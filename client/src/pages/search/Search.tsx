@@ -3,7 +3,7 @@ import { useSearchParams, Navigate } from "react-router-dom"
 import { IoSearch } from "react-icons/io5"
 import ImageSearch from "./ImageSearch"
 import VideoSearch from "./VideoSearch"
-import SearchRecommendations from "./SearchRecommedations"
+import SearchRecommendations from "./SearchRecommendations"
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -46,7 +46,7 @@ const Search = () => {
           </button>
         </form>
 
-        <SearchRecommendations searchQuery={searchQuery} />
+        <SearchRecommendations urlQuery={urlQuery} />
       </div>
 
       <div className="flex justify-between">
