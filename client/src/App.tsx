@@ -4,11 +4,11 @@ import Home from './pages/home/Home'
 import Search from './pages/search/Search'
 import Explore from './pages/explore/Explore'
 import CollectionDetailPage from './pages/explore/CollectionDetailPage'
-import PhotoDetailModel from './components/PhotoDetailModel'
+import PhotoDetailModal from './components/media/PhotoDetailModal'
 import PhotoDetailPage from './pages/media-detail/PhotoDetailPage'
 import { ScrollToTop } from './components/features/ScrollToTop'
 import VideoDetailPage from './pages/media-detail/VideoDetailPage'
-import VideoDetailModal from './components/VideoDetailModel'
+import VideoDetailModal from './components/media/VideoDetailModal'
 
 function App() {
   const location = useLocation()
@@ -31,7 +31,7 @@ function App() {
 
         {state?.photoBackgroundLocation && (
           <Routes>
-            <Route path="/photos/:photoId" element={<PhotoDetailModel />} />
+            <Route path="/photos/:photoId" element={<PhotoDetailModal />} />
           </Routes>
         )}
 

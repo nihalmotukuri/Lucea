@@ -3,12 +3,10 @@ import { useNavigate, useLocation, useParams, Navigate } from "react-router-dom"
 import { IoSearch } from "react-icons/io5"
 import type React from "react"
 import Media from "./Media"
-// import FeaturedCollections from "../explore/FeaturedCollections"
 import Suggestions from "./Suggestions"
 import { Topic } from "./Topic"
 import { useTopic } from "@/store/useTopic"
 import Featured from "./Featured"
-// import MediaDetailModal from "@/components/PhotoDetailModel"
 
 const Home = () => {
     const navigate = useNavigate()
@@ -18,16 +16,17 @@ const Home = () => {
     const setActiveTopic = useTopic(state => state.setActiveTopic)
     const topics = useTopic(state => state.topics)
 
-    if (!topicSlug) { setActiveTopic('') }
-    else setActiveTopic(topicSlug)
+    if (!topicSlug) { 
+        setActiveTopic('') 
+    } else { 
+        setActiveTopic(topicSlug) 
+    }
 
     if (topicSlug && !topics.some(t => t.slug === topicSlug)) return <Navigate to='/' replace />
 
     const onSearchMedia = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
         if (!searchQuery) return null
-
         navigate(`/search?query=${searchQuery}&type=photos`)
     }
 
@@ -45,7 +44,6 @@ const Home = () => {
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
-
                     <button
                         type="submit"
                         className="pl-2 text-xl text-black/50 cursor-pointer"
@@ -53,25 +51,19 @@ const Home = () => {
                         <IoSearch />
                     </button>
                 </form>
-
                 <Suggestions />
             </div>
 
             {!location.pathname.includes('/t')
                 ? (
                     <>
-                        {/* <FeaturedCollections /> */}
                         <Featured />
-
                         <h1
                             className="pt-2 pb-3 text-3xl text-neutral-700"
-                            style={{
-                                fontFamily: '"PT Serif", serif'
-                            }}
+                            style={{ fontFamily: '"PT Serif", serif' }}
                         >
                             Photos & Videos
                         </h1>
-
                         <Media />
                     </>
                 )

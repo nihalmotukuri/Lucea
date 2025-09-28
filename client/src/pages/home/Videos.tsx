@@ -3,7 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import axios from "axios"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
-import VideoItem from '../../components/VideoItem'
+import VideoItem from '../../components/media/VideoItem'
 
 const OddSkeletonCard = () => <div className="m-[4px] rounded-2xl w-full bg-[#e7e7e2] animate-pulse h-[460px]"></div>
 

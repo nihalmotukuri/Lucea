@@ -1,6 +1,4 @@
-
-export const trendingTopics = [
-    // Aesthetics & Moods
+const trendingTopics = [
     'Cinematic',
     'Minimalism',
     'Golden Hour',
@@ -9,8 +7,6 @@ export const trendingTopics = [
     'Moody & Dramatic',
     'Ethereal',
     'Vintage Film',
-
-    // Art & Technique
     'Light & Shadow',
     'Abstract Forms',
     'Surrealism',
@@ -19,8 +15,6 @@ export const trendingTopics = [
     'High Contrast',
     'Macro Photography',
     'Long Exposure',
-
-    // Subjects & Themes
     'Urban Exploration',
     'Wanderlust',
     'Botanical Details',
@@ -28,8 +22,6 @@ export const trendingTopics = [
     'Interior Design',
     'Food & Drink',
     'Wildlife',
-
-    // Colors & Palettes
     'Monochrome',
     'Earth Tones',
     'Vibrant Colors',
@@ -38,21 +30,14 @@ export const trendingTopics = [
 const TrendingTopics = () => {
     return (
         <section>
-            {/* <h1
-                className="pt-1 pb-[16px] text-3xl text-neutral-700"
-                style={{
-                    fontFamily: '"PT Serif", serif'
-                }}
-            >
-                Trending Topics
-            </h1> */}
-
             <div>
                 {trendingTopics.map((topic, idx) => (
                     <button
                         key={idx}
                         className="border border-black/20 text-neutral-500 m-2 p-2 rounded-md"
-                    >{topic}</button>
+                    >
+                        {topic}
+                    </button>
                 ))}
             </div>
         </section>

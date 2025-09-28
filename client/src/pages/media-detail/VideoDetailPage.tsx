@@ -10,7 +10,8 @@ import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard";
 import OddSkeletonCard from "@/components/layout/OddSkeletonCard";
 import Suggestions from "../home/Suggestions";
 import { IoSearch } from "react-icons/io5";
-import VideoItem from "@/components/VideoItem";
+import VideoItem from "@/components/media/VideoItem";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const urlToBase64 = async (url) => {
     try {
@@ -27,6 +28,8 @@ const urlToBase64 = async (url) => {
         throw error;
     }
 };
+
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 const VideoDetailPage = () => {
     const navigate = useNavigate();
@@ -63,42 +66,35 @@ const VideoDetailPage = () => {
         }
 
         try {
-            const base64Image = await urlToBase64(video.image); 
-            const systemPrompt = `You are an AI-powered creative search assistant. Analyze the provided image (which is a poster frame from a video) and return a single, concise keyword that best represents the video's core subject matter. This keyword will be used to search for visually similar videos. Return ONLY a valid JSON object with a single key "keyword" containing the extracted string.`;
-            const userPromptText = "Generate a search keyword for the theme of this video based on its poster image.";
+            const base64Image = await urlToBase64(video.image);
 
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: userPromptText },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: base64Image
-                            }
-                        }
-                    ]
-                }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
+            const model = genAI.getGenerativeModel({
+                model: "gemini-2.0-flash",
                 generationConfig: {
                     responseMimeType: "application/json",
                     temperature: 0.7,
                 },
-            };
+                systemInstruction: `
+        You are an AI-powered creative search assistant. 
+        Analyze the provided image (which is a poster frame from a video) 
+        and return a single, concise keyword that best represents the video's core subject matter. 
+        Return ONLY a valid JSON object with a single key "keyword".
+      `
+            });
 
-            const geminiResponse = await axios.post(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
-                payload,
+            const result = await model.generateContent([
+                { text: "Generate a search keyword for the theme of this video based on its poster image." },
                 {
-                    headers: { 'Content-Type': 'application/json' }
+                    inlineData: {
+                        mimeType: "image/jpeg",
+                        data: base64Image
+                    }
                 }
-            );
+            ]);
 
-            const keywordObj = JSON.parse(geminiResponse.data.candidates[0].content.parts[0].text);
-            const keyword = keywordObj.keyword;
-            return { keyword };
+            const text = await result.response.text();
+            const keywordObj = JSON.parse(text);
+            return keywordObj;
         } catch (err) {
             console.error("Error getting related keyword from Gemini:", err);
             return "";
@@ -122,7 +118,7 @@ const VideoDetailPage = () => {
     const getRelatedVideos = async ({ pageParam = 1 }) => {
         try {
             const res = await axios.get(
-                `https://api.pexels.com/v1/videos/search?query=${keyword}&per_page=8&page=${pageParam}`, // Video search endpoint
+                `https://api.pexels.com/v1/videos/search?query=${keyword}&per_page=8&page=${pageParam}`,
                 {
                     headers: {
                         Authorization: import.meta.env.VITE_PEXELS_API_KEY,
@@ -195,10 +191,7 @@ const VideoDetailPage = () => {
                 )}
 
                 <section className="mt-[54px]">
-                    {/* CHANGED: Title updated */}
                     <h1 className="text-3xl mb-[24px]">Related Videos</h1>
-
-                    {/* { <MediaSkeleton />} */}
 
                     {(isRelatedVideosPending || isRelatedVideosLoading || !keyword) &&
                         (
@@ -213,7 +206,7 @@ const VideoDetailPage = () => {
                         )
                     }
 
-                    {videoList && ( 
+                    {videoList && (
                         <InfiniteScroll
                             dataLength={videoList.length}
                             hasMore={hasMore}

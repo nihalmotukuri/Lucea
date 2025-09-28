@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const VideoItem = ({ video }) => {
@@ -29,7 +29,6 @@ const VideoItem = ({ video }) => {
                     )?.link || video.video_files[0].link
                 }
                 ref={videoRef}
-                // controls={playVideo}
                 muted
                 loop
                 playsInline

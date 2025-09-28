@@ -1,19 +1,6 @@
 import { Link } from "react-router-dom"
 import { useTopic } from "@/store/useTopic"
 
-// const topics = [
-//     { slug: 'minimalist', title: 'Minimalist' },
-//     { slug: 'wallpapers', title: 'Wallpapers' },
-//     { slug: '3d-renders', title: '3D Renders' },
-//     { slug: 'travel', title: 'Travel' },
-//     { slug: 'nature', title: 'Nature' },
-//     { slug: 'street-photography', title: 'Street Photography' },
-//     { slug: 'film', title: 'Film' },
-//     { slug: 'architecture', title: 'Architecture' },
-//     { slug: 'experimental', title: 'Experimental' },
-//     { slug: 'animals', title: 'Animals' },
-// ]
-
 const Suggestions = () => {
     const topics = useTopic(state => state.topics)
     const activeTopic = useTopic(state => state.activeTopic)

@@ -1,19 +1,18 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-// import { useMedia } from "@/store/useMedia"; // No longer needed for this logic
 import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { LineSpinner } from 'ldrs/react';
 import 'ldrs/react/LineSpinner.css';
-import { IoIosArrowRoundBack } from "react-icons/io"
 import MediaSkeleton from "@/components/layout/MediaSkeleton";
-import ImageItem from "@/components/ImageItem";
+import ImageItem from "@/components/media/ImageItem";
 import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard";
 import OddSkeletonCard from "@/components/layout/OddSkeletonCard";
 import Suggestions from "../home/Suggestions";
 import { IoSearch } from "react-icons/io5";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const urlToBase64 = async (url) => {
     try {
@@ -31,6 +30,7 @@ const urlToBase64 = async (url) => {
     }
 };
 
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 
 const PhotoDetailPage = () => {
     const navigate = useNavigate()
@@ -73,45 +73,41 @@ const PhotoDetailPage = () => {
 
         try {
             const base64Image = await urlToBase64(photo.src.original)
-            const systemPrompt = `You are an AI-powered creative search assistant. Analyze the provided image and return a single, concise, and descriptive keyword that best represents its core essence or subject matter. This keyword will be used to search for visually similar images. Return ONLY a valid JSON object with a single key "keyword" containing the extracted string.`
-            const userPromptText = "Generate a search keyword for this image."
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: userPromptText },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: base64Image
-                            }
-                        }
-                    ]
-                }],
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                },
+
+            const model = genAI.getGenerativeModel({
+                model: "gemini-2.0-flash",
                 generationConfig: {
-                    responseMimeType: "application/json",
                     temperature: 0.7,
+                    responseMimeType: "application/json"
                 },
-            };
+                systemInstruction: `
+                You are an AI-powered creative search assistant. 
+                Analyze the provided image and return a single, concise, descriptive keyword 
+                that best represents its core essence or subject matter.
+                Return ONLY a valid JSON object with a single key "keyword".
+            `
+            })
 
-            const geminiResponse = await axios.post(
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`,
-                payload,
+            const result = await model.generateContent([
                 {
-                    headers: { 'Content-Type': 'application/json' }
+                    text: "Generate a search keyword for this image."
+                },
+                {
+                    inlineData: {
+                        mimeType: "image/jpeg",
+                        data: base64Image
+                    }
                 }
-            );
+            ])
 
-            const keywordObj = JSON.parse(geminiResponse.data.candidates[0].content.parts[0].text);
-            const keyword = keywordObj.keyword;
-            return { keyword };
+            const text = result.response.text()
+            const keywordObj = JSON.parse(text)
+            return keywordObj
         } catch (err) {
             console.error("Error getting related keyword from Gemini:", err);
             return "";
         }
-    };
+    }
 
     const { data: photo, isPending: isPhotoPending } = useQuery({
         queryKey: ["photo", photoId],
@@ -188,9 +184,7 @@ const PhotoDetailPage = () => {
                 <Suggestions />
             </div>
 
-            {/* <div className='py-[24px] px-[120px]'> */}
             <div
-                // id="mediaDetailScrollable"
                 className="bg-white rounded-4xl h-full"
             >
                 {isPhotoPending
@@ -226,7 +220,6 @@ const PhotoDetailPage = () => {
                             hasMore={hasMore}
                             next={fetchNextPage}
                             loader={<div></div>}
-                        // scrollableTarget="mediaDetailScrollable"
                         >
                             <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
                                 <Masonry>
@@ -249,7 +242,6 @@ const PhotoDetailPage = () => {
                 </section>
             </div>
         </div>
-        // </div>
     )
 }
 

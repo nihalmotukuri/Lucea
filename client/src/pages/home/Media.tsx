@@ -3,26 +3,11 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import axios from "axios"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
-import VideoItem from '@/components/VideoItem'
+import VideoItem from '@/components/media/VideoItem'
 import MediaSkeleton from '@/components/layout/MediaSkeleton'
 import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
-import ImageItem from '@/components/ImageItem'
-
-// const collectionRes = await axios.get(
-//     `https://api.pexels.com/v1/collections/featured?per_page=2&page=1`,
-//     // `https://api.pexels.com/v1/collections/eta6y9n?per_page=8`,
-// //     // `https://api.pexels.com/v1/collections/e3qxk94?per_page=8`,
-// //     // `https://api.pexels.com/v1/collections/rywkryy?per_page=8`,
-// // //     // `https://api.pexels.com/v1/collections/otixfca`,
-//     {
-//         headers: {
-//             Authorization: import.meta.env.VITE_PEXELS_API_KEY
-//         }
-//     }
-// )
-
-// console.log('coll', collectionRes.data)
+import ImageItem from '@/components/media/ImageItem'
 
 const Media = () => {
     const [hasMore, setHasMore] = useState(true)
@@ -51,7 +36,6 @@ const Media = () => {
             const photos = imageRes.data.photos
             const videos = videoRes.data.videos
             const media = [...photos, ...videos]
-            // console.log("media", media)
 
             setImageListLoading(false)
 

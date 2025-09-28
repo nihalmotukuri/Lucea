@@ -1,11 +1,11 @@
-import VideoItem from '@/components/VideoItem'
+import VideoItem from '@/components/media/VideoItem'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import { useTopic } from '@/store/useTopic'
-import ImageItem from '@/components/ImageItem'
+import ImageItem from '@/components/media/ImageItem'
 
 const OddSkeletonCard = () => <div style={{ animationDelay: '500ms' }} className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[460px]"></div>
 

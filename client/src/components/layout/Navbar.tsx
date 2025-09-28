@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import { AuroraText } from "../ui/aurora-text"
 import { CiHome, CiCompass1 } from "react-icons/ci"
-import { IoIosCompass } from "react-icons/io"
 
 const Navbar = () => {
   return (

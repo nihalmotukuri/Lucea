@@ -1,9 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { IoSearch } from "react-icons/io5"
-// import FeaturedCollections from "./FeaturedCollections"
 import RecommendCollections from "./RecommendCollections"
-// import TrendingTopics from "./TrendingTopics"
 import Suggestions from "../home/Suggestions"
 
 const Explore = () => {
@@ -46,20 +44,13 @@ const Explore = () => {
 
             <h1
                 className="pt-1 text-[48px] text-neutral-700 text-center"
-                style={{
-                    // fontFamily: '"PT Serif", serif'
-                }}
             >
                 Explore
             </h1>
 
             <p className="text-center text-xl">Stay Inspired</p>
 
-            {/* <FeaturedCollections /> */}
-
             <RecommendCollections />
-
-            {/* {/* <TrendingTopics /> */}
         </div>
     )
 }

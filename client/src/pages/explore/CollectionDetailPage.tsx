@@ -10,7 +10,7 @@ import MediaSkeleton from "@/components/layout/MediaSkeleton"
 import InfiniteScroll from "react-infinite-scroll-component"
 import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard"
 import OddSkeletonCard from "@/components/layout/OddSkeletonCard"
-import ImageItem from "@/components/ImageItem"
+import ImageItem from "@/components/media/ImageItem"
 
 const CollectionDetailPage = () => {
     const { collectionId } = useParams()
@@ -44,8 +44,6 @@ const CollectionDetailPage = () => {
 
             if (pageParam === 5 || photos.length === 0) setHasMore(false)
 
-            // setImageListLoading(false)
-
             return { data: photos, nextPage: pageParam + 1 }
         } catch (err) {
             console.log(err)
@@ -60,9 +58,7 @@ const CollectionDetailPage = () => {
         initialPageParam: 1
     })
 
-    // const filteredPhotos = photos?.filter(img => img.height > img.width)
     const photos = data?.pages.flatMap(p => p.data)
-    // console.log(photos)
 
     if (!collection) return <Navigate to='/explore' replace />
 
