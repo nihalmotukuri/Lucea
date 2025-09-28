@@ -19,7 +19,7 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
             })
 
             const result = await model.generateContent([
-                { text: 'Generate 6 diverse keywords related to this search query' }
+                { text: `Search query: "${urlQuery}". Generate 6 diverse keywords related to this.` }
             ])
 
             const candidates = result?.response?.candidates
