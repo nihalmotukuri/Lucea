@@ -2,7 +2,11 @@ import { Link } from "react-router-dom"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
 
-const SearchRecommendations = ({ searchQuery }) => {
+interface SearchRecommendationsProps {
+    searchQuery: string
+}
+
+const SearchRecommendations = ({ searchQuery }: SearchRecommendationsProps) => {
 
     const aiRecommendations = async () => {
         try {
@@ -31,7 +35,6 @@ const SearchRecommendations = ({ searchQuery }) => {
 
             const suggestionsObj = JSON.parse(geminiResponse.data.candidates[0].content.parts[0].text)
             const suggestionsList = suggestionsObj.suggestions
-            console.log(suggestionsList)
             return suggestionsList
         } catch (err) {
             console.error(err)
@@ -50,7 +53,7 @@ const SearchRecommendations = ({ searchQuery }) => {
             <ul className="w-full gap-3 flex items-center h-[50px] px-[2]">
                 {Array
                     .from({ length: 6 })
-                    .map((s, idx) => (
+                    .map((_, idx) => (
                         <li
                             key={idx}
                             className='bg-black/6 h-[32px] w-[60px] rounded-md animate-pulse'
@@ -62,7 +65,7 @@ const SearchRecommendations = ({ searchQuery }) => {
 
     return (
         <ul className="w-full h-[50px] flex gap-6 flex">
-            {isFetched && suggestions && suggestions.map((s, idx) => (
+            {isFetched && suggestions && suggestions.map((s: string, idx: number) => (
                 <Link
                     key={idx}
                     to={`/search?query=${s}`}

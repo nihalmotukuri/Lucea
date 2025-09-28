@@ -11,6 +11,7 @@ import VideoItem from "./VideoItem";
 import OddSkeletonCard from "../layout/OddSkeletonCard";
 import EvenSkeletonCard from "../layout/EvenSkeletonCard";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Video, VideoFile } from "@/types/types";
 
 const urlToBase64 = async (url: string) => {
     try {
@@ -59,14 +60,14 @@ const VideoDetailModal = () => {
         }
     };
 
-    const getRelatedKeyword = async (video) => {
+    const getRelatedKeyword = async (video: Video): Promise<{ keyword: string } | ""> => {
         if (!video?.image) {
             console.error("Video poster image URL is missing.");
             return "";
         }
 
         try {
-            const base64Image = await urlToBase64(video.image);
+            const base64Image = await urlToBase64(video.image) as string;
 
             const model = genAI.getGenerativeModel({
                 model: "gemini-2.0-flash",
@@ -113,7 +114,7 @@ const VideoDetailModal = () => {
         staleTime: Infinity,
     });
 
-    const keyword = keywordData?.keyword;
+    const keyword = typeof keywordData === "object" && keywordData !== null ? keywordData.keyword : undefined;
 
     const getRelatedVideos = async ({ pageParam = 1 }) => {
         try {
@@ -147,7 +148,7 @@ const VideoDetailModal = () => {
     });
 
     const videoList = relatedVideos?.pages.flatMap(p => p.data);
-    const mainVideoFile = video?.video_files?.find((file) => file.quality === 'hd' || file.quality === 'uhd')?.link || video?.video_files?.[0]?.link;
+    const mainVideoFile = video?.video_files?.find((file: VideoFile) => file.quality === 'hd' || file.quality === 'uhd')?.link || video?.video_files?.[0]?.link;
 
     return (
         <div className='fixed inset-0 overflow-y-auto z-50 bg-black/30 backdrop-blur-xs py-[24px] px-4 sm:px-[120px]'>
@@ -162,7 +163,7 @@ const VideoDetailModal = () => {
                 id="mediaDetailScrollable"
                 className="relative bg-white p-6 sm:p-[54px] rounded-4xl h-full overflow-y-auto"
             >
-                
+
                 {isVideoPending ? (
                     <div className="h-[540px] flex items-center justify-center">
                         <LineSpinner size="40" stroke="3" speed="1" color="#b8bfad" />

@@ -1,7 +1,12 @@
+import type { Video } from '@/types/types'
 import { useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-const VideoItem = ({ video }) => {
+interface VideoItemProps {
+    video: Video
+}
+
+const VideoItem = ({ video }: VideoItemProps) => {
     const navigate = useNavigate()
     const location = useLocation()
 

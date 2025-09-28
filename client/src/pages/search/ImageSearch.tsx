@@ -7,7 +7,11 @@ import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import ImageItem from '@/components/media/ImageItem'
 
-const ImageSearch = ({ searchQuery }) => {
+interface ImageSearchProps {
+    searchQuery: string
+}
+
+const ImageSearch = ({ searchQuery }: ImageSearchProps) => {
     const [hasMore, setHasMore] = useState(true)
     const [imageListLoading, setImageListLoading] = useState(true)
 

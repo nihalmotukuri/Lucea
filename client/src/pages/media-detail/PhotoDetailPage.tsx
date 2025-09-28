@@ -13,14 +13,19 @@ import OddSkeletonCard from "@/components/layout/OddSkeletonCard";
 import Suggestions from "../home/Suggestions";
 import { IoSearch } from "react-icons/io5";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Photo } from "@/types/types";
 
-const urlToBase64 = async (url) => {
+const urlToBase64 = async (url: string): Promise<string> => {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result?.split(',')[1])
+            if (typeof reader.result === "string") {
+                resolve(reader.result.split(',')[1]);
+            } else {
+                reject(new Error("Failed to convert blob to base64 string"));
+            }
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
@@ -65,44 +70,30 @@ const PhotoDetailPage = () => {
         }
     };
 
-    const getRelatedKeyword = async (photo) => {
-        if (!photo?.src?.medium) {
-            console.error("Photo source URL is missing.");
-            return "";
-        }
+    const getRelatedKeyword = async (photo: Photo): Promise<{ keyword: string } | ""> => {
+        if (!photo?.src?.medium) return "";
 
         try {
-            const base64Image = await urlToBase64(photo.src.original)
+            const base64Image = await urlToBase64(photo.src.original);
 
             const model = genAI.getGenerativeModel({
                 model: "gemini-2.0-flash",
-                generationConfig: {
-                    temperature: 0.7,
-                    responseMimeType: "application/json"
-                },
+                generationConfig: { temperature: 0.7, responseMimeType: "application/json" },
                 systemInstruction: `
-                You are an AI-powered creative search assistant. 
-                Analyze the provided image and return a single, concise, descriptive keyword 
-                that best represents its core essence or subject matter.
-                Return ONLY a valid JSON object with a single key "keyword".
-            `
-            })
+                        You are an AI-powered creative search assistant. 
+                        Analyze the provided image and return a single, concise, descriptive keyword 
+                        that best represents its core essence or subject matter.
+                        Return ONLY a valid JSON object with a single key "keyword".
+                    `
+            });
 
             const result = await model.generateContent([
-                {
-                    text: "Generate a search keyword for this image."
-                },
-                {
-                    inlineData: {
-                        mimeType: "image/jpeg",
-                        data: base64Image
-                    }
-                }
-            ])
+                { text: "Generate a search keyword for this image." },
+                { inlineData: { mimeType: "image/jpeg", data: base64Image } }
+            ]);
 
-            const text = result.response.text()
-            const keywordObj = JSON.parse(text)
-            return keywordObj
+            const text = await result.response.text();
+            return JSON.parse(text);
         } catch (err) {
             console.error("Error getting related keyword from Gemini:", err);
             return "";
@@ -121,7 +112,7 @@ const PhotoDetailPage = () => {
         staleTime: Infinity,
     });
 
-    const keyword = keywordData?.keyword;
+    const keyword = typeof keywordData === "object" && keywordData !== null ? keywordData.keyword : "";
 
     const getRelatedImages = async ({ pageParam = 1 }) => {
         try {

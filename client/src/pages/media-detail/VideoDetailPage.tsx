@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -12,14 +12,19 @@ import Suggestions from "../home/Suggestions";
 import { IoSearch } from "react-icons/io5";
 import VideoItem from "@/components/media/VideoItem";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Video, VideoFile } from "@/types/types";
 
-const urlToBase64 = async (url) => {
+const urlToBase64 = async (url: string): Promise<string> => {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result?.split(',')[1]);
+            if (typeof reader.result === "string") {
+                resolve(reader.result.split(',')[1]);
+            } else {
+                reject(new Error("Failed to convert blob to base64 string"));
+            }
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
@@ -37,7 +42,7 @@ const VideoDetailPage = () => {
     const { videoId } = useParams();
     const [hasMore, setHasMore] = useState(true);
 
-    const onSearchMedia = (e) => {
+    const onSearchMedia = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         navigate(`/search?query=${searchQuery}&type=videos`);
     };
@@ -59,7 +64,7 @@ const VideoDetailPage = () => {
         }
     };
 
-    const getRelatedKeyword = async (video) => {
+    const getRelatedKeyword = async (video: Video): Promise<{ keyword: string } | ""> => {
         if (!video?.image) {
             console.error("Video poster image URL is missing.");
             return "";
@@ -113,7 +118,7 @@ const VideoDetailPage = () => {
         staleTime: Infinity,
     });
 
-    const keyword = keywordData?.keyword;
+    const keyword = typeof keywordData === 'object' && keywordData !== null ? keywordData.keyword : undefined;
 
     const getRelatedVideos = async ({ pageParam = 1 }) => {
         try {
@@ -153,7 +158,10 @@ const VideoDetailPage = () => {
     return (
         <div className="relative bg-[#fdfcfb] px-[18px] pb-[24px] pt-[140px]">
             <div className="fixed top-0 right-0 left-[80px] bg-[#fdfcfb] z-10 m-auto px-5 pt-5 border-b border-black/10">
-                <form onSubmit={onSearchMedia} className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10">
+                <form
+                    onSubmit={onSearchMedia}
+                    className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10"
+                >
                     <input
                         className="text-md w-full border-none outline-none"
                         type="text"
@@ -178,7 +186,7 @@ const VideoDetailPage = () => {
                 {video && (
                     <video
                         src={
-                            video.video_files.find(vf => vf.quality === 'hd' || vf.quality === 'uhd')?.link
+                            video.video_files.find((vf: VideoFile) => vf.quality === 'hd' || vf.quality === 'uhd')?.link
                             || video.video_files[0].link
                         }
                         poster={video.image}

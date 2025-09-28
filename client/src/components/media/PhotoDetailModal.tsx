@@ -12,14 +12,19 @@ import 'ldrs/react/LineSpinner.css';
 import MediaSkeleton from "../layout/MediaSkeleton";
 import { HiArrowLeft } from "react-icons/hi2";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Photo } from "@/types/types";
 
-const urlToBase64 = async (url) => {
+const urlToBase64 = async (url: string): Promise<string> => {
     try {
         const response = await fetch(url);
         const blob = await response.blob();
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result?.split(',')[1])
+            if (typeof reader.result === "string") {
+                resolve(reader.result.split(',')[1]);
+            } else {
+                reject(new Error("Failed to convert blob to base64 string"));
+            }
             reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
@@ -54,7 +59,7 @@ const PhotoDetailModal = () => {
         }
     };
 
-    const getRelatedKeyword = async (photo) => {
+    const getRelatedKeyword = async (photo: Photo): Promise<{ keyword: string } | "">  => {
         if (!photo?.src?.medium) return "";
 
         try {
@@ -96,7 +101,7 @@ const PhotoDetailModal = () => {
         staleTime: Infinity,
     });
 
-    const keyword = keywordData?.keyword;
+    const keyword = typeof keywordData === "object" && keywordData !== null ? keywordData.keyword : undefined;
 
     const getRelatedImages = async ({ pageParam = 1 }) => {
         try {

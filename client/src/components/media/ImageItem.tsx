@@ -1,6 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom"
+import type { Photo } from "@/types/types.ts";
 
-const ImageItem = ({ image }) => {
+interface ImageItemProps {
+  image: Photo;
+}
+
+const ImageItem = ({ image }: ImageItemProps) => {
     const navigate = useNavigate()
     const location = useLocation()
 

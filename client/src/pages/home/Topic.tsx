@@ -7,11 +7,15 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import { useTopic } from '@/store/useTopic'
 import ImageItem from '@/components/media/ImageItem'
 
+interface TopicProps {
+    topicSlug: string | undefined
+}
+
 const OddSkeletonCard = () => <div style={{ animationDelay: '500ms' }} className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[460px]"></div>
 
 const EvenSkeletonCard = () => <div className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[320px]"></div>
 
-export const Topic = ({ topicSlug }) => {
+export const Topic = ({ topicSlug }: TopicProps) => {
     const [hasMore, setHasMore] = useState(true)
     const [mediaListLoading, setMediaListLoading] = useState(true)
     const topics = useTopic(state => state.topics)

@@ -4,12 +4,14 @@ import axios from "axios"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import VideoItem from '@/components/media/VideoItem'
+import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
+import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 
-const OddSkeletonCard = () => <div className="m-[4px] rounded-2xl w-full bg-[#e7e7e2] animate-pulse h-[460px]"></div>
+interface VideoSearchProps {
+    searchQuery: string
+}
 
-const EvenSkeletonCard = () => <div className="m-[4px] rounded-2xl w-full bg-[#e7e7e2] animate-pulse h-[360px]"></div>
-
-const VideoSearch = ({ searchQuery }) => {
+const VideoSearch = ({ searchQuery }: VideoSearchProps) => {
     const [hasMore, setHasMore] = useState(true)
     const [videoListLoading, setVideoListLoading] = useState(true)
 
