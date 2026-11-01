@@ -66,7 +66,7 @@ const Media = () => {
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {mediaList.map((media) => {
 

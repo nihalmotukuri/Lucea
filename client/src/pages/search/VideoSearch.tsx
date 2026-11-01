@@ -52,7 +52,7 @@ const VideoSearch = ({ searchQuery }: VideoSearchProps) => {
 
     if (isPending || videoListLoading) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {Array.from({ length:6 }).map((_, i) => {
                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
@@ -71,7 +71,7 @@ const VideoSearch = ({ searchQuery }: VideoSearchProps) => {
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {videoList.map((video) => {
                         if (!video?.video_files) return null

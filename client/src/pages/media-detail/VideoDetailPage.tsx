@@ -203,7 +203,7 @@ const VideoDetailPage = () => {
 
                     {(isRelatedVideosPending || isRelatedVideosLoading || !keyword) &&
                         (
-                            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+                            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                                 <Masonry>
                                     {Array.from({ length: 6 }).map((_, i) => {
                                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
@@ -221,7 +221,7 @@ const VideoDetailPage = () => {
                             next={fetchNextPage}
                             loader={<div></div>}
                         >
-                            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+                            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                                 <Masonry>
                                     {relatedVideos && videoList.map((vid) => {
                                         if (!vid?.video_files?.[0]?.link) return null;

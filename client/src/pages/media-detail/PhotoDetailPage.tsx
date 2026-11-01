@@ -212,7 +212,7 @@ const PhotoDetailPage = () => {
                             next={fetchNextPage}
                             loader={<div></div>}
                         >
-                            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
+                            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                                 <Masonry>
                                     {relatedPhotos && imageList.map((img) => {
                                         if (!img?.src?.large) return null

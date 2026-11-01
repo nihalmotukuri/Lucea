@@ -49,7 +49,7 @@ const ImageSearch = ({ searchQuery }: ImageSearchProps) => {
 
     if (isPending || imageListLoading) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {Array.from({ length: 10 }).map((_, i) => {
                         if (i % 2 === 0) return <EvenSkeletonCard key={i} />
@@ -67,7 +67,7 @@ const ImageSearch = ({ searchQuery }: ImageSearchProps) => {
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {data && imageList.map((img) => {
                         if (!img?.src?.large) return null

@@ -4,7 +4,7 @@ import OddSkeletonCard from "./OddSkeletonCard"
 
 const MediaSkeleton = () => {
   return (
-    <ResponsiveMasonry columnsCountBreakPoints={{ 992: 5 }}>
+    <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
       <Masonry>
         {Array.from({ length: 10 }).map((_, i) => {
           if (i % 2 == 0) return <EvenSkeletonCard key={i} />

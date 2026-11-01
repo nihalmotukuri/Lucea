@@ -51,7 +51,7 @@ const Images = () => {
 
     if (isPending || imageListLoading) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 4 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {Array.from({ length: 12 }).map((_, i) =>
                         i % 2 === 0 ? <EvenSkeletonCard key={i} /> : <OddSkeletonCard key={i} />
@@ -68,7 +68,7 @@ const Images = () => {
             next={fetchNextPage}
             loader={<div />}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 4 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                 <Masonry>
                     {imageList.map((img) => {
                         if (!img?.src?.large) return null

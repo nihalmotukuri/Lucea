@@ -187,7 +187,7 @@ const VideoDetailModal = () => {
 
                     {(isRelatedVideosPending || isRelatedVideosLoading || !keyword) &&
                         (
-                            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+                            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                                 <Masonry>
                                     {Array.from({ length: 6 }).map((_, i) => {
                                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
@@ -206,7 +206,7 @@ const VideoDetailModal = () => {
                             loader={<div></div>}
                             scrollableTarget="mediaDetailScrollable"
                         >
-                            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 3 }}>
+                            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                                 <Masonry gutter="1rem">
                                     {videoList.map((vid) => {
                                         if (!vid?.image) return null;
