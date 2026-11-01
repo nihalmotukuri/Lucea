@@ -1,23 +1,24 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { useExplore } from "@/store/useExplore";
 
 const RecommendCollections = () => {
-    const navigate = useNavigate()
     const recommendedCollections = useExplore(state => state.recommendedCollections)
 
     return (
         <section className="mt-[36px]">
-            <ResponsiveMasonry columnsCountBreakPoints={{ 992: 4 }}>
+            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 992: 4 }}>
                 <Masonry>
-                    {recommendedCollections.map((rc, idx) => (
-                        <div
-                            key={idx}
-                            className="relative rounded-3xl overflow-hidden cursor-pointer m-[2px]"
-                            onClick={() => navigate(`/explore/${rc.id}`)}
+                    {recommendedCollections.map((rc) => (
+                        <Link
+                            key={rc.id}
+                            to={`/explore/${rc.id}`}
+                            className="relative m-[2px] block overflow-hidden rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                         >
                             <img
                                 src={`${rc.heroImage}`}
+                                alt=""
+                                loading="lazy"
                             />
 
                             <div className="absolute z-1 bottom-5 left-5 right-5">
@@ -36,7 +37,7 @@ const RecommendCollections = () => {
                                     {rc.description}
                                 </p>
                             </div>
-                        </div>
+                        </Link>
                     ))}
                 </Masonry>
             </ResponsiveMasonry>

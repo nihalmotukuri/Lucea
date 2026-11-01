@@ -1,11 +1,11 @@
 import VideoItem from '@/components/media/VideoItem'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import { useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import { useTopic } from '@/store/useTopic'
 import ImageItem from '@/components/media/ImageItem'
+import QueryFeedback from '@/components/features/QueryFeedback'
+import { searchPhotos, searchVideos } from '@/api/pexels'
 
 interface TopicProps {
     topicSlug: string | undefined
@@ -16,60 +16,39 @@ const OddSkeletonCard = () => <div style={{ animationDelay: '500ms' }} className
 const EvenSkeletonCard = () => <div className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[320px]"></div>
 
 export const Topic = ({ topicSlug }: TopicProps) => {
-    const [hasMore, setHasMore] = useState(true)
-    const [mediaListLoading, setMediaListLoading] = useState(true)
     const topics = useTopic(state => state.topics)
     const topicTitle = topics.find(t => t.slug === topicSlug)?.title
 
-    const getTopicMedia = async ({ pageParam = 1 }) => {
-        try {
-            const imageRes = await axios.get(
-                `https://api.pexels.com/v1/search?query=${topicTitle}&per_page=8&page=${pageParam}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY
-                    }
-                }
-            )
-
-            const videoRes = await axios.get(
-                `https://api.pexels.com/videos/search?query=${topicTitle}&per_page=6&page=${pageParam}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY
-                    }
-                }
-            )
-
-            const photos = imageRes.data.photos
-            const videos = videoRes.data.videos
-            const media = [...photos, ...videos]
-
-            setMediaListLoading(false)
-
-            if (photos.length === 0 && videos.length === 0) setHasMore(false)
-
-            return { data: media, nextPage: pageParam + 1 }
-        } catch (err) {
-            console.error(err)
-            return { data: [], nextPage: undefined }
-        }
-    }
-
-    const { data, fetchNextPage, isFetchingNextPage, isPending } = useInfiniteQuery({
+    const {
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        isPending,
+        isError,
+        error,
+        refetch,
+    } = useInfiniteQuery({
         queryKey: ['topic', topicSlug],
-        queryFn: getTopicMedia,
+        queryFn: async ({ pageParam, signal }) => {
+            const [photos, videos] = await Promise.all([
+                searchPhotos(topicTitle ?? '', pageParam, 8, signal),
+                searchVideos(topicTitle ?? '', pageParam, 6, signal),
+            ])
+            return {
+                data: [...photos.data, ...videos.data],
+                nextPage: photos.nextPage ?? videos.nextPage,
+            }
+        },
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
     })
 
     const mediaList = data?.pages.flatMap(pg => pg.data) ?? []
-    console.log(mediaList)
 
-    if (isPending || mediaListLoading) {
+    if (isPending && !isError) {
             return (
                 <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                    <Masonry>
+                    <Masonry sequential>
                         {Array.from({ length: 10 }).map((_, i) => {
                             if (i % 2 == 0) return <EvenSkeletonCard key={i} />
                             return <OddSkeletonCard key={i} />
@@ -79,25 +58,29 @@ export const Topic = ({ topicSlug }: TopicProps) => {
             )
         }
 
+    if (mediaList.length === 0) {
+        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+    }
+
     return (
         <section>
             <InfiniteScroll
                 dataLength={mediaList.length}
                 next={fetchNextPage}
-                hasMore={hasMore}
+                hasMore={!!data?.pages.at(-1)?.nextPage}
                 loader={<div></div>}
             >
             <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry>
+                <Masonry sequential>
                     {mediaList.map((media) => {
 
-                        if (!media.duration) {
+                        if ("src" in media) {
                             if (!media?.src?.large) return null
 
-                            return <ImageItem image={media} />
+                            return <ImageItem image={media} key={media.id} />
                         }
 
-                        if (!media?.video_files) return null
+                        if (!("video_files" in media)) return null
 
                         return <VideoItem key={media.id} video={media} />
                     })}
@@ -112,6 +95,7 @@ export const Topic = ({ topicSlug }: TopicProps) => {
                 </Masonry>
             </ResponsiveMasonry>
         </InfiniteScroll>
+            {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
         </section>
     )
 }

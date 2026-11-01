@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -14,6 +13,8 @@ import Suggestions from "../home/Suggestions";
 import { IoSearch } from "react-icons/io5";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Photo } from "@/types/types";
+import QueryFeedback from "@/components/features/QueryFeedback";
+import { getPhoto, searchPhotos } from "@/api/pexels";
 
 const urlToBase64 = async (url: string): Promise<string> => {
     try {
@@ -50,25 +51,6 @@ const PhotoDetailPage = () => {
     }
 
     const { photoId } = useParams();
-    const [hasMore, setHasMore] = useState(true);
-
-    const getPhoto = async () => {
-        try {
-            const res = await axios.get(
-                `https://api.pexels.com/v1/photos/${photoId}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY
-                    }
-                }
-            )
-            console.log(res.data)
-            return res.data
-        } catch (err) {
-            console.error(err)
-            return null
-        }
-    };
 
     const getRelatedKeyword = async (photo: Photo): Promise<{ keyword: string } | ""> => {
         if (!photo?.src?.medium) return "";
@@ -96,52 +78,51 @@ const PhotoDetailPage = () => {
             return JSON.parse(text);
         } catch (err) {
             console.error("Error getting related keyword from Gemini:", err);
-            return "";
+            throw err;
         }
     }
 
-    const { data: photo, isPending: isPhotoPending } = useQuery({
+    const {
+        data: photo,
+        isPending: isPhotoPending,
+        isError: isPhotoError,
+        refetch: refetchPhoto,
+    } = useQuery({
         queryKey: ["photo", photoId],
-        queryFn: getPhoto
+        queryFn: ({ signal }) => {
+            if (!photoId) throw new Error("Photo ID is required")
+            return getPhoto(photoId, signal)
+        },
+        enabled: !!photoId,
     });
 
-    const { data: keywordData } = useQuery({
+    const {
+        data: keywordData,
+        isPending: isKeywordPending,
+        isError: isKeywordError,
+        refetch: refetchKeyword,
+    } = useQuery({
         queryKey: ["relatedKeyword", photoId],
-        queryFn: () => getRelatedKeyword(photo),
+        queryFn: () => {
+            if (!photo) throw new Error("Photo is required to generate a related keyword")
+            return getRelatedKeyword(photo)
+        },
         enabled: !!photo,
         staleTime: Infinity,
     });
 
     const keyword = typeof keywordData === "object" && keywordData !== null ? keywordData.keyword : "";
 
-    const getRelatedImages = async ({ pageParam = 1 }) => {
-        try {
-            const res = await axios.get(
-                `https://api.pexels.com/v1/search?query=${keyword}&per_page=12&page=${pageParam}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY,
-                    },
-                }
-            )
-            const photos = res.data.photos
-            if (photos.length === 0) setHasMore(false)
-            return { data: photos, nextPage: pageParam + 1 }
-        } catch (err) {
-            console.error(err)
-            return { data: [], nextPage: undefined }
-        }
-    };
-
     const {
         data: relatedPhotos,
         fetchNextPage,
         isFetchingNextPage,
         isPending: isRelatedPhotosPending,
-        isLoading: isRelatedPhotosLoading
+        isError: isRelatedPhotosError,
+        refetch: refetchRelatedPhotos,
     } = useInfiniteQuery({
         queryKey: ["relatedImages", keyword],
-        queryFn: getRelatedImages,
+        queryFn: ({ pageParam, signal }) => searchPhotos(keyword ?? "", pageParam, 12, signal),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
         enabled: !!keyword,
@@ -151,13 +132,14 @@ const PhotoDetailPage = () => {
 
     return (
         <div className="relative bg-[#fdfcfb] px-[18px] pb-[24px] pt-[140px]">
-            <div className="fixed top-0 right-0 left-[80px] bg-[#fdfcfb] z-10 m-auto px-5 pt-5 border-b border-black/10">
+            <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
                 <form
                     onSubmit={onSearchMedia}
                     className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10"
                 >
                     <input
-                        className="text-md w-full border-none outline-none"
+                        aria-label="Search photos and videos"
+                        className="text-md w-full border-none outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
                         type="text"
                         placeholder="Discover photos & videos"
                         value={searchQuery}
@@ -166,6 +148,7 @@ const PhotoDetailPage = () => {
 
                     <button
                         type="submit"
+                        aria-label="Search"
                         className="pl-2 text-xl text-black/50 cursor-pointer"
                     >
                         <IoSearch />
@@ -178,58 +161,62 @@ const PhotoDetailPage = () => {
             <div
                 className="bg-white rounded-4xl h-full"
             >
-                {isPhotoPending
-                    ? (
-                        <div className="h-[540px] flex items-center justify-center">
-                            <LineSpinner
-                                size="40"
-                                stroke="3"
-                                speed="1"
-                                color="#b8bfad"
-                            />
-                        </div>
-                    ) : null}
-
+                {isPhotoPending && (
+                    <div className="h-[540px] flex items-center justify-center">
+                        <LineSpinner size="40" stroke="3" speed="1" color="#b8bfad" />
+                    </div>
+                )}
+                {isPhotoError && (
+                    <QueryFeedback error onRetry={() => void refetchPhoto()} />
+                )}
                 {photo && (
                     <img
                         src={photo?.src?.large2x || photo?.src?.large || photo?.src?.original}
-                        className="m-auto rounded-3xl h-[540px] max-w-[1046px] object-cover"
-                        style={{
-                            backgroundColor: photo.avg_color
-                        }}
+                        className="m-auto h-auto max-h-[60vh] max-w-full rounded-3xl object-contain sm:h-[540px] sm:max-h-[70vh] sm:max-w-[1046px]"
+                        style={{ backgroundColor: photo.avg_color }}
                     />
                 )}
 
                 <section className="mt-[54px]">
                     <h1 className="text-3xl mb-[24px]">Related Photos</h1>
 
-                    {(isRelatedPhotosPending || isRelatedPhotosLoading || !keyword) && <MediaSkeleton />}
-
-                    {imageList &&
+                    {isRelatedPhotosPending && !!keyword && <MediaSkeleton />}
+                    {isKeywordError && (
+                        <QueryFeedback error onRetry={() => void refetchKeyword()} />
+                    )}
+                    {!isKeywordPending && !isKeywordError && !keyword && (
+                        <QueryFeedback empty />
+                    )}
+                    {imageList?.length === 0 && !isRelatedPhotosPending && !isRelatedPhotosError && (
+                        <QueryFeedback empty />
+                    )}
+                    {imageList && imageList.length > 0 &&
                         <InfiniteScroll
                             dataLength={imageList.length}
-                            hasMore={hasMore}
+                            hasMore={!!relatedPhotos?.pages.at(-1)?.nextPage}
                             next={fetchNextPage}
                             loader={<div></div>}
                         >
                             <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                                <Masonry>
-                                    {relatedPhotos && imageList.map((img) => {
+                                <Masonry sequential>
+                                    {imageList.map((img) => {
                                         if (!img?.src?.large) return null
                                         return <ImageItem image={img} key={img.id} />
                                     })}
 
-                                    {isFetchingNextPage
-                                        ? Array.from({ length: 12 }).map((_, i) => {
-                                            if (i % 2 == 0) return <EvenSkeletonCard key={i} />
+                                    {isFetchingNextPage &&
+                                        Array.from({ length: 12 }).map((_, i) => {
+                                            if (i % 2 === 0) return <EvenSkeletonCard key={i} />
                                             return <OddSkeletonCard key={i} />
                                         })
-                                        : null
                                     }
                                 </Masonry>
                             </ResponsiveMasonry>
                         </InfiniteScroll>
                     }
+                    {isRelatedPhotosError && (
+                        <QueryFeedback error onRetry={() => void refetchRelatedPhotos()} />
+                    )}
                 </section>
             </div>
         </div>

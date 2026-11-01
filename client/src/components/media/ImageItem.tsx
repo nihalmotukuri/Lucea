@@ -16,18 +16,20 @@ const ImageItem = ({ image }: ImageItemProps) => {
     }
 
     return (
-        <div
-            key={image.id}
-            className='m-[4px] rounded-2xl overflow-hidden w-full'
+        <button
+            type="button"
+            className='m-[4px] block w-[calc(100%-8px)] cursor-pointer overflow-hidden rounded-2xl border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
+            aria-label={`View photo by ${image.photographer}${image.alt ? `: ${image.alt}` : ''}`}
+            onClick={onImage}
             style={{
                 backgroundColor: image.avg_color,
                 aspectRatio: `${image.width}/${image.height}`,
             }}
-            onClick={onImage}
         >
             <img
-                className='cursor-pointer fade-in'
+                className='fade-in'
                 src={image.src.large}
+                alt={image.alt || `Photo by ${image.photographer}`}
                 loading='lazy'
                 style={{
                     width: "100%",
@@ -37,7 +39,7 @@ const ImageItem = ({ image }: ImageItemProps) => {
                     borderRadius: "8px",
                 }}
             />
-        </div>
+        </button>
     )
 }
 

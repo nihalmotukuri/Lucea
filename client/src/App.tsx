@@ -18,7 +18,7 @@ function App() {
     <>
       <Navbar />
 
-      <main className='h-screen pl-[80px]'>
+      <main className='min-h-screen pb-[76px] md:h-screen md:pb-0 md:pl-[80px]'>
         <Routes location={state?.photoBackgroundLocation || location}>
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />

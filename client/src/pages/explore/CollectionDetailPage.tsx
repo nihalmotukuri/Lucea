@@ -4,19 +4,19 @@ import { Navigate, useNavigate, useParams } from "react-router-dom"
 import Suggestions from "../home/Suggestions"
 import { useExplore } from "@/store/useExplore"
 import { useInfiniteQuery } from "@tanstack/react-query"
-import axios from "axios"
-import Masonry from "react-responsive-masonry"
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import MediaSkeleton from "@/components/layout/MediaSkeleton"
 import InfiniteScroll from "react-infinite-scroll-component"
 import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard"
 import OddSkeletonCard from "@/components/layout/OddSkeletonCard"
 import ImageItem from "@/components/media/ImageItem"
+import QueryFeedback from "@/components/features/QueryFeedback"
+import { searchPhotos } from "@/api/pexels"
 
 const CollectionDetailPage = () => {
     const { collectionId } = useParams()
     const recommendedCollections = useExplore(state => state.recommendedCollections)
     const collection = recommendedCollections.find(c => c.id === collectionId)
-    const [hasMore, setHasMore] = useState(true)
 
     const navigate = useNavigate()
     const [searchQuery, setSearchQuery] = useState('')
@@ -29,33 +29,26 @@ const CollectionDetailPage = () => {
         navigate(`/search?query=${searchQuery}&type=photos`)
     }
 
-    const getCollection = async ({ pageParam = 1 }) => {
-        try {
-            const res = await axios.get(
-                `https://api.pexels.com/v1/search?query=${collection?.title}&per_page=40&page=${pageParam}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY
-                    }
-                }
-            )
-
-            const photos = res.data.photos
-
-            if (pageParam === 5 || photos.length === 0) setHasMore(false)
-
-            return { data: photos, nextPage: pageParam + 1 }
-        } catch (err) {
-            console.log(err)
-            return { data: [], nextPage: undefined }
-        }
-    }
-
-    const { data, isPending, isLoading, fetchNextPage, isFetchingNextPage } = useInfiniteQuery({
+    const {
+        data,
+        isPending,
+        fetchNextPage,
+        isFetchingNextPage,
+        isError,
+        error,
+        refetch,
+    } = useInfiniteQuery({
         queryKey: ['collection', collectionId],
-        queryFn: getCollection,
-        getNextPageParam: (lastPage) => lastPage.nextPage,
-        initialPageParam: 1
+        queryFn: async ({ pageParam, signal }) => {
+            const result = await searchPhotos(collection?.title ?? '', pageParam, 40, signal)
+            return {
+                ...result,
+                nextPage: pageParam < 5 ? result.nextPage : undefined,
+            }
+        },
+        getNextPageParam: lastPage => lastPage.nextPage,
+        initialPageParam: 1,
+        enabled: !!collection,
     })
 
     const photos = data?.pages.flatMap(p => p.data)
@@ -64,13 +57,14 @@ const CollectionDetailPage = () => {
 
     return (
         <div className="relative bg-[#fdfcfb] min-h-screen px-[18px] pb-[24px] pt-[150px]">
-            <div className="fixed top-0 right-0 left-[80px] bg-[#fdfcfb] z-10 m-auto px-5 pt-5 border-b border-black/10">
+            <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
                 <form
                     onSubmit={onSearchMedia}
                     className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10"
                 >
                     <input
-                        className="text-md w-full border-none outline-none"
+                        aria-label="Search photos and videos"
+                        className="text-md w-full border-none outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
                         type="text"
                         placeholder="Discover photos & videos"
                         value={searchQuery}
@@ -79,6 +73,7 @@ const CollectionDetailPage = () => {
 
                     <button
                         type="submit"
+                        aria-label="Search"
                         className="pl-2 text-xl text-black/50 cursor-pointer"
                     >
                         <IoSearch />
@@ -90,7 +85,7 @@ const CollectionDetailPage = () => {
 
             <section>
                 <div
-                    className="relative h-[300px] w-[700px] mx-auto mb-[36px] rounded-4xl bg-cover bg-center overflow-hidden"
+                    className="relative mx-auto mb-8 h-[220px] w-full max-w-[700px] overflow-hidden rounded-3xl bg-cover bg-center sm:mb-[36px] sm:h-[300px] sm:rounded-4xl"
                     style={{
                         backgroundImage: `url(${collection.backgroundImage})`
                     }}
@@ -99,7 +94,7 @@ const CollectionDetailPage = () => {
                         className="absolute z-1 h-full w-full bg-black/30 flex flex-col justify-end items-center text-white p-[28px]"
                     >
                         <h1
-                            className="font-bold text-[42px]"
+                            className="text-center text-3xl font-bold sm:text-[42px]"
                         >
                             {collection.title}
                         </h1>
@@ -108,23 +103,27 @@ const CollectionDetailPage = () => {
                     </div>
                 </div>
 
-                {isPending || isLoading
+                {isPending && !isError
                     ? <MediaSkeleton />
+                    : !photos?.length
+                        ? <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
                     : photos
                         ? (
+                            <>
                             <InfiniteScroll
                                 dataLength={photos.length}
                                 next={fetchNextPage}
-                                hasMore={hasMore}
+                                hasMore={!!data?.pages.at(-1)?.nextPage}
                                 loader={<div></div>}
                             >
-                                <Masonry columnsCount={5} gutter="16px">
+                                <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
+                                <Masonry gutter="16px" sequential>
                                     {photos.map((img) => {
                                         if (!img?.src?.large) return null
 
                                         if (img.height <= img.width) return null
 
-                                        return <ImageItem image={img} />
+                                        return <ImageItem image={img} key={img.id} />
                                     })}
 
                                     {isFetchingNextPage
@@ -135,7 +134,10 @@ const CollectionDetailPage = () => {
                                         : null
                                     }
                                 </Masonry>
+                                </ResponsiveMasonry>
                             </InfiniteScroll>
+                            {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+                            </>
                         ) : null
                 }
             </section>

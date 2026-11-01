@@ -24,14 +24,15 @@ const Search = () => {
   }
 
   return (
-    <div className="relative bg-[#fdfcfb] min-h-screen px-[18px] pb-[24px] pt-[140px]">
-      <div className="fixed top-0 right-0 left-[80px] bg-[#fdfcfb] z-10 m-auto px-5 pt-5 border-b border-black/10">
+    <div className="relative min-h-screen bg-[#fdfcfb] px-3 pb-6 pt-[140px] sm:px-[18px]">
+      <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
         <form
           onSubmit={onSearch}
           className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10"
         >
           <input
-            className="text-md w-full border-none outline-none"
+            aria-label="Search photos and videos"
+            className="text-md w-full border-none outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
             type="text"
             placeholder="Discover photos & videos"
             value={searchQuery}
@@ -40,6 +41,7 @@ const Search = () => {
 
           <button
             type="submit"
+            aria-label="Search"
             className="pl-2 text-xl text-black/50 cursor-pointer"
           >
             <IoSearch />
@@ -49,27 +51,34 @@ const Search = () => {
         <SearchRecommendations urlQuery={urlQuery} />
       </div>
 
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h1
-          className="pt-1 pb-4 text-3xl text-neutral-700"
+          className="break-words pt-1 pb-2 text-2xl text-neutral-700 sm:pb-4 sm:text-3xl"
           style={{ fontFamily: '"PT Serif", serif' }}
         >
           Results for {urlQuery}
         </h1>
 
-        <ul className="flex gap-6 h-[48px]">
-          <li
-            onClick={() => setSearchParams({ query: searchQuery, type: 'photos' })}
-            className={`${mediaType === 'photos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} border-b-2 pt-3 pb-1 text-lg cursor-pointer hover:text-neutral-900 font-medium`}
-          >
-            Photos
+        <ul aria-label="Media type" className="flex h-[48px] gap-6">
+          <li>
+            <button
+              type="button"
+              aria-pressed={mediaType === 'photos'}
+              onClick={() => setSearchParams({ query: searchQuery, type: 'photos' })}
+              className={`${mediaType === 'photos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} h-full border-b-2 pt-3 pb-1 text-lg font-medium hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
+            >
+              Photos
+            </button>
           </li>
-
-          <li
-            onClick={() => setSearchParams({ query: searchQuery, type: 'videos' })}
-            className={`${mediaType === 'videos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} border-b-2 pt-3 pb-1 text-lg cursor-pointer hover:text-neutral-900 font-medium`}
-          >
-            Videos
+          <li>
+            <button
+              type="button"
+              aria-pressed={mediaType === 'videos'}
+              onClick={() => setSearchParams({ query: searchQuery, type: 'videos' })}
+              className={`${mediaType === 'videos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} h-full border-b-2 pt-3 pb-1 text-lg font-medium hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
+            >
+              Videos
+            </button>
           </li>
         </ul>
       </div>

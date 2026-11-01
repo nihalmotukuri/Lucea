@@ -1,6 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -12,6 +11,8 @@ import OddSkeletonCard from "../layout/OddSkeletonCard";
 import EvenSkeletonCard from "../layout/EvenSkeletonCard";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { Video, VideoFile } from "@/types/types";
+import QueryFeedback from "@/components/features/QueryFeedback";
+import { getVideo, searchVideos } from "@/api/pexels";
 
 const urlToBase64 = async (url: string) => {
     try {
@@ -34,36 +35,26 @@ const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
 const VideoDetailModal = () => {
     const navigate = useNavigate();
     const { videoId } = useParams();
-    const [hasMore, setHasMore] = useState(true)
+    const closeButtonRef = useRef<HTMLButtonElement>(null)
 
     useEffect(() => {
         document.body.style.overflow = "hidden";
+        const previouslyFocused = document.activeElement
+        closeButtonRef.current?.focus()
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") navigate(-1)
+        }
+        document.addEventListener("keydown", onKeyDown)
         return () => {
             document.body.style.overflow = "";
+            document.removeEventListener("keydown", onKeyDown)
+            if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus()
         };
-    }, []);
-
-    const getVideo = async () => {
-        try {
-            const res = await axios.get(
-                `https://api.pexels.com/v1/videos/videos/${videoId}`,
-                {
-                    headers: {
-                        Authorization: import.meta.env.VITE_PEXELS_API_KEY
-                    }
-                }
-            );
-            return res.data;
-        } catch (err) {
-            console.error(err);
-            return null;
-        }
-    };
+    }, [navigate]);
 
     const getRelatedKeyword = async (video: Video): Promise<{ keyword: string } | ""> => {
         if (!video?.image) {
-            console.error("Video poster image URL is missing.");
-            return "";
+            throw new Error("Video poster image URL is missing")
         }
 
         try {
@@ -98,50 +89,51 @@ const VideoDetailModal = () => {
             return keywordObj;
         } catch (err) {
             console.error("Error getting related keyword from Gemini:", err);
-            return "";
+            throw err;
         }
     };
 
-    const { data: video, isPending: isVideoPending } = useQuery({
+    const {
+        data: video,
+        isPending: isVideoPending,
+        isError: isVideoError,
+        refetch: refetchVideo,
+    } = useQuery({
         queryKey: ["video", videoId],
-        queryFn: getVideo
+        queryFn: ({ signal }) => {
+            if (!videoId) throw new Error("Video ID is required")
+            return getVideo(videoId, signal)
+        },
+        enabled: !!videoId,
     });
 
-    const { data: keywordData } = useQuery({
+    const {
+        data: keywordData,
+        isPending: isKeywordPending,
+        isError: isKeywordError,
+        refetch: refetchKeyword,
+    } = useQuery({
         queryKey: ["relatedKeyword", videoId],
-        queryFn: () => getRelatedKeyword(video),
+        queryFn: () => {
+            if (!video) throw new Error("Video is required to generate a related keyword")
+            return getRelatedKeyword(video)
+        },
         enabled: !!video,
         staleTime: Infinity,
     });
 
     const keyword = typeof keywordData === "object" && keywordData !== null ? keywordData.keyword : undefined;
 
-    const getRelatedVideos = async ({ pageParam = 1 }) => {
-        try {
-            const res = await axios.get(
-                `https://api.pexels.com/v1/videos/search?query=${keyword}&per_page=8&page=${pageParam}`,
-                {
-                    headers: { Authorization: import.meta.env.VITE_PEXELS_API_KEY },
-                }
-            );
-            const videos = res.data.videos;
-            if (videos.length === 0) setHasMore(false);
-            return { data: videos, nextPage: pageParam + 1 };
-        } catch (err) {
-            console.error(err);
-            return { data: [], nextPage: undefined };
-        }
-    };
-
     const {
         data: relatedVideos,
         fetchNextPage,
         isFetchingNextPage,
         isPending: isRelatedVideosPending,
-        isLoading: isRelatedVideosLoading
+        isError: isRelatedVideosError,
+        refetch: refetchRelatedVideos,
     } = useInfiniteQuery({
         queryKey: ["relatedVideos", keyword],
-        queryFn: getRelatedVideos,
+        queryFn: ({ pageParam, signal }) => searchVideos(keyword ?? "", pageParam, 8, signal),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
         enabled: !!keyword,
@@ -151,17 +143,25 @@ const VideoDetailModal = () => {
     const mainVideoFile = video?.video_files?.find((file: VideoFile) => file.quality === 'hd' || file.quality === 'uhd')?.link || video?.video_files?.[0]?.link;
 
     return (
-        <div className='fixed inset-0 overflow-y-auto z-50 bg-black/30 backdrop-blur-xs py-[24px] px-4 sm:px-[120px]'>
-            <div
-                className="absolute top-[32px] left-4 sm:left-[36px] text-white text-3xl cursor-pointer"
+        <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Video details"
+            className='fixed inset-0 z-50 overflow-y-auto bg-black/30 px-3 py-3 backdrop-blur-xs sm:px-8 sm:py-6 lg:px-[120px]'
+        >
+            <button
+                ref={closeButtonRef}
+                type="button"
+                aria-label="Close video details"
+                className="absolute top-5 left-5 z-10 rounded-full p-2 text-3xl text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:top-[32px] sm:left-[36px]"
                 onClick={() => navigate(-1)}
             >
                 <HiArrowLeft />
-            </div>
+            </button>
 
             <div
                 id="mediaDetailScrollable"
-                className="relative bg-white p-6 sm:p-[54px] rounded-4xl h-full overflow-y-auto"
+                className="relative min-h-full overflow-y-auto rounded-3xl bg-white p-4 sm:rounded-4xl sm:p-8 lg:p-[54px]"
             >
 
                 {isVideoPending ? (
@@ -169,6 +169,7 @@ const VideoDetailModal = () => {
                         <LineSpinner size="40" stroke="3" speed="1" color="#b8bfad" />
                     </div>
                 ) : null}
+                {isVideoError && <QueryFeedback error onRetry={() => void refetchVideo()} />}
 
                 {video && (
                     <video
@@ -185,10 +186,10 @@ const VideoDetailModal = () => {
                 <section className="mt-[54px]">
                     <h1 className="text-3xl mb-[24px]">Related Videos</h1>
 
-                    {(isRelatedVideosPending || isRelatedVideosLoading || !keyword) &&
+                    {isRelatedVideosPending && !!keyword &&
                         (
                             <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                                <Masonry>
+                                <Masonry sequential>
                                     {Array.from({ length: 6 }).map((_, i) => {
                                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
                                         return <OddSkeletonCard key={i} />
@@ -197,17 +198,24 @@ const VideoDetailModal = () => {
                             </ResponsiveMasonry>
                         )
                     }
+                    {isKeywordError && (
+                        <QueryFeedback error onRetry={() => void refetchKeyword()} />
+                    )}
+                    {!isKeywordPending && !isKeywordError && !keyword && <QueryFeedback empty />}
+                    {videoList?.length === 0 && !isRelatedVideosPending && !isRelatedVideosError && keyword && (
+                        <QueryFeedback empty />
+                    )}
 
-                    {videoList &&
+                    {videoList && videoList.length > 0 &&
                         <InfiniteScroll
                             dataLength={videoList.length}
-                            hasMore={hasMore}
+                            hasMore={!!relatedVideos?.pages.at(-1)?.nextPage}
                             next={fetchNextPage}
                             loader={<div></div>}
                             scrollableTarget="mediaDetailScrollable"
                         >
                             <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                                <Masonry gutter="1rem">
+                                <Masonry gutter="1rem" sequential>
                                     {videoList.map((vid) => {
                                         if (!vid?.image) return null;
                                         return <VideoItem video={vid} key={vid.id} />;
@@ -224,6 +232,9 @@ const VideoDetailModal = () => {
                             </ResponsiveMasonry>
                         </InfiniteScroll>
                     }
+                    {isRelatedVideosError && (
+                        <QueryFeedback error onRetry={() => void refetchRelatedVideos()} />
+                    )}
                 </section>
             </div>
         </div>
@@ -231,4 +242,3 @@ const VideoDetailModal = () => {
 };
 
 export default VideoDetailModal;
-
