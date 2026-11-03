@@ -9,6 +9,7 @@ import PhotoDetailPage from './pages/media-detail/PhotoDetailPage'
 import { ScrollToTop } from './components/features/ScrollToTop'
 import VideoDetailPage from './pages/media-detail/VideoDetailPage'
 import VideoDetailModal from './components/media/VideoDetailModal'
+import MoodboardsPage from './pages/moodboards/MoodboardsPage'
 
 function App() {
   const location = useLocation()
@@ -25,6 +26,8 @@ function App() {
           <Route path="/t/:topicSlug" element={<Home />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/explore/:collectionId" element={<CollectionDetailPage />} />
+          <Route path="/moodboards" element={<MoodboardsPage />} />
+          <Route path="/moodboards/:moodboardId" element={<MoodboardsPage />} />
           <Route path="/photos/:photoId" element={<PhotoDetailPage />} />
           <Route path="/videos/:videoId" element={<VideoDetailPage />} />
         </Routes>

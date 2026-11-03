@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom"
 import { AuroraText } from "../ui/aurora-text"
-import { CiHome, CiCompass1 } from "react-icons/ci"
+import { CiBookmark, CiHome, CiCompass1 } from "react-icons/ci"
 
 const Navbar = () => {
   return (
@@ -29,6 +29,14 @@ const Navbar = () => {
           className={({ isActive }) => `rounded-full border p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 text-neutral-900' : 'border-black/20 text-neutral-600'}`}
         >
           <CiCompass1 />
+        </NavLink>
+
+        <NavLink
+          to='/moodboards'
+          aria-label="Your moodboards"
+          className={({ isActive }) => `rounded-full border p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 text-neutral-900' : 'border-black/20 text-neutral-600'}`}
+        >
+          <CiBookmark />
         </NavLink>
       </nav>
     </header>

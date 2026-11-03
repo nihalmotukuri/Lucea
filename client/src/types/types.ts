@@ -45,3 +45,20 @@ export interface Video {
   };
   video_files: VideoFile[];
 }
+
+export interface MoodboardMedia {
+  key: string;
+  type: 'photo' | 'video';
+  id: number;
+  detailPath: string;
+  thumbnail: string;
+  alt: string;
+  creator: string;
+}
+
+export interface Moodboard {
+  id: string;
+  title: string;
+  createdAt: number;
+  media: MoodboardMedia[];
+}
