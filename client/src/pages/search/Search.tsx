@@ -4,11 +4,21 @@ import { IoSearch } from "react-icons/io5"
 import ImageSearch from "./ImageSearch"
 import VideoSearch from "./VideoSearch"
 import SearchRecommendations from "./SearchRecommendations"
+import type { MediaOrientation } from "@/api/pexels"
+import type { MediaSortOrder } from "@/lib/media"
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const urlQuery = searchParams.get('query')
-  const mediaType = searchParams.get('type') || 'photos'
+  const urlQuery = searchParams.get('query')?.trim() || null
+  const mediaType = searchParams.get('type') === 'videos' ? 'videos' : 'photos'
+  const requestedOrientation = searchParams.get('orientation')
+  const orientation: MediaOrientation | "all" =
+    requestedOrientation === "landscape" || requestedOrientation === "portrait" || requestedOrientation === "square"
+      ? requestedOrientation
+      : "all"
+  const requestedSort = searchParams.get('sort')
+  const sortOrder: MediaSortOrder =
+    requestedSort === "largest" || requestedSort === "smallest" ? requestedSort : "relevance"
 
   const [searchQuery, setSearchQuery] = useState(urlQuery || '')
 
@@ -20,7 +30,22 @@ const Search = () => {
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSearchParams({ query: searchQuery, type: mediaType })
+    const query = searchQuery.trim()
+    if (!query) return
+    setSearchParams({ query, type: mediaType })
+  }
+
+  const updateFilters = (updates: { orientation?: string; sort?: string }) => {
+    const nextParams = new URLSearchParams(searchParams)
+    if (updates.orientation !== undefined) {
+      if (updates.orientation === "all") nextParams.delete("orientation")
+      else nextParams.set("orientation", updates.orientation)
+    }
+    if (updates.sort !== undefined) {
+      if (updates.sort === "relevance") nextParams.delete("sort")
+      else nextParams.set("sort", updates.sort)
+    }
+    setSearchParams(nextParams)
   }
 
   return (
@@ -64,7 +89,11 @@ const Search = () => {
             <button
               type="button"
               aria-pressed={mediaType === 'photos'}
-              onClick={() => setSearchParams({ query: searchQuery, type: 'photos' })}
+              onClick={() => {
+                const nextParams = new URLSearchParams(searchParams)
+                nextParams.set("type", "photos")
+                setSearchParams(nextParams)
+              }}
               className={`${mediaType === 'photos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} h-full border-b-2 pt-3 pb-1 text-lg font-medium hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
             >
               Photos
@@ -74,7 +103,11 @@ const Search = () => {
             <button
               type="button"
               aria-pressed={mediaType === 'videos'}
-              onClick={() => setSearchParams({ query: searchQuery, type: 'videos' })}
+              onClick={() => {
+                const nextParams = new URLSearchParams(searchParams)
+                nextParams.set("type", "videos")
+                setSearchParams(nextParams)
+              }}
               className={`${mediaType === 'videos' ? 'text-neutral-900 border-neutral-900' : 'text-neutral-500 border-transparent'} h-full border-b-2 pt-3 pb-1 text-lg font-medium hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
             >
               Videos
@@ -83,9 +116,40 @@ const Search = () => {
         </ul>
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <label className="flex items-center gap-2 text-sm text-neutral-600">
+          <span>Orientation</span>
+          <select
+            aria-label="Filter by orientation"
+            className="rounded-lg border border-black/15 bg-white px-3 py-2 text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+            value={orientation}
+            onChange={event => updateFilters({ orientation: event.target.value })}
+          >
+            <option value="all">Any</option>
+            <option value="landscape">Landscape</option>
+            <option value="portrait">Portrait</option>
+            <option value="square">Square</option>
+          </select>
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-neutral-600">
+          <span>Sort by</span>
+          <select
+            aria-label="Sort search results"
+            className="rounded-lg border border-black/15 bg-white px-3 py-2 text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+            value={sortOrder}
+            onChange={event => updateFilters({ sort: event.target.value })}
+          >
+            <option value="relevance">Relevance</option>
+            <option value="largest">Largest first</option>
+            <option value="smallest">Smallest first</option>
+          </select>
+        </label>
+      </div>
+
       {mediaType === 'videos'
-        ? <VideoSearch searchQuery={urlQuery} />
-        : <ImageSearch searchQuery={urlQuery} />
+        ? <VideoSearch searchQuery={urlQuery} orientation={orientation} sortOrder={sortOrder} />
+        : <ImageSearch searchQuery={urlQuery} orientation={orientation} sortOrder={sortOrder} />
       }
     </div>
   )

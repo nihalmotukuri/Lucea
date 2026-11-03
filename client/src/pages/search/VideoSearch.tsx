@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
@@ -5,13 +6,16 @@ import VideoItem from '@/components/media/VideoItem'
 import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 import QueryFeedback from '@/components/features/QueryFeedback'
-import { searchVideos } from '@/api/pexels'
+import { searchVideos, type MediaOrientation } from '@/api/pexels'
+import { sortMediaBySize, type MediaSortOrder } from '@/lib/media'
 
 interface VideoSearchProps {
     searchQuery: string
+    orientation: MediaOrientation | "all"
+    sortOrder: MediaSortOrder
 }
 
-const VideoSearch = ({ searchQuery }: VideoSearchProps) => {
+const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) => {
     const {
         data,
         fetchNextPage,
@@ -21,13 +25,22 @@ const VideoSearch = ({ searchQuery }: VideoSearchProps) => {
         error,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ["search", "videos", searchQuery],
-        queryFn: ({ pageParam, signal }) => searchVideos(searchQuery, pageParam, 20, signal),
+        queryKey: ["search", "videos", searchQuery, orientation],
+        queryFn: ({ pageParam, signal }) => searchVideos(
+            searchQuery,
+            pageParam,
+            20,
+            signal,
+            orientation === "all" ? undefined : orientation,
+        ),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
     });
 
-    const videoList = data?.pages.flatMap(pg => pg.data) ?? []
+    const videoList = useMemo(
+        () => sortMediaBySize(data?.pages.flatMap(pg => pg.data) ?? [], sortOrder),
+        [data, sortOrder],
+    )
 
     if (isPending && !isError) {
         return (

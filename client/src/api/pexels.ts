@@ -12,6 +12,8 @@ export interface MediaPage<T> {
     nextPage: number | undefined
 }
 
+export type MediaOrientation = "landscape" | "portrait" | "square"
+
 const request = async <T>(
     path: string,
     params: Record<string, string | number>,
@@ -66,8 +68,13 @@ export const searchPhotos = async (
     page: number,
     perPage: number,
     signal?: AbortSignal,
+    orientation?: MediaOrientation,
 ) => {
-    const response = await request<Photo>("/v1/search", { query, per_page: perPage, page }, signal)
+    const response = await request<Photo>(
+        "/v1/search",
+        { query, per_page: perPage, page, ...(orientation ? { orientation } : {}) },
+        signal,
+    )
     return toMediaPage(response.photos, response.next_page, page)
 }
 
@@ -76,8 +83,13 @@ export const searchVideos = async (
     page: number,
     perPage: number,
     signal?: AbortSignal,
+    orientation?: MediaOrientation,
 ) => {
-    const response = await request<Video>("/videos/search", { query, per_page: perPage, page }, signal)
+    const response = await request<Video>(
+        "/videos/search",
+        { query, per_page: perPage, page, ...(orientation ? { orientation } : {}) },
+        signal,
+    )
     return toMediaPage(response.videos, response.next_page, page)
 }
 

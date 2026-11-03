@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
@@ -5,13 +6,16 @@ import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import ImageItem from '@/components/media/ImageItem'
 import QueryFeedback from '@/components/features/QueryFeedback'
-import { searchPhotos } from '@/api/pexels'
+import { searchPhotos, type MediaOrientation } from '@/api/pexels'
+import { sortMediaBySize, type MediaSortOrder } from '@/lib/media'
 
 interface ImageSearchProps {
     searchQuery: string
+    orientation: MediaOrientation | "all"
+    sortOrder: MediaSortOrder
 }
 
-const ImageSearch = ({ searchQuery }: ImageSearchProps) => {
+const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) => {
     const {
         data,
         fetchNextPage,
@@ -21,13 +25,22 @@ const ImageSearch = ({ searchQuery }: ImageSearchProps) => {
         error,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ["search", "photos", searchQuery],
-        queryFn: ({ pageParam, signal }) => searchPhotos(searchQuery, pageParam, 20, signal),
+        queryKey: ["search", "photos", searchQuery, orientation],
+        queryFn: ({ pageParam, signal }) => searchPhotos(
+            searchQuery,
+            pageParam,
+            20,
+            signal,
+            orientation === "all" ? undefined : orientation,
+        ),
         getNextPageParam: (lastPage) => lastPage.nextPage,
         initialPageParam: 1,
     })
 
-    const imageList = data?.pages.flatMap(pg => pg.data) ?? []
+    const imageList = useMemo(
+        () => sortMediaBySize(data?.pages.flatMap(pg => pg.data) ?? [], sortOrder),
+        [data, sortOrder],
+    )
 
     if (isPending && !isError) {
         return (
