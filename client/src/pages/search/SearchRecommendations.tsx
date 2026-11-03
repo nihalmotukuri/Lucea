@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import HorizontalScroller from "@/components/features/HorizontalScroller"
+import { Sparkles } from "lucide-react"
 
 interface SearchRecommendationsProps {
     urlQuery: string
@@ -64,6 +65,7 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
         data: suggestions,
         isPending,
         isError,
+        isFetching,
         refetch,
     } = useQuery({
         queryKey: ['recommendations', urlQuery],
@@ -74,27 +76,27 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
 
     if (isPending) {
         return (
-            <ul className="w-full gap-3 flex items-center h-[50px] px-[2]">
-                {Array
-                    .from({ length: 6 })
-                    .map((_, idx) => (
-                        <li
-                            key={idx}
-                            className='bg-black/6 h-[32px] w-[60px] rounded-md animate-pulse'
-                        ></li>
+            <div className="flex h-[50px] min-w-0 items-center gap-3" role="status" aria-label="Finding related search ideas">
+                <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-neutral-500">
+                    <Sparkles size={14} aria-hidden="true" /> Ideas
+                </span>
+                <ul className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden" aria-hidden="true">
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                        <li key={idx} className="h-7 w-20 shrink-0 animate-pulse rounded-full bg-black/[0.06]" />
                     ))}
-            </ul>
+                </ul>
+            </div>
         )
     }
 
-    if (isError) {
+    if (isError && !suggestions?.length) {
         return (
-            <div role="alert" className="flex h-[50px] items-center gap-2 text-sm text-neutral-500">
-                <span>Suggestions unavailable.</span>
+            <div role="status" className="flex h-[50px] min-w-0 items-center justify-between gap-3 text-sm text-neutral-600">
+                <span>Related ideas are unavailable right now.</span>
                 <button
                     type="button"
                     onClick={() => void refetch()}
-                    className="cursor-pointer underline underline-offset-2 hover:text-neutral-900"
+                    className="min-h-9 shrink-0 rounded-full border border-black/10 px-3 font-medium text-neutral-700 transition hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 >
                     Retry
                 </button>
@@ -103,20 +105,29 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
     }
 
     return (
-        <HorizontalScroller label="related search suggestions">
-            <ul aria-label="Related search suggestions" className="flex h-[50px] w-full gap-4 whitespace-nowrap sm:gap-6">
-                {suggestions?.map((s, idx) => (
-                    <li key={`${s}-${idx}`} className="shrink-0">
-                        <Link
-                            to={`/search?query=${encodeURIComponent(s)}&type=photos`}
-                            className='block pt-4 pb-3 text-sm text-neutral-500 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700'
-                        >
-                            {s}
-                        </Link>
-                    </li>
-                ))}
-            </ul>
-        </HorizontalScroller>
+        <div className="flex h-[50px] min-w-0 items-center gap-2">
+            <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-neutral-500 sm:gap-2">
+                <Sparkles size={14} aria-hidden="true" />
+                <span className="hidden sm:inline">Ideas</span>
+            </span>
+            <HorizontalScroller label="related search suggestions">
+                <ul aria-label="Related search suggestions" className="flex h-[50px] w-full items-center gap-2 whitespace-nowrap sm:gap-3">
+                    {suggestions?.map((suggestion, idx) => (
+                        <li key={`${suggestion}-${idx}`} className="shrink-0">
+                            <Link
+                                to={`/search?query=${encodeURIComponent(suggestion)}&type=photos`}
+                                className="flex min-h-9 items-center rounded-full border border-black/10 bg-white/70 px-3 text-xs text-neutral-600 transition hover:border-black/20 hover:bg-white hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm"
+                            >
+                                {suggestion}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </HorizontalScroller>
+            {isFetching && (
+                <span className="sr-only" role="status">Refreshing related ideas</span>
+            )}
+        </div>
     )
 }
 

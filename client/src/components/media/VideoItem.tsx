@@ -20,7 +20,7 @@ const VideoItem = ({ video }: VideoItemProps) => {
     }
 
     return (
-        <div className="relative m-[4px]">
+        <div className="group relative m-[4px]">
             <button
                 type="button"
                 className='block w-full cursor-pointer overflow-hidden rounded-3xl border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'

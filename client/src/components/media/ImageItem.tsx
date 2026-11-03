@@ -17,7 +17,7 @@ const ImageItem = ({ image }: ImageItemProps) => {
     }
 
     return (
-        <div className="relative m-[4px]">
+        <div className="group relative m-[4px]">
             <button
                 type="button"
                 className='block w-full cursor-pointer overflow-hidden rounded-2xl border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
