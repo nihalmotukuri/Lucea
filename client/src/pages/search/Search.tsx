@@ -6,7 +6,22 @@ import SearchRecommendations from "./SearchRecommendations"
 import type { MediaOrientation } from "@/api/pexels"
 import type { MediaSortOrder } from "@/lib/media"
 import SearchBar from "@/components/features/SearchBar"
-import { ArrowDownWideNarrow, ChevronDown, Crop } from "lucide-react"
+import SearchFilterDropdown from "@/components/features/SearchFilterDropdown"
+import type { SearchFilterOption } from "@/components/features/SearchFilterDropdown"
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, RectangleHorizontal, RectangleVertical, Sparkles, Square } from "lucide-react"
+
+const orientationOptions: SearchFilterOption[] = [
+  { value: "all", label: "Any shape", description: "Show every orientation", icon: Square },
+  { value: "landscape", label: "Landscape", description: "Wide, horizontal frames", icon: RectangleHorizontal },
+  { value: "portrait", label: "Portrait", description: "Tall, vertical frames", icon: RectangleVertical },
+  { value: "square", label: "Square", description: "Balanced, equal sides", icon: Square },
+]
+
+const sortOptions: SearchFilterOption[] = [
+  { value: "relevance", label: "Most relevant", description: "Best match for your search", icon: Sparkles },
+  { value: "largest", label: "Largest first", description: "Highest resolution first", icon: ArrowDownWideNarrow },
+  { value: "smallest", label: "Smallest first", description: "Lowest resolution first", icon: ArrowUpNarrowWide },
+]
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -29,9 +44,8 @@ const Search = () => {
 
   if (!urlQuery) return <Navigate to='/' replace />
 
-  const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const query = searchQuery.trim()
+  const onSearch = (searchTerm: string) => {
+    const query = searchTerm.trim()
     if (!query) return
     const nextParams = new URLSearchParams(searchParams)
     nextParams.set("query", query)
@@ -60,20 +74,20 @@ const Search = () => {
         <SearchRecommendations urlQuery={urlQuery} />
       </div>
 
-      <section aria-label="Search results controls" className="mb-4 rounded-2xl border border-black/10 bg-white/70 px-4 py-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <section aria-label="Search results controls" className="mb-5 border-b border-black/[0.08] pb-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Search results</p>
             <h1
-              className="break-words text-xl text-neutral-800 sm:text-2xl"
+              className="break-words text-[26px] leading-tight text-neutral-800 sm:text-[32px]"
               style={{ fontFamily: '"PT Serif", serif' }}
             >
-              Results for <span className="font-semibold">{urlQuery}</span>
+              {urlQuery}
             </h1>
-            <p className="mt-1 text-xs text-neutral-500">Filter by orientation; size sorting applies to loaded results.</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-end sm:gap-4">
-            <div role="group" aria-label="Media type" className="col-span-2 inline-flex w-fit rounded-xl bg-black/[0.04] p-1 sm:col-span-1">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
+            <div role="group" aria-label="Media type" className="flex items-center gap-3 border-r border-black/[0.08] pr-4">
               {(["photos", "videos"] as const).map(type => (
                 <button
                   key={type}
@@ -84,66 +98,35 @@ const Search = () => {
                     nextParams.set("type", type)
                     setSearchParams(nextParams)
                   }}
-                  className={`${mediaType === type ? "bg-white text-neutral-900 shadow-sm" : "text-neutral-500 hover:text-neutral-900"} min-h-10 rounded-lg px-3 text-sm font-medium capitalize transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
+                  className={`${mediaType === type ? "border-neutral-900 text-neutral-900" : "border-transparent text-neutral-500 hover:text-neutral-900"} min-h-9 border-b text-sm font-medium capitalize transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700`}
                 >
                   {type === "photos" ? "Photos" : "Videos"}
                 </button>
               ))}
             </div>
 
-            <span className="hidden h-7 w-px bg-black/10 sm:block" aria-hidden="true" />
-
-            <label className="relative flex min-w-0 items-center gap-2 rounded-2xl border border-black/[0.07] bg-[#faf8f4] p-2.5 transition hover:border-black/[0.14] focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/[0.04]">
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-neutral-500 shadow-sm">
-                <Crop size={16} strokeWidth={1.8} aria-hidden="true" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400">Shape</span>
-              <select
-                aria-label="Filter by orientation"
-                className="min-h-6 w-full min-w-0 appearance-none border-0 bg-transparent pr-5 text-sm font-medium text-neutral-800 outline-none"
-                value={orientation}
-                onChange={event => updateFilters({ orientation: event.target.value })}
-              >
-                <option value="all">Any shape</option>
-                <option value="landscape">Landscape</option>
-                <option value="portrait">Portrait</option>
-                <option value="square">Square</option>
-              </select>
-              </span>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} aria-hidden="true" />
-            </label>
-
-            <label className="relative flex min-w-0 items-center gap-2 rounded-2xl border border-black/[0.07] bg-[#faf8f4] p-2.5 transition hover:border-black/[0.14] focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/[0.04]">
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-neutral-500 shadow-sm">
-                <ArrowDownWideNarrow size={16} strokeWidth={1.8} aria-hidden="true" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400">Order</span>
-              <select
-                aria-label="Sort search results"
-                className="min-h-6 w-full min-w-0 appearance-none border-0 bg-transparent pr-5 text-sm font-medium text-neutral-800 outline-none"
-                value={sortOrder}
-                onChange={event => updateFilters({ sort: event.target.value })}
-              >
-                <option value="relevance">Most relevant</option>
-                <option value="largest">Largest first</option>
-                <option value="smallest">Smallest first</option>
-              </select>
-              </span>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} aria-hidden="true" />
-            </label>
+            <SearchFilterDropdown
+              label="Shape"
+              value={orientation}
+              options={orientationOptions}
+              onChange={value => updateFilters({ orientation: value })}
+            />
+            <SearchFilterDropdown
+              label="Order"
+              value={sortOrder}
+              options={sortOptions}
+              onChange={value => updateFilters({ sort: value })}
+            />
           </div>
         </div>
 
         {(orientation !== "all" || sortOrder !== "relevance") && (
-          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-black/5 pt-3">
-            <span className="mr-1 text-xs text-neutral-500">Active filters</span>
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {orientation !== "all" && (
               <button
                 type="button"
                 onClick={() => updateFilters({ orientation: "all" })}
-                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-neutral-900 px-3 text-xs font-medium capitalize text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-black/[0.09] px-2.5 text-[11px] font-medium capitalize text-neutral-600 transition hover:border-black/20 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 aria-label={`Remove ${orientation} orientation filter`}
               >
                 {orientation}<span aria-hidden="true">×</span>
@@ -153,7 +136,7 @@ const Search = () => {
               <button
                 type="button"
                 onClick={() => updateFilters({ sort: "relevance" })}
-                className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-neutral-900 px-3 text-xs font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-black/[0.09] px-2.5 text-[11px] font-medium text-neutral-600 transition hover:border-black/20 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 aria-label={`Remove ${sortOrder === "largest" ? "largest first" : "smallest first"} sort`}
               >
                 {sortOrder === "largest" ? "Largest first" : "Smallest first"}<span aria-hidden="true">×</span>

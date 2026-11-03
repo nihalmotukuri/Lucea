@@ -187,6 +187,11 @@
   display: none;
 }
 
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -194,16 +199,32 @@
 
 .media-action {
   opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
   .media-action {
     opacity: 0;
+    transform: translateX(10px);
   }
 
   .group:hover .media-action,
+  .group:focus-within .media-action,
   .media-action:focus-visible {
     opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-action {
+    transition: none;
   }
 }
 

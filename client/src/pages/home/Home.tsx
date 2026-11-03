@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useNavigate, useLocation, useParams, Navigate } from "react-router-dom"
-import type React from "react"
 import Media from "./Media"
 import Suggestions from "./Suggestions"
 import { Topic } from "./Topic"
@@ -24,9 +23,8 @@ const Home = () => {
 
     if (topicSlug && !topics.some(t => t.slug === topicSlug)) return <Navigate to='/' replace />
 
-    const onSearchMedia = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const query = searchQuery.trim()
+    const onSearchMedia = (searchTerm: string) => {
+        const query = searchTerm.trim()
         if (!query) return
         navigate(`/search?query=${encodeURIComponent(query)}&type=photos`)
     }

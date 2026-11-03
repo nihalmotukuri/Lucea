@@ -42,10 +42,8 @@ const PhotoDetailPage = () => {
     const navigate = useNavigate()
     const [searchQuery, setSearchQuery] = useState('')
 
-    const onSearchMedia = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-
-        const query = searchQuery.trim()
+    const onSearchMedia = (searchTerm: string) => {
+        const query = searchTerm.trim()
         if (!query) return
 
         navigate(`/search?query=${encodeURIComponent(query)}&type=photos`)

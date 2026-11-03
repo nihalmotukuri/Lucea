@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -42,9 +42,8 @@ const VideoDetailPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const { videoId } = useParams();
 
-    const onSearchMedia = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const query = searchQuery.trim()
+    const onSearchMedia = (searchTerm: string) => {
+        const query = searchTerm.trim()
         if (!query) return
         navigate(`/search?query=${encodeURIComponent(query)}&type=videos`);
     };

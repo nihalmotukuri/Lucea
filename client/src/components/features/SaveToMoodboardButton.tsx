@@ -57,7 +57,7 @@ const SaveToMoodboardButton = ({ media }: SaveToMoodboardButtonProps) => {
                 type="button"
                 aria-label={savedBoardCount > 0 ? `Saved to ${savedBoardCount} moodboard${savedBoardCount === 1 ? "" : "s"}. Manage moodboards` : "Save to moodboard"}
                 title={savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
-                className="media-action absolute right-3 top-3 z-10 rounded-full bg-white/95 p-2.5 text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:scale-105 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900"
+                className="media-action absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 onClick={() => setIsOpen(true)}
             >
                 {savedBoardCount > 0

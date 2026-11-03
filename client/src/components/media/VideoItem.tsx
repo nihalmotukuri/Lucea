@@ -20,7 +20,7 @@ const VideoItem = ({ video }: VideoItemProps) => {
     }
 
     return (
-        <div className="group relative m-[4px]">
+        <div className="group relative z-0 m-[4px]">
             <button
                 type="button"
                 className='block w-full cursor-pointer overflow-hidden rounded-3xl border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
@@ -53,7 +53,6 @@ const VideoItem = ({ video }: VideoItemProps) => {
                         height: "100%",
                         objectFit: "cover",
                         display: "block",
-                        borderRadius: "8px",
                     }}
                 />
             </button>

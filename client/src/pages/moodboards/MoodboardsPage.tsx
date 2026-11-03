@@ -89,18 +89,18 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
 
     if (media.length === 0) {
         return (
-            <div className="grid aspect-[16/9] place-items-center bg-gradient-to-br from-neutral-100 to-[#f4efe9] text-neutral-500">
+            <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-neutral-100 to-[#f4efe9] text-neutral-500">
                 <span className="flex items-center gap-2 text-sm"><ImagePlus size={17} aria-hidden="true" /> No saved items yet</span>
             </div>
         )
     }
 
     if (media.length === 1) {
-        return <img src={media[0].thumbnail} alt="" className="block aspect-[16/9] w-full object-cover" loading="lazy" />
+        return <img src={media[0].thumbnail} alt="" className="block aspect-[4/3] w-full object-cover" loading="lazy" />
     }
 
     return (
-        <div className={`grid aspect-[16/9] grid-cols-2 gap-0.5 overflow-hidden bg-neutral-100 ${media.length === 2 ? "grid-rows-1" : "grid-rows-2"}`}>
+        <div className={`grid aspect-[4/3] grid-cols-2 gap-0.5 overflow-hidden bg-neutral-100 ${media.length === 2 ? "grid-rows-1" : "grid-rows-2"}`}>
             {media.map((item, index) => (
                 <img
                     key={item.key}
@@ -178,16 +178,17 @@ const MoodboardsPage = () => {
                 <Link to="/moodboards" className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
                     <ArrowLeft size={16} aria-hidden="true" /> All moodboards
                 </Link>
-                <div className="mb-6 mt-3 flex flex-wrap items-end justify-between gap-3 sm:mb-8">
-                    <div>
-                        <h1 className="break-words text-3xl font-semibold sm:text-4xl" style={{ fontFamily: '"PT Serif", serif' }}>{moodboard.title}</h1>
-                        <p className="mt-2 text-sm text-neutral-500" aria-live="polite">
+                <div className="relative mb-7 mt-5 flex flex-wrap items-end justify-center gap-3 border-b border-black/[0.08] pb-6 text-center sm:mb-9">
+                    <div className="w-full">
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Your collection</p>
+                        <h1 className="break-words pt-1 text-4xl font-normal text-neutral-700 sm:text-[48px]">{moodboard.title}</h1>
+                        <p className="mt-2 text-base text-neutral-500 sm:text-lg" aria-live="polite">
                             {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"}
                         </p>
                     </div>
                     <button
                         type="button"
-                        className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-black/10 px-3 text-sm font-medium text-neutral-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                        className="relative inline-flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm text-neutral-500 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                         onClick={() => setMoodboardToDelete(moodboard)}
                     >
                         <Trash2 size={16} aria-hidden="true" /> Delete
@@ -198,31 +199,32 @@ const MoodboardsPage = () => {
                     <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
                         <Masonry gutter="12px">
                             {moodboard.media.map(media => (
-                                <figure key={media.key} className="group relative overflow-hidden rounded-2xl border border-black/[0.07] bg-white shadow-sm transition hover:shadow-md">
+                                <figure key={media.key} className="group relative overflow-hidden rounded-3xl bg-neutral-200">
                                     <Link
                                         to={media.detailPath}
-                                        className="block overflow-hidden rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                                        className="relative block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                                     >
                                         <img
                                             src={media.thumbnail}
                                             alt={media.alt}
                                             loading="lazy"
-                                            className="fade-in block h-auto w-full transition duration-300 group-hover:scale-[1.015]"
+                                            className="block h-auto w-full"
                                         />
+                                        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/65 to-transparent" />
+                                        <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-3.5 pb-3.5 text-xs text-white sm:px-4 sm:pb-4">
+                                            <span className="min-w-0 truncate font-medium">{media.creator}</span>
+                                            <span className="shrink-0 capitalize text-white/75">{media.type}</span>
+                                        </span>
                                     </Link>
                                     <button
                                         type="button"
                                         aria-label={`Remove ${media.type} by ${media.creator} from ${moodboard.title}`}
                                         title="Remove from moodboard"
-                                        className="media-action absolute right-3 top-3 rounded-full bg-white/95 p-2.5 text-neutral-800 shadow-md ring-1 ring-black/5 transition hover:scale-105 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900"
+                                        className="media-action absolute right-3 top-3 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                         onClick={() => removeMedia(moodboard.id, media.key)}
                                     >
                                         <X size={17} aria-hidden="true" />
                                     </button>
-                                    <figcaption className="flex items-center justify-between gap-3 border-t border-black/[0.05] px-3 py-2.5 text-xs">
-                                        <span className="truncate font-medium text-neutral-700">{media.creator}</span>
-                                        <span className="shrink-0 capitalize text-neutral-400">{media.type}</span>
-                                    </figcaption>
                                 </figure>
                             ))}
                         </Masonry>
@@ -254,12 +256,14 @@ const MoodboardsPage = () => {
     return (
         <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:px-8 md:pt-12">
             <div className="mx-auto max-w-6xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-neutral-500">Your library</p>
-                <h1 className="mt-2 text-3xl font-semibold sm:text-4xl" style={{ fontFamily: '"PT Serif", serif' }}>Moodboards</h1>
-                <p className="mt-2 text-neutral-600">Collect photos and videos for ideas you want to revisit.</p>
-                <p className="mt-1 text-xs text-neutral-500">Moodboards are saved in this browser.</p>
+                <header className="pt-1 text-center">
+                    <h1 className="text-4xl font-normal text-neutral-700 sm:text-[48px]">Moodboards</h1>
+                    <p className="mt-1 text-xl text-neutral-800">Keep the things that move you.</p>
+                    <p className="mt-2 text-sm text-neutral-500">Collect photos and videos for ideas you want to revisit.</p>
+                    <p className="mt-1 text-xs text-neutral-400">Saved in this browser</p>
+                </header>
 
-                <form onSubmit={onCreateMoodboard} className="mt-6 max-w-xl rounded-2xl border border-black/[0.08] bg-white p-3 shadow-sm sm:flex sm:items-end sm:gap-3 sm:p-4">
+                <form onSubmit={onCreateMoodboard} className="mx-auto mt-7 max-w-xl border-y border-black/[0.08] py-4 sm:flex sm:items-end sm:gap-3 sm:py-5">
                     <div className="min-w-0 flex-1">
                         <label htmlFor="moodboard-name" className="mb-2 block text-sm font-medium text-neutral-700">Create a moodboard</label>
                         <input
@@ -290,30 +294,31 @@ const MoodboardsPage = () => {
                 {moodboards.length > 0 ? (
                     <div className="mt-8">
                         <h2 className="mb-4 text-sm font-semibold text-neutral-700">Saved boards <span className="ml-1 font-normal text-neutral-500">({moodboards.length})</span></h2>
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {moodboards.map(board => (
-                            <article key={board.id} className="group relative overflow-hidden rounded-2xl border border-black/[0.08] bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <article key={board.id} className="group relative overflow-hidden rounded-3xl bg-neutral-200">
                                 <Link
                                     to={`/moodboards/${board.id}`}
                                     aria-label={`${board.title}, ${board.media.length} saved ${board.media.length === 1 ? "item" : "items"}`}
-                                    className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                                    className="relative block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                                 >
                                     <MoodboardPreview moodboard={board} />
-                                    <div className="flex items-center justify-between gap-3 p-4 pr-14">
-                                        <div className="min-w-0">
-                                        <h2 className="truncate text-lg font-medium">{board.title}</h2>
-                                        <p className="mt-1 text-sm text-neutral-500" aria-hidden="true">
-                                            {board.media.length} {board.media.length === 1 ? "item" : "items"}
-                                        </p>
-                                        </div>
-                                        <ArrowUpRight size={17} className="shrink-0 text-neutral-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-neutral-700" aria-hidden="true" />
-                                    </div>
+                                    <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                                    <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
+                                        <span className="min-w-0">
+                                            <span className="block truncate text-2xl text-white" style={{ fontFamily: '"PT Serif", serif' }}>{board.title}</span>
+                                            <span className="mt-1 block text-sm text-white/80" aria-hidden="true">
+                                                {board.media.length} {board.media.length === 1 ? "item" : "items"}
+                                            </span>
+                                        </span>
+                                        <ArrowUpRight size={18} className="mb-1 shrink-0 text-white/80" aria-hidden="true" />
+                                    </span>
                                 </Link>
                                 <button
                                     type="button"
                                     aria-label={`Delete ${board.title}`}
                                     title="Delete moodboard"
-                                    className="media-action absolute bottom-3 right-10 rounded-full p-2 text-neutral-500 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                                    className="media-action absolute right-3 top-3 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                                     onClick={() => setMoodboardToDelete(board)}
                                 >
                                     <Trash2 size={17} aria-hidden="true" />

@@ -17,10 +17,10 @@ const ImageItem = ({ image }: ImageItemProps) => {
     }
 
     return (
-        <div className="group relative m-[4px]">
+        <div className="group relative z-0 m-[4px]">
             <button
                 type="button"
-                className='block w-full cursor-pointer overflow-hidden rounded-2xl border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
+                className='block w-full cursor-pointer overflow-hidden rounded-3xl border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
                 aria-label={`View photo by ${image.photographer}${image.alt ? `: ${image.alt}` : ''}`}
                 onClick={onImage}
                 style={{
@@ -38,7 +38,6 @@ const ImageItem = ({ image }: ImageItemProps) => {
                         height: "100%",
                         objectFit: "cover",
                         display: "block",
-                        borderRadius: "8px",
                     }}
                 />
             </button>

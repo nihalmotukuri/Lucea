@@ -76,63 +76,57 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
 
     if (isPending) {
         return (
-            <div className="flex h-[50px] min-w-0 items-center gap-3" role="status" aria-label="Finding related search ideas">
-                <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-neutral-500">
-                    <Sparkles size={14} aria-hidden="true" /> Ideas
+            <div className="flex h-[46px] min-w-0 items-center gap-2.5" role="status" aria-label="Finding related search ideas">
+                <span className="flex shrink-0 items-center gap-2 text-[11px] font-medium text-neutral-400">
+                    <Sparkles size={13} aria-hidden="true" /> Related
                 </span>
-                <ul className="flex min-w-0 flex-1 items-center gap-3 overflow-hidden" aria-hidden="true">
-                    {Array.from({ length: 5 }).map((_, idx) => (
-                        <li key={idx} className="h-7 w-20 shrink-0 animate-pulse rounded-full bg-black/[0.06]" />
-                    ))}
-                </ul>
+                <LoaderCircle size={13} className="animate-spin text-neutral-400" aria-hidden="true" />
+                <span className="text-xs text-neutral-400">Finding ideas</span>
             </div>
         )
     }
 
     if (isError && !suggestions?.length) {
         return (
-            <div role="status" aria-live="polite" className="flex min-h-[58px] min-w-0 items-center justify-between gap-3 border-t border-black/[0.05] py-2.5">
-                <span className="flex min-w-0 items-center gap-2.5">
-                    <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[#f3eee6] text-neutral-600">
-                        <Sparkles size={15} aria-hidden="true" />
-                    </span>
-                    <span className="min-w-0">
-                        <span className="block text-xs font-medium text-neutral-700">A little inspiration?</span>
-                        <span className="block truncate text-xs text-neutral-500">Related ideas couldn’t load just now.</span>
-                    </span>
-                </span>
+            <div role="status" className="flex h-[46px] min-w-0 items-center gap-2.5">
+                <Sparkles size={13} className="shrink-0 text-neutral-400" aria-hidden="true" />
+                <span className="shrink-0 text-[11px] font-medium text-neutral-400">Related</span>
+                <span className="truncate text-xs text-neutral-400">Ideas unavailable</span>
                 <button
                     type="button"
                     onClick={() => void refetch()}
                     disabled={isFetching}
-                    className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-xl border border-black/10 bg-white px-3 text-xs font-medium text-neutral-700 shadow-sm transition hover:border-black/20 hover:bg-[#f8f6f2] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:px-3.5"
+                    className="inline-flex min-h-8 shrink-0 items-center gap-1.5 px-1 text-xs text-neutral-500 underline decoration-neutral-300 underline-offset-4 transition hover:text-neutral-900 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 >
                     {isFetching
-                        ? <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />
-                        : <RotateCw size={14} aria-hidden="true" />
+                        ? <LoaderCircle size={13} className="animate-spin" aria-hidden="true" />
+                        : <RotateCw size={13} aria-hidden="true" />
                     }
-                    <span>{isFetching ? "Trying again" : "Try again"}</span>
+                    <span>{isFetching ? "Trying" : "Retry"}</span>
                 </button>
             </div>
         )
     }
 
     return (
-        <div className="flex h-[50px] min-w-0 items-center gap-2">
-            <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-neutral-500 sm:gap-2">
-                <Sparkles size={14} aria-hidden="true" />
-                <span className="hidden sm:inline">Ideas</span>
+        <div className="flex h-[46px] min-w-0 items-center gap-2.5">
+            <span className="flex shrink-0 items-center gap-2 text-[11px] font-medium text-neutral-400">
+                <Sparkles size={13} aria-hidden="true" />
+                <span>Related</span>
             </span>
             <HorizontalScroller label="related search suggestions">
-                <ul aria-label="Related search suggestions" className="flex h-[50px] w-full items-center gap-2 whitespace-nowrap sm:gap-3">
+                <ul aria-label="Related search suggestions" className="flex h-[46px] w-full items-center gap-5 whitespace-nowrap pr-8">
                     {suggestions?.map((suggestion, idx) => (
-                        <li key={`${suggestion}-${idx}`} className="shrink-0">
+                        <li key={`${suggestion}-${idx}`} className="relative shrink-0">
                             <Link
                                 to={`/search?query=${encodeURIComponent(suggestion)}&type=photos`}
-                                className="flex min-h-9 items-center rounded-full border border-black/10 bg-white/70 px-3 text-xs text-neutral-600 transition hover:border-black/20 hover:bg-white hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm"
+                                className="text-xs text-neutral-500 transition hover:text-neutral-900 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-[13px]"
                             >
                                 {suggestion}
                             </Link>
+                            {idx < (suggestions?.length ?? 0) - 1 && (
+                                <span aria-hidden="true" className="pointer-events-none absolute -right-3 top-1/2 size-0.5 -translate-y-1/2 rounded-full bg-neutral-300" />
+                            )}
                         </li>
                     ))}
                 </ul>
