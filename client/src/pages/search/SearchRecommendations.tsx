@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import HorizontalScroller from "@/components/features/HorizontalScroller"
-import { Sparkles } from "lucide-react"
+import { LoaderCircle, RotateCw, Sparkles } from "lucide-react"
 
 interface SearchRecommendationsProps {
     urlQuery: string
@@ -91,14 +91,27 @@ const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
 
     if (isError && !suggestions?.length) {
         return (
-            <div role="status" className="flex h-[50px] min-w-0 items-center justify-between gap-3 text-sm text-neutral-600">
-                <span>Related ideas are unavailable right now.</span>
+            <div role="status" aria-live="polite" className="flex min-h-[58px] min-w-0 items-center justify-between gap-3 border-t border-black/[0.05] py-2.5">
+                <span className="flex min-w-0 items-center gap-2.5">
+                    <span className="grid size-8 shrink-0 place-items-center rounded-xl bg-[#f3eee6] text-neutral-600">
+                        <Sparkles size={15} aria-hidden="true" />
+                    </span>
+                    <span className="min-w-0">
+                        <span className="block text-xs font-medium text-neutral-700">A little inspiration?</span>
+                        <span className="block truncate text-xs text-neutral-500">Related ideas couldn’t load just now.</span>
+                    </span>
+                </span>
                 <button
                     type="button"
                     onClick={() => void refetch()}
-                    className="min-h-9 shrink-0 rounded-full border border-black/10 px-3 font-medium text-neutral-700 transition hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                    disabled={isFetching}
+                    className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-xl border border-black/10 bg-white px-3 text-xs font-medium text-neutral-700 shadow-sm transition hover:border-black/20 hover:bg-[#f8f6f2] disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:px-3.5"
                 >
-                    Retry
+                    {isFetching
+                        ? <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />
+                        : <RotateCw size={14} aria-hidden="true" />
+                    }
+                    <span>{isFetching ? "Trying again" : "Try again"}</span>
                 </button>
             </div>
         )

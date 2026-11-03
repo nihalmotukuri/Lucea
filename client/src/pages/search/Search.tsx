@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react"
 import { useSearchParams, Navigate } from "react-router-dom"
-import { IoSearch } from "react-icons/io5"
 import ImageSearch from "./ImageSearch"
 import VideoSearch from "./VideoSearch"
 import SearchRecommendations from "./SearchRecommendations"
 import type { MediaOrientation } from "@/api/pexels"
 import type { MediaSortOrder } from "@/lib/media"
+import SearchBar from "@/components/features/SearchBar"
+import { ArrowDownWideNarrow, ChevronDown, Crop } from "lucide-react"
 
 const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -54,27 +55,7 @@ const Search = () => {
   return (
     <div className="relative min-h-screen bg-[#fdfcfb] px-3 pb-6 pt-[140px] sm:px-[18px]">
       <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
-        <form
-          onSubmit={onSearch}
-          className="relative h-[50px] w-full p-[16px] rounded-2xl flex items-center border border-black/10"
-        >
-          <input
-            aria-label="Search photos and videos"
-            className="text-md w-full border-none outline-none focus-visible:ring-2 focus-visible:ring-neutral-500"
-            type="text"
-            placeholder="Discover photos & videos"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-
-          <button
-            type="submit"
-            aria-label="Search"
-            className="pl-2 text-xl text-black/50 cursor-pointer"
-          >
-            <IoSearch />
-          </button>
-        </form>
+        <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearch} />
 
         <SearchRecommendations urlQuery={urlQuery} />
       </div>
@@ -112,26 +93,36 @@ const Search = () => {
 
             <span className="hidden h-7 w-px bg-black/10 sm:block" aria-hidden="true" />
 
-            <label className="flex min-w-0 items-center gap-2 text-sm text-neutral-600">
-              <span className="sr-only">Orientation</span>
+            <label className="relative flex min-w-0 items-center gap-2 rounded-2xl border border-black/[0.07] bg-[#faf8f4] p-2.5 transition hover:border-black/[0.14] focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/[0.04]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-neutral-500 shadow-sm">
+                <Crop size={16} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400">Shape</span>
               <select
                 aria-label="Filter by orientation"
-                className="min-h-10 w-full max-w-[9.5rem] rounded-xl border border-black/10 bg-[#fdfcfb] px-3 text-sm text-neutral-800 outline-none transition hover:border-black/20 focus-visible:ring-2 focus-visible:ring-neutral-500"
+                className="min-h-6 w-full min-w-0 appearance-none border-0 bg-transparent pr-5 text-sm font-medium text-neutral-800 outline-none"
                 value={orientation}
                 onChange={event => updateFilters({ orientation: event.target.value })}
               >
-                <option value="all">Any orientation</option>
+                <option value="all">Any shape</option>
                 <option value="landscape">Landscape</option>
                 <option value="portrait">Portrait</option>
                 <option value="square">Square</option>
               </select>
+              </span>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} aria-hidden="true" />
             </label>
 
-            <label className="flex min-w-0 items-center gap-2 text-sm text-neutral-600">
-              <span className="sr-only">Sort results</span>
+            <label className="relative flex min-w-0 items-center gap-2 rounded-2xl border border-black/[0.07] bg-[#faf8f4] p-2.5 transition hover:border-black/[0.14] focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-900/[0.04]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-neutral-500 shadow-sm">
+                <ArrowDownWideNarrow size={16} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-400">Order</span>
               <select
                 aria-label="Sort search results"
-                className="min-h-10 w-full max-w-[9.5rem] rounded-xl border border-black/10 bg-[#fdfcfb] px-3 text-sm text-neutral-800 outline-none transition hover:border-black/20 focus-visible:ring-2 focus-visible:ring-neutral-500"
+                className="min-h-6 w-full min-w-0 appearance-none border-0 bg-transparent pr-5 text-sm font-medium text-neutral-800 outline-none"
                 value={sortOrder}
                 onChange={event => updateFilters({ sort: event.target.value })}
               >
@@ -139,6 +130,8 @@ const Search = () => {
                 <option value="largest">Largest first</option>
                 <option value="smallest">Smallest first</option>
               </select>
+              </span>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} aria-hidden="true" />
             </label>
           </div>
         </div>

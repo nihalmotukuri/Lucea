@@ -1,3 +1,5 @@
+import { AlertCircle, ImageOff, RotateCw } from "lucide-react"
+
 interface QueryFeedbackProps {
     error?: unknown
     empty?: boolean
@@ -15,24 +17,34 @@ const QueryFeedback = ({ error, empty = false, onRetry }: QueryFeedbackProps) =>
         && "status" in error.response
         && error.response.status === 429
 
+    const message = hasError
+        ? isRateLimited
+            ? "We're taking a short breather. Give it a moment, then try again."
+            : "We couldn't bring these visuals in. Please try again."
+        : "No visuals found for this search."
+
     return (
         <div
             role={hasError ? "alert" : "status"}
-            className="my-6 flex flex-col items-center gap-2 text-center text-neutral-600"
+            className="mx-auto my-8 flex w-full max-w-xl flex-col items-center rounded-3xl border border-black/[0.07] bg-white/80 px-5 py-8 text-center shadow-[0_8px_32px_rgba(35,29,22,0.035)] sm:px-8 sm:py-10"
         >
-            <p>
+            <span className={`grid size-12 place-items-center rounded-2xl ${hasError ? "bg-[#f5eee7] text-neutral-700" : "bg-neutral-100 text-neutral-500"}`}>
                 {hasError
-                    ? isRateLimited
-                        ? "We're experiencing a temporary slowdown. Please try again in a moment."
-                        : "We couldn't load this media. Please try again."
-                    : "No media found."}
-            </p>
+                    ? <AlertCircle size={21} strokeWidth={1.7} aria-hidden="true" />
+                    : <ImageOff size={21} strokeWidth={1.7} aria-hidden="true" />
+                }
+            </span>
+            <h2 className="mt-4 text-base font-semibold text-neutral-800">
+                {hasError ? "We hit a small snag" : "A quiet corner"}
+            </h2>
+            <p className="mt-1.5 max-w-sm text-sm leading-6 text-neutral-500">{message}</p>
             {hasError && onRetry && (
                 <button
                     type="button"
                     onClick={onRetry}
-                    className="cursor-pointer underline underline-offset-2 hover:text-neutral-900"
+                    className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:-translate-y-px hover:bg-neutral-700 hover:shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 >
+                    <RotateCw size={15} aria-hidden="true" />
                     Try again
                 </button>
             )}
