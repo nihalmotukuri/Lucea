@@ -19,13 +19,7 @@ const request = async <T>(
     params: Record<string, string | number>,
     signal?: AbortSignal,
 ) => {
-    const response = await pexelsApi.get<PexelsResponse<T>>(
-        path,
-        {
-            params,
-            signal,
-        },
-    )
+    const response = await pexelsApi.get<PexelsResponse<T>>(path, { params, signal })
 
     return response.data
 }
@@ -50,7 +44,7 @@ export const fetchCuratedPhotos = async (
     perPage: number,
     signal?: AbortSignal,
 ) => {
-    const response = await request<Photo>("/v1/curated", { per_page: perPage, page }, signal)
+    const response = await request<Photo>("/pexels/curated", { per_page: perPage, page }, signal)
     return toMediaPage(response.photos, response.next_page, page)
 }
 
@@ -59,7 +53,7 @@ export const fetchPopularVideos = async (
     perPage: number,
     signal?: AbortSignal,
 ) => {
-    const response = await request<Video>("/videos/popular", { per_page: perPage, page }, signal)
+    const response = await request<Video>("/pexels/videos/popular", { per_page: perPage, page }, signal)
     return toMediaPage(response.videos, response.next_page, page)
 }
 
@@ -71,7 +65,7 @@ export const searchPhotos = async (
     orientation?: MediaOrientation,
 ) => {
     const response = await request<Photo>(
-        "/v1/search",
+        "/pexels/photos/search",
         { query, per_page: perPage, page, ...(orientation ? { orientation } : {}) },
         signal,
     )
@@ -86,7 +80,7 @@ export const searchVideos = async (
     orientation?: MediaOrientation,
 ) => {
     const response = await request<Video>(
-        "/videos/search",
+        "/pexels/videos/search",
         { query, per_page: perPage, page, ...(orientation ? { orientation } : {}) },
         signal,
     )
@@ -94,17 +88,11 @@ export const searchVideos = async (
 }
 
 export const getPhoto = async (id: string, signal?: AbortSignal) => {
-    const response = await pexelsApi.get<Photo>(
-        `/v1/photos/${encodeURIComponent(id)}`,
-        { signal },
-    )
+    const response = await pexelsApi.get<Photo>(`/pexels/photos/${encodeURIComponent(id)}`, { signal })
     return response.data
 }
 
 export const getVideo = async (id: string, signal?: AbortSignal) => {
-    const response = await pexelsApi.get<Video>(
-        `/videos/videos/${encodeURIComponent(id)}`,
-        { signal },
-    )
+    const response = await pexelsApi.get<Video>(`/pexels/videos/${encodeURIComponent(id)}`, { signal })
     return response.data
 }

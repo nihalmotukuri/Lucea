@@ -1,10 +1,9 @@
 import axios from "axios"
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || "/api"
+
 const pexelsApi = axios.create({
-    baseURL: "https://api.pexels.com",
-    headers: {
-        Authorization: import.meta.env.VITE_PEXELS_API_KEY,
-    },
+    baseURL: apiBaseUrl,
 })
 
 export default pexelsApi

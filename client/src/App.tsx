@@ -10,6 +10,8 @@ import { ScrollToTop } from './components/features/ScrollToTop'
 import VideoDetailPage from './pages/media-detail/VideoDetailPage'
 import VideoDetailModal from './components/media/VideoDetailModal'
 import MoodboardsPage from './pages/moodboards/MoodboardsPage'
+import AuthProvider from './auth/AuthProvider'
+import AuthCallback from './auth/AuthCallback'
 
 function App() {
   const location = useLocation()
@@ -20,7 +22,8 @@ function App() {
       <Navbar />
 
       <main className='min-h-screen pb-[76px] md:h-screen md:pb-0 md:pl-[80px]'>
-        <Routes location={state?.photoBackgroundLocation || location}>
+        <Routes location={state?.photoBackgroundLocation || state?.videoBackgroundLocation || location}>
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/t/:topicSlug" element={<Home />} />
@@ -50,9 +53,11 @@ function App() {
 
 export default function Root() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   )
 }

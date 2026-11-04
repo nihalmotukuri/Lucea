@@ -6,9 +6,10 @@ import { useMoodboards } from "@/store/useMoodboards"
 
 interface SaveToMoodboardButtonProps {
     media: MoodboardMedia
+    variant?: "overlay" | "inline"
 }
 
-const SaveToMoodboardButton = ({ media }: SaveToMoodboardButtonProps) => {
+const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardButtonProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [title, setTitle] = useState("")
     const [createError, setCreateError] = useState("")
@@ -57,16 +58,23 @@ const SaveToMoodboardButton = ({ media }: SaveToMoodboardButtonProps) => {
                 type="button"
                 aria-label={savedBoardCount > 0 ? `Saved to ${savedBoardCount} moodboard${savedBoardCount === 1 ? "" : "s"}. Manage moodboards` : "Save to moodboard"}
                 title={savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
-                className="media-action absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className={variant === "overlay"
+                    ? "media-action absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    : "inline-flex min-h-11 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                }
                 onClick={() => setIsOpen(true)}
             >
                 {savedBoardCount > 0
                     ? <BookmarkCheck size={18} aria-hidden="true" />
                     : <BookmarkPlus size={18} aria-hidden="true" />
                 }
+                {variant === "inline" && (savedBoardCount > 0 ? "Saved" : "Save to moodboard")}
             </button>
             {feedback && (
-                <span role="status" aria-live="polite" className="absolute bottom-3 left-3 z-10 max-w-[calc(100%-5.5rem)] truncate rounded-full bg-neutral-900/90 px-3 py-1.5 text-xs font-medium text-white shadow-lg">
+                <span role="status" aria-live="polite" className={variant === "overlay"
+                    ? "absolute bottom-3 left-3 z-10 max-w-[calc(100%-5.5rem)] truncate rounded-full bg-neutral-900/90 px-3 py-1.5 text-xs font-medium text-white shadow-lg"
+                    : "mt-2 block text-xs font-medium text-neutral-500"
+                }>
                     {feedback}
                 </span>
             )}

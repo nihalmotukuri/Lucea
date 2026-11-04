@@ -1,0 +1,4 @@
+project_id = "lucea"
+
+[functions.refresh-daily-topics]
+verify_jwt = false
