@@ -92,6 +92,9 @@ export const getPhoto = async (id: string, signal?: AbortSignal) => {
     return response.data
 }
 
+export const getPhotoDownloadUrl = (id: string) =>
+    pexelsApi.getUri({ url: `/pexels/photos/${encodeURIComponent(id)}/download` })
+
 export const getVideo = async (id: string, signal?: AbortSignal) => {
     const response = await pexelsApi.get<Video>(`/pexels/videos/${encodeURIComponent(id)}`, { signal })
     return response.data

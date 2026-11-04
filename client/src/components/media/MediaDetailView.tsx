@@ -3,8 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import InfiniteScroll from "react-infinite-scroll-component"
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
 import { ArrowLeft, ArrowUpRight, Check, Copy, ExternalLink, Share2, X } from "lucide-react"
-import { Link } from "react-router-dom"
-import { searchPhotos, searchVideos } from "@/api/pexels"
+import { getPhotoDownloadUrl, searchPhotos, searchVideos } from "@/api/pexels"
 import QueryFeedback from "@/components/features/QueryFeedback"
 import SaveToMoodboardButton from "@/components/features/SaveToMoodboardButton"
 import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard"
@@ -48,6 +47,8 @@ const formatDuration = (duration: number) => {
     const seconds = duration % 60
     return `${minutes}:${String(seconds).padStart(2, "0")}`
 }
+
+const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
 
 const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps) => {
     const [shareMessage, setShareMessage] = useState("")
@@ -119,7 +120,6 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                     title: photo?.alt || `Video by ${video?.user.name}`,
                     url: window.location.href,
                 })
-                setShareMessage("Link shared")
                 return
             }
 
@@ -134,17 +134,21 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
     const creator = photo?.photographer ?? video?.user.name ?? ""
     const creatorUrl = photo?.photographer_url ?? video?.user.url ?? ""
     const detailUrl = photo?.url ?? video?.url ?? ""
-    const heading = photo?.alt || (video ? "A moving image" : "A moment to keep")
-    const mediaLabel = isPhoto ? "Photography" : "Moving image"
+    const heading = photo?.alt
+        || (photo
+            ? `A photo by ${photo.photographer}`
+            : video
+                ? `A ${formatDuration(video.duration)} video by ${video.user.name}`
+                : "A visual to revisit")
 
     return (
         <article
             id={isModal ? "mediaDetailScrollable" : undefined}
             aria-labelledby="media-detail-title"
-            className={`mx-auto w-full max-w-[1440px] bg-[#fdfcfb] ${
+            className={`mx-auto w-full bg-[#fdfcfb] ${
                 isModal
-                    ? "overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(27,24,20,0.2)] sm:max-h-[94dvh] sm:rounded-[34px]"
-                    : "min-h-full"
+                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(27,24,20,0.2)] sm:max-h-[94dvh] sm:rounded-[34px]"
+                    : "min-h-full max-w-[1440px]"
             }`}
         >
             <div className="px-4 pb-8 pt-4 sm:px-7 sm:pb-10 sm:pt-6 lg:px-10 lg:pb-12">
@@ -171,7 +175,7 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                 )}
 
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.75fr)] lg:gap-6">
-                    <div className="relative grid min-h-[300px] place-items-center overflow-hidden rounded-[26px] border border-black/[0.06] bg-[#e8e4de] p-3 sm:min-h-[420px] sm:p-5 lg:min-h-[560px]">
+                    <div className="relative grid min-w-0 place-items-center">
                         {photo && !mediaError && (
                             <img
                                 src={photo.src.large2x || photo.src.large || photo.src.original}
@@ -180,11 +184,7 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                                 decoding="async"
                                 fetchPriority="high"
                                 onError={() => setMediaError(true)}
-                                className="max-h-[72dvh] max-w-full rounded-[18px] object-contain shadow-[0_18px_48px_rgba(0,0,0,0.14)]"
-                                style={{
-                                    backgroundColor: photo.avg_color,
-                                    aspectRatio: `${photo.width}/${photo.height}`,
-                                }}
+                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[18px] object-contain"
                             />
                         )}
                         {video && !mediaError && (
@@ -200,7 +200,7 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                                 onError={() => setMediaError(true)}
                                 onLoadedData={() => setMediaError(false)}
                                 aria-label={`Video by ${video.user.name}`}
-                                className="max-h-[72dvh] max-w-full rounded-[18px] bg-black object-contain shadow-[0_18px_48px_rgba(0,0,0,0.18)]"
+                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[18px] object-contain"
                             />
                         )}
                         {mediaError && (
@@ -215,110 +215,98 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                     </div>
 
                     <aside className="flex flex-col gap-4">
-                        <header className="pb-1 pt-1">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-                                {mediaLabel} <span className="mx-1.5 text-neutral-300">/</span> A visual to revisit
+                        <header>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                                {isPhoto ? "Photographer" : "Video creator"}
                             </p>
+                            <h2 className="mt-1 text-lg font-medium text-neutral-900">
+                                {creatorUrl
+                                    ? <a href={creatorUrl} target="_blank" rel="noreferrer" className="underline decoration-black/20 underline-offset-4 hover:decoration-black">{creator}</a>
+                                    : creator
+                                }
+                            </h2>
+                        </header>
+
+                        <div className="flex flex-wrap items-center gap-2 border-y border-black/[0.08] py-4">
+                            <SaveToMoodboardButton
+                                variant="inline"
+                                media={{
+                                    key: `${item.type}-${item.media.id}`,
+                                    type: item.type,
+                                    id: item.media.id,
+                                    detailPath: `/${item.type === "photo" ? "photos" : "videos"}/${item.media.id}`,
+                                    thumbnail: photo?.src.medium ?? video?.image ?? "",
+                                    alt: heading,
+                                    creator,
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => void shareMedia()}
+                                className={secondaryActionClassName}
+                            >
+                                {shareMessage === "Link copied"
+                                    ? <Check size={16} aria-hidden="true" />
+                                    : typeof navigator.share === "function"
+                                        ? <Share2 size={16} aria-hidden="true" />
+                                        : <Copy size={16} aria-hidden="true" />
+                                }
+                                {typeof navigator.share === "function" ? "Share" : "Copy link"}
+                            </button>
+                            {photo && (
+                                <a
+                                    href={getPhotoDownloadUrl(String(photo.id))}
+                                    className={secondaryActionClassName}
+                                >
+                                    <ArrowUpRight size={14} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    Download
+                                </a>
+                            )}
+                            <a
+                                href={detailUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={secondaryActionClassName}
+                            >
+                                View on Pexels <ExternalLink size={14} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                            </a>
+                        </div>
+                        {shareMessage && (
+                            <p role="status" className={`-mt-3 text-xs ${shareMessage.startsWith("Could") ? "text-red-700" : "text-neutral-500"}`}>
+                                {shareMessage}
+                            </p>
+                        )}
+
+                        <dl className="grid grid-cols-2 gap-4">
+                            {photo && (
+                                <div>
+                                    <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Dimensions</dt>
+                                    <dd className="mt-1 text-sm text-neutral-700">{photo.width} × {photo.height}</dd>
+                                </div>
+                            )}
+                            {video && (
+                                <>
+                                    <div>
+                                        <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Duration</dt>
+                                        <dd className="mt-1 text-sm text-neutral-700">{formatDuration(video.duration)}</dd>
+                                    </div>
+                                    <div>
+                                        <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Dimensions</dt>
+                                        <dd className="mt-1 text-sm text-neutral-700">{video.width} × {video.height}</dd>
+                                    </div>
+                                </>
+                            )}
+                        </dl>
+
+                        <section className="border-t border-black/[0.08] pt-4">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Description</p>
                             <h1
                                 id="media-detail-title"
-                                className="font-editorial mt-2 text-2xl leading-tight tracking-[-0.035em] text-neutral-900 sm:text-3xl xl:text-4xl"
+                                className="font-editorial mt-2 text-xl leading-snug tracking-[-0.025em] text-neutral-900 sm:text-2xl"
                             >
                                 {heading}
                             </h1>
-                            <p className="mt-2 text-sm text-neutral-500">
-                                Collected by{" "}
-                                {creatorUrl
-                                    ? <a href={creatorUrl} target="_blank" rel="noreferrer" className="font-medium text-neutral-800 underline decoration-black/20 underline-offset-4 hover:decoration-black">{creator}</a>
-                                    : <span className="font-medium text-neutral-800">{creator}</span>
-                                }
-                            </p>
-                        </header>
-
-                        <section className="rounded-[24px] border border-black/[0.07] bg-white p-5 sm:p-6">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">Keep this idea</p>
-                            <div className="mt-4 flex flex-wrap items-center gap-2">
-                                <SaveToMoodboardButton
-                                    variant="inline"
-                                    media={{
-                                        key: `${item.type}-${item.media.id}`,
-                                        type: item.type,
-                                        id: item.media.id,
-                                        detailPath: `/${item.type === "photo" ? "photos" : "videos"}/${item.media.id}`,
-                                        thumbnail: photo?.src.medium ?? video?.image ?? "",
-                                        alt: heading,
-                                        creator,
-                                    }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => void shareMedia()}
-                                    className="inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] bg-[#fdfcfb] px-4 text-sm font-medium text-neutral-700 transition hover:border-black/20 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
-                                >
-                                    {shareMessage === "Link copied"
-                                        ? <Check size={16} aria-hidden="true" />
-                                        : typeof navigator.share === "function"
-                                            ? <Share2 size={16} aria-hidden="true" />
-                                            : <Copy size={16} aria-hidden="true" />
-                                    }
-                                    {typeof navigator.share === "function" ? "Share" : "Copy link"}
-                                </button>
-                            </div>
-                            {shareMessage && (
-                                <p role="status" className={`mt-3 text-xs ${shareMessage.startsWith("Could") ? "text-red-700" : "text-neutral-500"}`}>
-                                    {shareMessage}
-                                </p>
-                            )}
                         </section>
-
-                        <section className="rounded-[24px] border border-black/[0.07] bg-white p-5 sm:p-6">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">About this visual</p>
-                            <p className="mt-3 text-sm leading-6 text-neutral-700">
-                                {photo?.alt || (video ? `A ${formatDuration(video.duration)} video shared by ${video.user.name}.` : "A visual collected for your next idea.")}
-                            </p>
-                            <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-black/[0.06] pt-4">
-                                <div>
-                                    <dt className="text-[10px] uppercase tracking-[0.14em] text-neutral-400">Format</dt>
-                                    <dd className="mt-1 text-xs font-medium text-neutral-700">{isPhoto ? "Photograph" : "Video"}</dd>
-                                </div>
-                                <div>
-                                    <dt className="text-[10px] uppercase tracking-[0.14em] text-neutral-400">{video ? "Duration" : "Dimensions"}</dt>
-                                    <dd className="mt-1 text-xs font-medium text-neutral-700">
-                                        {photo ? `${photo.width} × ${photo.height}` : video ? formatDuration(video.duration) : ""}
-                                    </dd>
-                                </div>
-                            </dl>
-                            <div className="mt-5 flex flex-wrap gap-2">
-                                {photo && (
-                                    <a
-                                        href={photo.src.original}
-                                        download={`lucea-photo-${photo.id}.jpg`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="inline-flex min-h-10 items-center gap-2 rounded-full bg-neutral-900 px-4 text-xs font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                                    >
-                                        Open original image <ArrowUpRight size={14} aria-hidden="true" />
-                                    </a>
-                                )}
-                                <a
-                                    href={detailUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-xs font-medium text-neutral-700 transition hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                                >
-                                    View on Pexels <ExternalLink size={14} aria-hidden="true" />
-                                </a>
-                            </div>
-                        </section>
-
-                        {video && (
-                            <Link
-                                to={`/search?query=${encodeURIComponent(video.user.name)}&type=videos`}
-                                className="group flex min-h-14 items-center justify-between rounded-[20px] border border-black/[0.07] bg-[#f3efe9] px-5 text-sm font-medium text-neutral-700 transition hover:bg-[#ece6dc] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
-                            >
-                                More from {video.user.name}
-                                <ArrowUpRight size={17} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
-                            </Link>
-                        )}
                     </aside>
                 </div>
 
