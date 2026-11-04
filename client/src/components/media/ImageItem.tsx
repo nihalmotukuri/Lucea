@@ -4,20 +4,25 @@ import SaveToMoodboardButton from "@/components/features/SaveToMoodboardButton"
 
 interface ImageItemProps {
   image: Photo;
+  openInModal?: boolean;
 }
 
-const ImageItem = ({ image }: ImageItemProps) => {
+const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
     const navigate = useNavigate()
     const location = useLocation()
 
     const onImage = () => {
-        navigate(`/photos/${image.id}`, {
-            state: { photoBackgroundLocation: location }
-        })
+        const state = location.state as { photoBackgroundLocation?: typeof location } | null
+        navigate(
+            `/photos/${image.id}`,
+            openInModal
+                ? { state: { photoBackgroundLocation: state?.photoBackgroundLocation ?? location } }
+                : undefined,
+        )
     }
 
     return (
-        <div className="group relative z-0 m-[4px]">
+        <div className="group relative z-0 w-full">
             <button
                 type="button"
                 className='block w-full cursor-pointer overflow-hidden rounded-3xl border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
@@ -33,6 +38,7 @@ const ImageItem = ({ image }: ImageItemProps) => {
                     src={image.src.large}
                     alt={image.alt || `Photo by ${image.photographer}`}
                     loading='lazy'
+                    decoding='async'
                     style={{
                         width: "100%",
                         height: "100%",

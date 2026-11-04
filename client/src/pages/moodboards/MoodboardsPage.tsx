@@ -1,9 +1,29 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry"
-import { ArrowLeft, ArrowUpRight, ImagePlus, Trash2, X } from "lucide-react"
+import Masonry, { ResponsiveMasonry, type MasonryProps } from "react-responsive-masonry"
+import { ArrowLeft, ArrowUpRight, Images, ImagePlus, LayoutGrid, Trash2, Video, X } from "lucide-react"
 import type { Moodboard } from "@/types/types"
 import { useMoodboards } from "@/store/useMoodboards"
+import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
+
+type MoodboardMediaFilter = "all" | "photos" | "videos"
+
+const MoodboardMasonry = ({ columnsCount = 1, itemStyle, ...props }: MasonryProps) => {
+    const gutterWidth = Number.parseFloat(MASONRY_GUTTER)
+    const columnWidth = `calc((100% - ${(columnsCount - 1) * gutterWidth}px) / ${columnsCount})`
+
+    return (
+        <Masonry
+            {...props}
+            columnsCount={columnsCount}
+            itemStyle={{
+                ...itemStyle,
+                flex: `0 0 ${columnWidth}`,
+                width: columnWidth,
+            }}
+        />
+    )
+}
 
 interface DeleteMoodboardDialogProps {
     moodboard: Moodboard | null
@@ -85,7 +105,7 @@ const DeleteMoodboardDialog = ({ moodboard, onCancel, onConfirm }: DeleteMoodboa
 }
 
 const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
-    const media = moodboard.media.slice(0, 4)
+    const media = moodboard.media.slice(0, 3)
 
     if (media.length === 0) {
         return (
@@ -100,15 +120,25 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
     }
 
     return (
-        <div className={`grid aspect-[4/3] grid-cols-2 gap-0.5 overflow-hidden bg-neutral-100 ${media.length === 2 ? "grid-rows-1" : "grid-rows-2"}`}>
+        <div className="grid aspect-[4/3] grid-cols-3 grid-rows-2 gap-1 overflow-hidden bg-[#fdfcfb]">
             {media.map((item, index) => (
-                <img
+                <div
                     key={item.key}
-                    src={item.thumbnail}
-                    alt=""
-                    className={`h-full w-full object-cover ${media.length === 3 && index === 0 ? "row-span-2" : ""}`}
-                    loading="lazy"
-                />
+                    className={`relative min-h-0 min-w-0 overflow-hidden ${
+                        index === 0
+                            ? "col-span-2 row-span-2"
+                            : media.length === 2
+                                ? "col-span-1 row-span-2"
+                                : "col-span-1 row-span-1"
+                    }`}
+                >
+                    <img src={item.thumbnail} alt="" className="block h-full w-full object-cover" loading="lazy" />
+                    {index === media.length - 1 && moodboard.media.length > media.length && (
+                        <span className="absolute inset-0 grid place-items-center bg-black/40 text-lg font-medium text-white">
+                            +{moodboard.media.length - media.length}
+                        </span>
+                    )}
+                </div>
             ))}
         </div>
     )
@@ -120,15 +150,25 @@ const MoodboardsPage = () => {
     const [title, setTitle] = useState("")
     const [createError, setCreateError] = useState("")
     const [moodboardToDelete, setMoodboardToDelete] = useState<Moodboard | null>(null)
+    const [mediaFilter, setMediaFilter] = useState<MoodboardMediaFilter>("all")
     const moodboards = useMoodboards(state => state.moodboards)
+    const accountId = useMoodboards(state => state.accountId)
+    const isSyncing = useMoodboards(state => state.isSyncing)
+    const isCloudSynced = useMoodboards(state => state.isCloudSynced)
+    const syncError = useMoodboards(state => state.syncError)
+    const retrySync = useMoodboards(state => state.retrySync)
     const createMoodboard = useMoodboards(state => state.createMoodboard)
     const removeMedia = useMoodboards(state => state.removeMedia)
     const deleteMoodboard = useMoodboards(state => state.deleteMoodboard)
     const moodboard = moodboards.find(item => item.id === moodboardId)
+    const visibleMedia = moodboard?.media.filter(media =>
+        mediaFilter === "all" || media.type === (mediaFilter === "photos" ? "photo" : "video")
+    ) ?? []
 
     useEffect(() => {
         setTitle("")
         setCreateError("")
+        setMediaFilter("all")
     }, [moodboardId])
 
     const onCreateMoodboard = (event: FormEvent<HTMLFormElement>) => {
@@ -181,7 +221,7 @@ const MoodboardsPage = () => {
                 <div className="relative mb-7 mt-5 flex flex-wrap items-end justify-center gap-3 border-b border-black/[0.08] pb-6 text-center sm:mb-9">
                     <div className="w-full">
                         <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Your collection</p>
-                        <h1 className="break-words pt-1 text-4xl font-normal text-neutral-700 sm:text-[48px]">{moodboard.title}</h1>
+                        <h1 className="font-editorial break-words pt-1 text-4xl font-normal text-neutral-700 sm:text-[48px]">{moodboard.title}</h1>
                         <p className="mt-2 text-base text-neutral-500 sm:text-lg" aria-live="polite">
                             {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"}
                         </p>
@@ -195,14 +235,52 @@ const MoodboardsPage = () => {
                     </button>
                 </div>
 
-                {moodboard.media.length > 0 ? (
-                    <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                        <Masonry gutter="12px">
-                            {moodboard.media.map(media => (
-                                <figure key={media.key} className="group relative overflow-hidden rounded-3xl bg-neutral-200">
+                {moodboard.media.length > 0 && (
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                        <p className="text-sm text-neutral-500" aria-live="polite">
+                            {visibleMedia.length} {mediaFilter === "all" ? "saved" : mediaFilter} {visibleMedia.length === 1 ? "item" : "items"}
+                        </p>
+                        <div
+                            role="group"
+                            aria-label="Filter moodboard items by media type"
+                            className="inline-flex max-w-full items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1"
+                        >
+                            {([
+                                { value: "all", label: "Everything", Icon: LayoutGrid },
+                                { value: "photos", label: "Photos", Icon: Images },
+                                { value: "videos", label: "Videos", Icon: Video },
+                            ] as const).map(({ value, label, Icon }) => (
+                                <button
+                                    key={value}
+                                    type="button"
+                                    aria-pressed={mediaFilter === value}
+                                    onClick={() => setMediaFilter(value)}
+                                    className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:px-4 sm:text-sm ${
+                                        mediaFilter === value
+                                            ? "bg-neutral-900 text-white"
+                                            : "text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900"
+                                    }`}
+                                >
+                                    <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {moodboard.media.length > 0 && visibleMedia.length > 0 ? (
+                    <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                        <MoodboardMasonry
+                            gutter={MASONRY_GUTTER}
+                            sequential
+                            style={{ justifyContent: "flex-start" }}
+                        >
+                            {visibleMedia.map(media => (
+                                <figure key={media.key} className="group relative w-full min-w-0 overflow-hidden rounded-3xl bg-neutral-200">
                                     <Link
                                         to={media.detailPath}
-                                        className="relative block overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                                        className="relative block w-full min-w-0 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                                     >
                                         <img
                                             src={media.thumbnail}
@@ -227,9 +305,9 @@ const MoodboardsPage = () => {
                                     </button>
                                 </figure>
                             ))}
-                        </Masonry>
+                        </MoodboardMasonry>
                     </ResponsiveMasonry>
-                ) : (
+                ) : moodboard.media.length === 0 ? (
                     <div className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center sm:py-14">
                         <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-600">
                             <ImagePlus size={20} aria-hidden="true" />
@@ -241,6 +319,10 @@ const MoodboardsPage = () => {
                         <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
                             Explore media <ArrowUpRight size={16} aria-hidden="true" />
                         </Link>
+                    </div>
+                ) : (
+                    <div role="status" className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center text-sm text-neutral-500">
+                        No {mediaFilter} saved to this moodboard yet.
                     </div>
                 )}
                 </div>
@@ -257,11 +339,35 @@ const MoodboardsPage = () => {
         <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:px-8 md:pt-12">
             <div className="mx-auto max-w-6xl">
                 <header className="pt-1 text-center">
-                    <h1 className="text-4xl font-normal text-neutral-700 sm:text-[48px]">Moodboards</h1>
+                    <h1 className="font-editorial text-4xl font-normal text-neutral-700 sm:text-[48px]">Moodboards</h1>
                     <p className="mt-1 text-xl text-neutral-800">Keep the things that move you.</p>
                     <p className="mt-2 text-sm text-neutral-500">Collect photos and videos for ideas you want to revisit.</p>
-                    <p className="mt-1 text-xs text-neutral-400">Saved in this browser</p>
+                    <p className="mt-1 text-xs text-neutral-400">
+                        {accountId
+                            ? isCloudSynced
+                                ? "Synced to your account"
+                                : isSyncing
+                                    ? "Syncing your moodboards"
+                                    : "Saved to your account"
+                            : "Saved in this browser"}
+                    </p>
                 </header>
+
+                {accountId && syncError && (
+                    <div className="mx-auto mt-5 flex max-w-xl flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                        <span>Moodboards couldn’t sync: {syncError}</span>
+                        <button
+                            type="button"
+                            disabled={isSyncing}
+                            aria-busy={isSyncing}
+                            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium text-red-800 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-70"
+                            onClick={() => void retrySync()}
+                        >
+                            {isSyncing && <span aria-hidden="true" className="size-3 animate-spin rounded-full border-2 border-red-300 border-t-red-800" />}
+                            {isSyncing ? "Retrying…" : "Retry sync"}
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={onCreateMoodboard} className="mx-auto mt-7 max-w-xl border-y border-black/[0.08] py-4 sm:flex sm:items-end sm:gap-3 sm:py-5">
                     <div className="min-w-0 flex-1">
@@ -306,7 +412,7 @@ const MoodboardsPage = () => {
                                     <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                                     <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
                                         <span className="min-w-0">
-                                            <span className="block truncate text-2xl text-white" style={{ fontFamily: '"PT Serif", serif' }}>{board.title}</span>
+                                            <span className="block truncate text-2xl text-white">{board.title}</span>
                                             <span className="mt-1 block text-sm text-white/80" aria-hidden="true">
                                                 {board.media.length} {board.media.length === 1 ? "item" : "items"}
                                             </span>
