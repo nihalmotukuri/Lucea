@@ -1,7 +1,7 @@
 const OddSkeletonCard = () => (
     <div
         style={{ animationDelay: '500ms' }}
-        className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[460px]"
+        className="w-full animate-pulse rounded-3xl bg-[#d9d9d5] aspect-[3/4]"
     ></div>
 )
 

@@ -192,10 +192,10 @@ const SearchBar = ({
                     type="submit"
                     disabled={!value.trim()}
                     aria-label="Search"
-                    className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-3 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:text-neutral-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:px-4"
+                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-gradient-to-r from-neutral-900 via-neutral-800 to-indigo-900 px-3 text-sm font-medium text-white shadow-[0_3px_10px_rgba(30,27,75,0.16)] transition duration-200 hover:-translate-y-px hover:from-neutral-800 hover:via-indigo-900 hover:to-violet-900 hover:shadow-[0_5px_14px_rgba(30,27,75,0.22)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-none disabled:from-[#e8e4de] disabled:via-[#e8e4de] disabled:to-[#e8e4de] disabled:text-neutral-600 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700 sm:px-4"
                 >
                     <span className="hidden sm:inline">Search</span>
-                    <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" />
+                    <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" className="transition-transform duration-200 group-hover/search:translate-x-0.5" />
                 </button>
             </form>
 

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react"
 import { useSearchParams, Navigate } from "react-router-dom"
 import ImageSearch from "./ImageSearch"
 import VideoSearch from "./VideoSearch"
-import SearchRecommendations from "./SearchRecommendations"
 import type { MediaOrientation } from "@/api/pexels"
 import type { MediaSortOrder } from "@/lib/media"
 import SearchBar from "@/components/features/SearchBar"
 import SearchFilterDropdown from "@/components/features/SearchFilterDropdown"
 import type { SearchFilterOption } from "@/components/features/SearchFilterDropdown"
 import { ArrowDownWideNarrow, ArrowUpNarrowWide, RectangleHorizontal, RectangleVertical, Sparkles, Square } from "lucide-react"
+import Suggestions from "@/pages/home/Suggestions"
 
 const orientationOptions: SearchFilterOption[] = [
   { value: "all", label: "Any shape", description: "Show every orientation", icon: Square },
@@ -71,7 +71,7 @@ const Search = () => {
       <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
         <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearch} />
 
-        <SearchRecommendations urlQuery={urlQuery} />
+        <Suggestions />
       </div>
 
       <section aria-label="Search results controls" className="mb-5 border-b border-black/[0.08] pb-4">
@@ -79,8 +79,7 @@ const Search = () => {
           <div className="min-w-0">
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Search results</p>
             <h1
-              className="break-words text-[26px] leading-tight text-neutral-800 sm:text-[32px]"
-              style={{ fontFamily: '"PT Serif", serif' }}
+              className="font-editorial break-words text-[26px] leading-tight text-neutral-800 sm:text-[32px]"
             >
               {urlQuery}
             </h1>

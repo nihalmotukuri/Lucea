@@ -8,6 +8,7 @@ import ImageItem from '@/components/media/ImageItem'
 import QueryFeedback from '@/components/features/QueryFeedback'
 import { searchPhotos, type MediaOrientation } from '@/api/pexels'
 import { sortMediaBySize, type MediaSortOrder } from '@/lib/media'
+import { MASONRY_COLUMNS, MASONRY_GUTTER } from '@/lib/masonry'
 
 interface ImageSearchProps {
     searchQuery: string
@@ -20,6 +21,7 @@ const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) 
         data,
         fetchNextPage,
         isFetchingNextPage,
+        isFetching,
         isPending,
         isError,
         error,
@@ -44,8 +46,8 @@ const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) 
 
     if (isPending && !isError) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {Array.from({ length: 10 }).map((_, i) => {
                         if (i % 2 === 0) return <EvenSkeletonCard key={i} />
                         return <OddSkeletonCard key={i} />
@@ -56,7 +58,7 @@ const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) 
     }
 
     if (imageList.length === 0) {
-        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+        return <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
     }
 
     return (
@@ -67,8 +69,8 @@ const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) 
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {data && imageList.map((img) => {
                         if (!img?.src?.large) return null
                         return <ImageItem key={img.id} image={img} />
@@ -83,7 +85,7 @@ const ImageSearch = ({ searchQuery, orientation, sortOrder }: ImageSearchProps) 
                 </Masonry>
             </ResponsiveMasonry>
         </InfiniteScroll>
-        {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+        {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
         </>
     )
 }

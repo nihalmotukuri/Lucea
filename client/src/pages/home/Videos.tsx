@@ -4,13 +4,14 @@ import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import VideoItem from '../../components/media/VideoItem'
 import QueryFeedback from '@/components/features/QueryFeedback'
 import { fetchPopularVideos } from '@/api/pexels'
+import { MASONRY_GUTTER, VIDEO_MASONRY_COLUMNS } from '@/lib/masonry'
 
-const OddSkeletonCard = () => <div className="m-[4px] rounded-2xl w-full bg-[#e7e7e2] animate-pulse h-[460px]"></div>
+const OddSkeletonCard = () => <div className="w-full animate-pulse rounded-2xl bg-[#e7e7e2] aspect-[3/4]" />
 
-const EvenSkeletonCard = () => <div className="m-[4px] rounded-2xl w-full bg-[#e7e7e2] animate-pulse h-[360px]"></div>
+const EvenSkeletonCard = () => <div className="w-full animate-pulse rounded-2xl bg-[#e7e7e2] aspect-[4/5]" />
 
 const Videos = () => {
-    const { data, fetchNextPage, isFetchingNextPage, isPending, isError, error, refetch } = useInfiniteQuery({
+    const { data, fetchNextPage, isFetchingNextPage, isFetching, isPending, isError, error, refetch } = useInfiniteQuery({
         queryKey: ["home", "videos"],
         queryFn: ({ pageParam, signal }) => fetchPopularVideos(pageParam, 12, signal),
         getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -21,8 +22,8 @@ const Videos = () => {
 
     if (isPending && !isError) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={VIDEO_MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {Array.from({ length: 12 }).map((_, i) => {
                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
                         return <OddSkeletonCard key={i} />
@@ -33,7 +34,7 @@ const Videos = () => {
     }
 
     if (videoList.length === 0) {
-        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+        return <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
     }
 
     return (
@@ -45,8 +46,8 @@ const Videos = () => {
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={VIDEO_MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {videoList.map((video) => {
                         if (!video?.video_files) return null
 
@@ -62,7 +63,7 @@ const Videos = () => {
                 </Masonry>
             </ResponsiveMasonry>
         </InfiniteScroll>
-        {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+        {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
         </>
     )
 }

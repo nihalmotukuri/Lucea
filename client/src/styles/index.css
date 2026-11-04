@@ -183,6 +183,10 @@
   scrollbar-width: none;
 }
 
+.font-editorial {
+  font-family: "PT Serif", serif;
+}
+
 *::-webkit-scrollbar {
   display: none;
 }
@@ -225,6 +229,10 @@ button:not(:disabled),
 @media (prefers-reduced-motion: reduce) {
   .media-action {
     transition: none;
+  }
+
+  .fade-in {
+    animation: none;
   }
 }
 

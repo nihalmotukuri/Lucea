@@ -3,10 +3,7 @@ const FeaturedCollections = () => {
     return (
         <section>
             <h1
-                className="pt-1 pb-[16px] text-3xl text-neutral-700"
-                style={{
-                    fontFamily: '"PT Serif", serif'
-                }}
+                className="font-editorial pt-1 pb-[16px] text-3xl text-neutral-700"
             >
                 Explore Featured Collections
             </h1>

@@ -1,6 +1,6 @@
 const EvenSkeletonCard = () => (
     <div
-        className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[320px]"
+        className="w-full animate-pulse rounded-3xl bg-[#d9d9d5] aspect-[4/5]"
     ></div>
 )
 

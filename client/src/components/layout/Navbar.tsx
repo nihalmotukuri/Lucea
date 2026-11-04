@@ -1,6 +1,7 @@
 import { Link, NavLink } from "react-router-dom"
 import { AuroraText } from "../ui/aurora-text"
 import { CiBookmark, CiHome, CiCompass1 } from "react-icons/ci"
+import AccountButton from "./AccountButton"
 
 const Navbar = () => {
   return (
@@ -18,7 +19,7 @@ const Navbar = () => {
           to='/'
           end
           aria-label="Home"
-          className={({ isActive }) => `rounded-full border p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 text-neutral-900' : 'border-black/20 text-neutral-600'}`}
+          className={({ isActive }) => `grid size-[42px] place-items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-black/20 text-neutral-600 hover:bg-black/[0.04] hover:text-neutral-900'}`}
         >
           <CiHome />
         </NavLink>
@@ -26,7 +27,7 @@ const Navbar = () => {
         <NavLink
           to='/explore'
           aria-label="Explore collections"
-          className={({ isActive }) => `rounded-full border p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 text-neutral-900' : 'border-black/20 text-neutral-600'}`}
+          className={({ isActive }) => `grid size-[42px] place-items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-black/20 text-neutral-600 hover:bg-black/[0.04] hover:text-neutral-900'}`}
         >
           <CiCompass1 />
         </NavLink>
@@ -34,11 +35,14 @@ const Navbar = () => {
         <NavLink
           to='/moodboards'
           aria-label="Your moodboards"
-          className={({ isActive }) => `rounded-full border p-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 text-neutral-900' : 'border-black/20 text-neutral-600'}`}
+          className={({ isActive }) => `grid size-[42px] place-items-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${isActive ? 'border-neutral-900 bg-neutral-900 text-white' : 'border-black/20 text-neutral-600 hover:bg-black/[0.04] hover:text-neutral-900'}`}
         >
           <CiBookmark />
         </NavLink>
       </nav>
+      <div className="md:mt-auto">
+        <AccountButton />
+      </div>
     </header>
   )
 }

@@ -8,6 +8,7 @@ import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 import QueryFeedback from '@/components/features/QueryFeedback'
 import { searchVideos, type MediaOrientation } from '@/api/pexels'
 import { sortMediaBySize, type MediaSortOrder } from '@/lib/media'
+import { MASONRY_GUTTER, VIDEO_MASONRY_COLUMNS } from '@/lib/masonry'
 
 interface VideoSearchProps {
     searchQuery: string
@@ -20,6 +21,7 @@ const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) 
         data,
         fetchNextPage,
         isFetchingNextPage,
+        isFetching,
         isPending,
         isError,
         error,
@@ -44,8 +46,8 @@ const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) 
 
     if (isPending && !isError) {
         return (
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={VIDEO_MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {Array.from({ length:6 }).map((_, i) => {
                         if (i % 2 == 0) return <EvenSkeletonCard key={i} />
                         return <OddSkeletonCard key={i} />
@@ -56,7 +58,7 @@ const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) 
     }
 
     if (videoList.length === 0) {
-        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+        return <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
     }
 
     return (
@@ -68,8 +70,8 @@ const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) 
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={VIDEO_MASONRY_COLUMNS}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {videoList.map((video) => {
                         if (!video?.video_files) return null
 
@@ -85,7 +87,7 @@ const VideoSearch = ({ searchQuery, orientation, sortOrder }: VideoSearchProps) 
                 </Masonry>
             </ResponsiveMasonry>
         </InfiniteScroll>
-        {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+        {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
         </>
     )
 }

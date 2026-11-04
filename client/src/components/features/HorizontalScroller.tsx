@@ -49,26 +49,44 @@ const HorizontalScroller = ({ children, label }: HorizontalScrollerProps) => {
             >
                 {children}
             </div>
-            {canScrollLeft && (
-                <button
-                    type="button"
-                    aria-label={`Scroll ${label} left`}
-                    onClick={() => scroll(-1)}
-                    className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/10 bg-[#fdfcfb]/95 p-1.5 text-neutral-700 shadow-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                >
-                    <ChevronLeft size={18} aria-hidden="true" />
-                </button>
-            )}
-            {canScrollRight && (
-                <button
-                    type="button"
-                    aria-label={`Scroll ${label} right`}
-                    onClick={() => scroll(1)}
-                    className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full border border-black/10 bg-[#fdfcfb]/95 p-1.5 text-neutral-700 shadow-sm hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                >
-                    <ChevronRight size={18} aria-hidden="true" />
-                </button>
-            )}
+            <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent transition-opacity duration-300 ${
+                    canScrollLeft ? "opacity-100" : "opacity-0"
+                }`}
+            />
+            <div
+                aria-hidden="true"
+                className={`pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent transition-opacity duration-300 ${
+                    canScrollRight ? "opacity-100" : "opacity-0"
+                }`}
+            />
+            <button
+                type="button"
+                aria-label={`Scroll ${label} left`}
+                tabIndex={canScrollLeft ? 0 : -1}
+                onClick={() => scroll(-1)}
+                className={`absolute left-1 top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full text-neutral-700 transition-all duration-300 hover:bg-white/80 hover:text-neutral-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                    canScrollLeft
+                        ? "translate-x-0 opacity-100"
+                        : "pointer-events-none -translate-x-1 opacity-0"
+                }`}
+            >
+                <ChevronLeft size={17} aria-hidden="true" />
+            </button>
+            <button
+                type="button"
+                aria-label={`Scroll ${label} right`}
+                tabIndex={canScrollRight ? 0 : -1}
+                onClick={() => scroll(1)}
+                className={`absolute right-1 top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full text-neutral-700 transition-all duration-300 hover:bg-white/80 hover:text-neutral-950 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                    canScrollRight
+                        ? "translate-x-0 opacity-100"
+                        : "pointer-events-none translate-x-1 opacity-0"
+                }`}
+            >
+                <ChevronRight size={17} aria-hidden="true" />
+            </button>
         </div>
     )
 }

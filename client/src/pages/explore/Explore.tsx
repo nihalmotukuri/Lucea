@@ -24,7 +24,7 @@ const Explore = () => {
             </div>
 
             <h1
-                className="pt-1 text-center text-4xl text-neutral-700 sm:text-[48px]"
+                className="font-editorial pt-1 text-center text-4xl text-neutral-700 sm:text-[48px]"
             >
                 Explore
             </h1>

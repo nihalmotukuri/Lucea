@@ -10,6 +10,7 @@ import EvenSkeletonCard from "@/components/layout/EvenSkeletonCard"
 import OddSkeletonCard from "@/components/layout/OddSkeletonCard"
 import ImageItem from "@/components/media/ImageItem"
 import QueryFeedback from "@/components/features/QueryFeedback"
+import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
 import { searchPhotos } from "@/api/pexels"
 import SearchBar from "@/components/features/SearchBar"
 
@@ -33,6 +34,7 @@ const CollectionDetailPage = () => {
         isPending,
         fetchNextPage,
         isFetchingNextPage,
+        isFetching,
         isError,
         error,
         refetch,
@@ -73,7 +75,7 @@ const CollectionDetailPage = () => {
                         className="absolute z-1 h-full w-full bg-black/30 flex flex-col justify-end items-center text-white p-[28px]"
                     >
                         <h1
-                            className="text-center text-3xl font-bold sm:text-[42px]"
+                            className="font-editorial text-center text-3xl font-bold sm:text-[42px]"
                         >
                             {collection.title}
                         </h1>
@@ -85,7 +87,7 @@ const CollectionDetailPage = () => {
                 {isPending && !isError
                     ? <MediaSkeleton />
                     : !photos?.length
-                        ? <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+                        ? <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
                     : photos
                         ? (
                             <>
@@ -95,8 +97,8 @@ const CollectionDetailPage = () => {
                                 hasMore={!!data?.pages.at(-1)?.nextPage}
                                 loader={<div></div>}
                             >
-                                <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                                <Masonry gutter="16px" sequential>
+                                <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                                <Masonry gutter={MASONRY_GUTTER} sequential>
                                     {photos.map((img) => {
                                         if (!img?.src?.large) return null
 
@@ -115,7 +117,7 @@ const CollectionDetailPage = () => {
                                 </Masonry>
                                 </ResponsiveMasonry>
                             </InfiniteScroll>
-                            {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+                            {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
                             </>
                         ) : null
                 }

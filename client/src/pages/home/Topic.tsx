@@ -1,101 +1,157 @@
-import VideoItem from '@/components/media/VideoItem'
+import { useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
+import { Images, LayoutGrid, Video } from 'lucide-react'
 import { useTopic } from '@/store/useTopic'
 import ImageItem from '@/components/media/ImageItem'
+import VideoItem from '@/components/media/VideoItem'
+import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
+import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import QueryFeedback from '@/components/features/QueryFeedback'
 import { searchPhotos, searchVideos } from '@/api/pexels'
+import { MASONRY_COLUMNS, MASONRY_GUTTER } from '@/lib/masonry'
 
 interface TopicProps {
     topicSlug: string | undefined
 }
 
-const OddSkeletonCard = () => <div style={{ animationDelay: '500ms' }} className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[460px]"></div>
+type TopicMediaFilter = 'all' | 'photos' | 'videos'
 
-const EvenSkeletonCard = () => <div className="m-[4px] rounded-3xl w-full bg-[#d9d9d5] animate-pulse h-[320px]"></div>
+const mediaFilters = [
+    { value: 'all', label: 'Everything', Icon: LayoutGrid },
+    { value: 'photos', label: 'Photos', Icon: Images },
+    { value: 'videos', label: 'Videos', Icon: Video },
+] as const
+
+interface TopicResultsHeaderProps {
+    title: string
+    mediaFilter: TopicMediaFilter
+    onFilterChange: (filter: TopicMediaFilter) => void
+}
+
+const TopicResultsHeader = ({ title, mediaFilter, onFilterChange }: TopicResultsHeaderProps) => (
+    <header className="mb-5 border-b border-black/[0.08] pb-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="min-w-0">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
+                    Today’s visual field <span className="mx-1.5 text-neutral-300">/</span> Curated search
+                </p>
+                <h1
+                    className="font-editorial break-words text-[26px] leading-tight text-neutral-800 sm:text-[32px]"
+                >
+                    {title}
+                </h1>
+                <p className="mt-1 text-xs text-neutral-500">
+                    A fresh trail of photos and motion, chosen for today.
+                </p>
+            </div>
+
+            <div role="group" aria-label="Filter topic results by media type" className="flex items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1">
+                {mediaFilters.map(({ value, label, Icon }) => (
+                    <button
+                        key={value}
+                        type="button"
+                        aria-pressed={mediaFilter === value}
+                        onClick={() => onFilterChange(value)}
+                        className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                            mediaFilter === value
+                                ? 'bg-neutral-900 text-white'
+                                : 'text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900'
+                        }`}
+                    >
+                        <Icon size={15} strokeWidth={1.8} aria-hidden="true" />
+                        {label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    </header>
+)
 
 export const Topic = ({ topicSlug }: TopicProps) => {
     const topics = useTopic(state => state.topics)
-    const topicTitle = topics.find(t => t.slug === topicSlug)?.title
+    const topicTitle = topics.find(topic => topic.slug === topicSlug)?.title ?? topicSlug ?? 'Today’s topic'
+    const [mediaFilter, setMediaFilter] = useState<TopicMediaFilter>('all')
 
     const {
         data,
         fetchNextPage,
         isFetchingNextPage,
+        isFetching,
         isPending,
         isError,
         error,
         refetch,
     } = useInfiniteQuery({
-        queryKey: ['topic', topicSlug],
+        queryKey: ['topic', topicSlug, topicTitle],
         queryFn: async ({ pageParam, signal }) => {
             const [photos, videos] = await Promise.all([
-                searchPhotos(topicTitle ?? '', pageParam, 8, signal),
-                searchVideos(topicTitle ?? '', pageParam, 6, signal),
+                searchPhotos(topicTitle, pageParam, 8, signal),
+                searchVideos(topicTitle, pageParam, 6, signal),
             ])
             return {
                 data: [...photos.data, ...videos.data],
                 nextPage: photos.nextPage ?? videos.nextPage,
             }
         },
-        getNextPageParam: (lastPage) => lastPage.nextPage,
+        getNextPageParam: lastPage => lastPage.nextPage,
         initialPageParam: 1,
     })
 
-    const mediaList = data?.pages.flatMap(pg => pg.data) ?? []
-
-    if (isPending && !isError) {
-            return (
-                <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                    <Masonry sequential>
-                        {Array.from({ length: 10 }).map((_, i) => {
-                            if (i % 2 == 0) return <EvenSkeletonCard key={i} />
-                            return <OddSkeletonCard key={i} />
-                        })}
-                    </Masonry>
-                </ResponsiveMasonry>
-            )
-        }
-
-    if (mediaList.length === 0) {
-        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
-    }
+    const allMedia = data?.pages.flatMap(page => page.data) ?? []
+    const mediaList = mediaFilter === 'all'
+        ? allMedia
+        : allMedia.filter(media => mediaFilter === 'photos' ? 'src' in media : 'video_files' in media)
 
     return (
-        <section>
-            <InfiniteScroll
-                dataLength={mediaList.length}
-                next={fetchNextPage}
-                hasMore={!!data?.pages.at(-1)?.nextPage}
-                loader={<div></div>}
-            >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
-                    {mediaList.map((media) => {
+        <section aria-label={`Visual results for ${topicTitle}`}>
+            <TopicResultsHeader
+                title={topicTitle}
+                mediaFilter={mediaFilter}
+                onFilterChange={setMediaFilter}
+            />
 
-                        if ("src" in media) {
-                            if (!media?.src?.large) return null
+            {isPending && !isError ? (
+                <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                    <Masonry gutter={MASONRY_GUTTER} sequential>
+                        {Array.from({ length: 10 }, (_, index) => index % 2 === 0
+                            ? <EvenSkeletonCard key={index} />
+                            : <OddSkeletonCard key={index} />
+                        )}
+                    </Masonry>
+                </ResponsiveMasonry>
+            ) : mediaList.length === 0 ? (
+                <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
+            ) : (
+                <>
+                    <InfiniteScroll
+                        dataLength={mediaList.length}
+                        next={fetchNextPage}
+                        hasMore={Boolean(data?.pages.at(-1)?.nextPage)}
+                        loader={<div role="status" className="py-4 text-center text-xs text-neutral-500">Gathering more visuals…</div>}
+                    >
+                        <ResponsiveMasonry columnsCountBreakPoints={MASONRY_COLUMNS}>
+                            <Masonry gutter={MASONRY_GUTTER} sequential>
+                                {mediaList.map(media => {
+                                    if ('src' in media) {
+                                        if (!media.src?.large) return null
+                                        return <ImageItem image={media} key={media.id} />
+                                    }
 
-                            return <ImageItem image={media} key={media.id} />
-                        }
-
-                        if (!("video_files" in media)) return null
-
-                        return <VideoItem key={media.id} video={media} />
-                    })}
-
-                    {isFetchingNextPage
-                        ? Array.from({ length: 20 }).map((_, i) => {
-                            if (i % 2 == 0) return <EvenSkeletonCard key={i} />
-                            return <OddSkeletonCard key={i} />
-                        })
-                        : null
-                    }
-                </Masonry>
-            </ResponsiveMasonry>
-        </InfiniteScroll>
-            {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+                                    if (!('video_files' in media)) return null
+                                    return <VideoItem video={media} key={media.id} />
+                                })}
+                                {isFetchingNextPage && Array.from({ length: 12 }, (_, index) => index % 2 === 0
+                                    ? <EvenSkeletonCard key={`loading-${index}`} />
+                                    : <OddSkeletonCard key={`loading-${index}`} />
+                                )}
+                            </Masonry>
+                        </ResponsiveMasonry>
+                    </InfiniteScroll>
+                    {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
+                </>
+            )}
         </section>
     )
 }

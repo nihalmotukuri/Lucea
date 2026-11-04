@@ -2,18 +2,25 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
 import VideoItem from '@/components/media/VideoItem'
-import MediaSkeleton from '@/components/layout/MediaSkeleton'
 import EvenSkeletonCard from '@/components/layout/EvenSkeletonCard'
 import OddSkeletonCard from '@/components/layout/OddSkeletonCard'
 import ImageItem from '@/components/media/ImageItem'
 import QueryFeedback from '@/components/features/QueryFeedback'
 import { fetchCuratedPhotos, fetchPopularVideos } from '@/api/pexels'
+import { MASONRY_COLUMNS, MASONRY_GUTTER, VIDEO_MASONRY_COLUMNS } from '@/lib/masonry'
 
-const Media = () => {
+type MediaFilter = "all" | "photos" | "videos"
+
+interface MediaProps {
+    filter: MediaFilter
+}
+
+const Media = ({ filter }: MediaProps) => {
     const {
         data,
         fetchNextPage,
         isFetchingNextPage,
+        isFetching,
         isPending,
         isError,
         error,
@@ -34,12 +41,28 @@ const Media = () => {
         initialPageParam: 1,
     });
 
-    const mediaList = data?.pages.flatMap(pg => pg.data) ?? []
+    const allMedia = data?.pages.flatMap(pg => pg.data) ?? []
+    const mediaList = filter === "all"
+        ? allMedia
+        : allMedia.filter(media => filter === "photos" ? "src" in media : "video_files" in media)
+    const columnsCountBreakPoints = filter === "videos" ? VIDEO_MASONRY_COLUMNS : MASONRY_COLUMNS
 
-    if (isPending && !isError) return <MediaSkeleton />
+    if (isPending && !isError) {
+        return (
+            <ResponsiveMasonry columnsCountBreakPoints={columnsCountBreakPoints}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
+                    {Array.from({ length: 12 }).map((_, index) =>
+                        index % 2 === 0
+                            ? <EvenSkeletonCard key={index} />
+                            : <OddSkeletonCard key={index} />
+                    )}
+                </Masonry>
+            </ResponsiveMasonry>
+        )
+    }
 
     if (mediaList.length === 0) {
-        return <QueryFeedback error={error} empty={!isError} onRetry={() => void refetch()} />
+        return <QueryFeedback error={error} empty={!isError} isRetrying={isFetching} onRetry={() => void refetch()} />
     }
 
     return (
@@ -50,8 +73,8 @@ const Media = () => {
             next={fetchNextPage}
             loader={<div></div>}
         >
-            <ResponsiveMasonry columnsCountBreakPoints={{ 480: 2, 768: 3, 1024: 4, 1440: 5 }}>
-                <Masonry sequential>
+            <ResponsiveMasonry columnsCountBreakPoints={columnsCountBreakPoints}>
+                <Masonry gutter={MASONRY_GUTTER} sequential>
                     {mediaList.map((media) => {
 
                         if ("src" in media) {
@@ -75,7 +98,7 @@ const Media = () => {
                 </Masonry>
             </ResponsiveMasonry>
         </InfiniteScroll>
-        {isError && <QueryFeedback error={error} onRetry={() => void refetch()} />}
+        {isError && <QueryFeedback error={error} isRetrying={isFetching} onRetry={() => void refetch()} />}
         </>
     )
 }
