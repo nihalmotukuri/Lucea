@@ -163,10 +163,10 @@ const Featured = () => {
                                     initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 4 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: prefersReducedMotion ? 0 : 0.25, delay: prefersReducedMotion ? 0 : 0.16, ease: "easeOut" }}
-                                    className="mb-1 inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-neutral-900 transition-colors group-hover:bg-[#f1e8da]"
+                                    className="mb-1 inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-neutral-900 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:bg-[#f1e8da] group-hover:shadow-md"
                                 >
                                     Explore
-                                    <ArrowUpRight size={16} aria-hidden="true" />
+                                        <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                 </m.span>
                             </span>
                         </Link>
@@ -188,7 +188,7 @@ const Featured = () => {
                                         src={story.image}
                                         alt=""
                                         loading={index < 3 ? "eager" : "lazy"}
-                                        className="absolute inset-0 h-full w-full object-cover"
+                                        className="absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-[1.04]"
                                     />
                                     <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent transition-colors group-hover:from-black/75" aria-hidden="true" />
                                     <span className="absolute left-3 top-3 rounded-full border border-white/25 bg-black/20 px-2 py-1 font-mono text-[10px] text-white/90 backdrop-blur-sm sm:left-3.5 sm:top-3.5">
@@ -199,7 +199,7 @@ const Featured = () => {
                                             <span className="block truncate text-[11px] font-semibold text-white sm:text-[13px]">{story.title}</span>
                                         </span>
                                         <span className="grid size-7 shrink-0 place-items-center rounded-full border border-white/30 bg-white/10 text-white transition group-hover:border-white group-hover:bg-white group-hover:text-neutral-900">
-                                            <ArrowDownRight size={15} aria-hidden="true" />
+                                            <ArrowDownRight size={15} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
                                         </span>
                                     </span>
                                 </Link>

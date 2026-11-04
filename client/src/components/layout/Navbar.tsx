@@ -31,13 +31,12 @@ const Navbar = () => {
         >
           {({ isActive }) => (
             <>
-              <span className={`grid size-9 shrink-0 place-items-center rounded-xl transition-colors duration-200 md:size-12 ${
+              <span className={`grid size-9 shrink-0 place-items-center rounded-xl transition-all duration-200 motion-safe:group-hover:scale-105 md:size-12 ${
                 isActive ? "bg-[#f3eee7] text-neutral-900" : "group-hover:bg-black/[0.035]"
               }`}>
                 <House size={18} strokeWidth={1.7} aria-hidden="true" />
               </span>
               <span className="sr-only">Home</span>
-              {/* {isActive && <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#9a7048] md:block" />} */}
             </>
           )}
         </NavLink>
@@ -50,13 +49,12 @@ const Navbar = () => {
         >
           {({ isActive }) => (
             <>
-              <span className={`grid size-9 shrink-0 place-items-center rounded-xl transition-colors duration-200 md:size-12 ${
+              <span className={`grid size-9 shrink-0 place-items-center rounded-xl transition-all duration-200 motion-safe:group-hover:scale-105 md:size-12 ${
                 isActive ? "bg-[#f3eee7] text-neutral-900" : "group-hover:bg-black/[0.035]"
               }`}>
                 <Bookmark size={18} strokeWidth={1.7} aria-hidden="true" />
               </span>
               <span className="sr-only">Saved</span>
-              {/* {isActive && <span aria-hidden="true" className="absolute left-0 top-1/2 hidden h-4 w-0.5 -translate-y-1/2 rounded-full bg-[#9a7048] md:block" />} */}
             </>
           )}
         </NavLink>

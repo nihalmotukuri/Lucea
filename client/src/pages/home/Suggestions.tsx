@@ -31,7 +31,11 @@ const Suggestions = () => {
                                         onClick={() => setActiveTopic(topic.slug)}
                                         to={`/t/${topic.slug}`}
                                         aria-current={activeTopic === topic.slug ? "page" : undefined}
-                                        className={`${activeTopic === topic.slug ? "text-neutral-900 underline decoration-neutral-900 underline-offset-[7px]" : "text-neutral-500"} inline-flex items-center text-[13px] leading-none transition hover:text-neutral-900 hover:underline hover:underline-offset-[7px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm`}
+                                        className={`relative inline-flex items-center py-1 text-[13px] leading-none transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:bg-neutral-900 after:content-[''] motion-safe:after:transition-transform motion-safe:after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm ${
+                                            activeTopic === topic.slug
+                                                ? "text-neutral-900 after:scale-x-100"
+                                                : "text-neutral-500 after:scale-x-0 hover:text-neutral-900 hover:after:scale-x-100 focus-visible:after:scale-x-100"
+                                        }`}
                                     >
                                         {topic.title}
                                     </Link>

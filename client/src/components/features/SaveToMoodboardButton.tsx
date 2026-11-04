@@ -68,7 +68,7 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
                 title={!user ? "Sign in to save this item" : savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
                 className={variant === "overlay"
                     ? "media-action absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-                    : "inline-flex min-h-11 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                    : "inline-flex min-h-11 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-neutral-700 hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 }
                 onClick={() => {
                     if (!user) {

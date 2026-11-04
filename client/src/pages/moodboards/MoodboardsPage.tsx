@@ -117,7 +117,7 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
     }
 
     if (media.length === 1) {
-        return <img src={media[0].thumbnail} alt="" className="block aspect-[4/3] w-full object-cover" loading="lazy" />
+        return <img src={media[0].thumbnail} alt="" className="block aspect-[4/3] w-full object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-[1.04]" loading="lazy" />
     }
 
     return (
@@ -133,7 +133,7 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
                                 : "col-span-1 row-span-1"
                     }`}
                 >
-                    <img src={item.thumbnail} alt="" className="block h-full w-full object-cover" loading="lazy" />
+                    <img src={item.thumbnail} alt="" className="block h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out motion-safe:group-hover:scale-[1.04]" loading="lazy" />
                     {index === media.length - 1 && moodboard.media.length > media.length && (
                         <span className="absolute inset-0 grid place-items-center bg-black/40 text-lg font-medium text-white">
                             +{moodboard.media.length - media.length}
@@ -432,7 +432,7 @@ const MoodboardsPage = () => {
                         <h2 className="mb-4 text-sm font-semibold text-neutral-700">Saved boards <span className="ml-1 font-normal text-neutral-500">({moodboards.length})</span></h2>
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {moodboards.map(board => (
-                            <article key={board.id} className="group relative overflow-hidden rounded-3xl bg-neutral-200">
+                            <article key={board.id} className="group relative overflow-hidden rounded-3xl bg-neutral-200 transition-shadow duration-300 hover:shadow-lg">
                                 <Link
                                     to={`/moodboards/${board.id}`}
                                     aria-label={`${board.title}, ${board.media.length} saved ${board.media.length === 1 ? "item" : "items"}`}
