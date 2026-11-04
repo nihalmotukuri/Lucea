@@ -39,26 +39,35 @@ const QUICK_TOPICS = [
     "Abstract",
 ]
 
-const COMPLETIONS = ["photography", "aesthetic", "in nature", "at golden hour", "close up"]
+const RECENT_SEARCHES_KEY = "lucea.recentSearches"
+const MAX_RECENT_SEARCHES = 5
 const DEBOUNCE_MS = 260
 
-const getSuggestions = (query: string) => {
+const getSuggestions = (query: string, recentSearches: string[]) => {
     const normalized = query.trim().replace(/\s+/g, " ")
     if (!normalized) return []
 
     const lowerQuery = normalized.toLocaleLowerCase()
-    const curated = SEARCH_IDEAS.filter(idea =>
+    const matches = [...recentSearches, ...SEARCH_IDEAS].filter(idea =>
         idea.toLocaleLowerCase().startsWith(lowerQuery) && idea.toLocaleLowerCase() !== lowerQuery
     )
-    const generated = COMPLETIONS
-        .map(completion => `${normalized} ${completion}`)
-        .filter(idea => idea.toLocaleLowerCase() !== lowerQuery)
-
-    return [normalized, ...curated, ...generated]
+    return [normalized, ...matches]
         .filter((idea, index, ideas) =>
             ideas.findIndex(candidate => candidate.toLocaleLowerCase() === idea.toLocaleLowerCase()) === index
         )
-        .slice(0, 6)
+        .slice(0, MAX_RECENT_SEARCHES)
+}
+
+const readRecentSearches = () => {
+    try {
+        const stored = window.localStorage.getItem(RECENT_SEARCHES_KEY)
+        const parsed: unknown = stored ? JSON.parse(stored) : []
+        if (!Array.isArray(parsed) || !parsed.every(item => typeof item === "string")) return []
+        return parsed.slice(0, MAX_RECENT_SEARCHES)
+    } catch (error) {
+        console.warn("Unable to read recent searches from local storage.", error)
+        return []
+    }
 }
 
 const SearchBar = ({
@@ -70,6 +79,7 @@ const SearchBar = ({
     const [isOpen, setIsOpen] = useState(false)
     const [debouncedValue, setDebouncedValue] = useState(value)
     const [activeIndex, setActiveIndex] = useState(-1)
+    const [recentSearches, setRecentSearches] = useState(readRecentSearches)
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
@@ -96,7 +106,23 @@ const SearchBar = ({
         return () => document.removeEventListener("pointerdown", closeOnOutsideClick)
     }, [])
 
-    const suggestions = useMemo(() => getSuggestions(debouncedValue), [debouncedValue])
+    useEffect(() => {
+        const focusSearchShortcut = (event: globalThis.KeyboardEvent) => {
+            const target = event.target
+            const isTyping = target instanceof HTMLElement
+                && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+            if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey || isTyping) return
+            event.preventDefault()
+            inputRef.current?.focus()
+        }
+        document.addEventListener("keydown", focusSearchShortcut)
+        return () => document.removeEventListener("keydown", focusSearchShortcut)
+    }, [])
+
+    const suggestions = useMemo(
+        () => getSuggestions(debouncedValue, recentSearches),
+        [debouncedValue, recentSearches],
+    )
     const showSuggestions = normalizedValue.length > 0 && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
 
     const submitQuery = (query: string) => {
@@ -107,6 +133,16 @@ const SearchBar = ({
         setActiveIndex(-1)
         inputRef.current?.blur()
         submitRef.current?.blur()
+        const nextRecentSearches = [
+            trimmedQuery,
+            ...recentSearches.filter(search => search.toLocaleLowerCase() !== trimmedQuery.toLocaleLowerCase()),
+        ].slice(0, MAX_RECENT_SEARCHES)
+        setRecentSearches(nextRecentSearches)
+        try {
+            window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(nextRecentSearches))
+        } catch (error) {
+            console.warn("Unable to save recent searches to local storage.", error)
+        }
         onSubmit(trimmedQuery)
     }
 
@@ -257,6 +293,43 @@ const SearchBar = ({
                         </div>
                     ) : (
                         <div className="p-3 sm:p-4">
+                            {recentSearches.length > 0 && (
+                                <div className="mb-3 border-b border-black/[0.06] pb-3">
+                                    <div className="flex items-center justify-between px-1 pb-2">
+                                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
+                                            Recent searches
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onMouseDown={event => event.preventDefault()}
+                                            onClick={() => {
+                                                setRecentSearches([])
+                                                try {
+                                                    window.localStorage.removeItem(RECENT_SEARCHES_KEY)
+                                                } catch (error) {
+                                                    console.warn("Unable to clear recent searches from local storage.", error)
+                                                }
+                                            }}
+                                            className="rounded px-1 py-0.5 text-[11px] text-neutral-500 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                        >
+                                            Clear
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {recentSearches.map(search => (
+                                            <button
+                                                key={search}
+                                                type="button"
+                                                onMouseDown={event => event.preventDefault()}
+                                                onClick={() => submitQuery(search)}
+                                                className="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-full border border-black/[0.08] px-2.5 text-xs text-neutral-600 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                            >
+                                                <span className="max-w-48 truncate">{search}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
                                 Explore a mood
                             </p>
@@ -276,7 +349,7 @@ const SearchBar = ({
                         </div>
                     )}
                     <div className="border-t border-black/[0.06] px-4 py-2 text-[10px] text-neutral-400">
-                        Use ↑ ↓ to browse · Enter to search
+                        Press / to search · Use ↑ ↓ to browse · Enter to search
                     </div>
                 </div>
             )}

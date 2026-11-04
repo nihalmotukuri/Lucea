@@ -47,6 +47,7 @@ const Search = () => {
   const onSearch = (searchTerm: string) => {
     const query = searchTerm.trim()
     if (!query) return
+    setSearchQuery(query)
     const nextParams = new URLSearchParams(searchParams)
     nextParams.set("query", query)
     nextParams.set("type", mediaType)
