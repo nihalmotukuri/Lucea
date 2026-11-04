@@ -1,9 +1,7 @@
-import { Routes, Route, BrowserRouter, useLocation } from 'react-router-dom'
+import { Routes, Route, BrowserRouter, Navigate, useLocation } from 'react-router-dom'
 import Navbar from "./components/layout/Navbar"
 import Home from './pages/home/Home'
 import Search from './pages/search/Search'
-import Explore from './pages/explore/Explore'
-import CollectionDetailPage from './pages/explore/CollectionDetailPage'
 import PhotoDetailModal from './components/media/PhotoDetailModal'
 import PhotoDetailPage from './pages/media-detail/PhotoDetailPage'
 import { ScrollToTop } from './components/features/ScrollToTop'
@@ -27,8 +25,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/t/:topicSlug" element={<Home />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/explore/:collectionId" element={<CollectionDetailPage />} />
+          <Route path="/explore/*" element={<Navigate to="/" replace />} />
           <Route path="/moodboards" element={<MoodboardsPage />} />
           <Route path="/moodboards/:moodboardId" element={<MoodboardsPage />} />
           <Route path="/photos/:photoId" element={<PhotoDetailPage />} />
