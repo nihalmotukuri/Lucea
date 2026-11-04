@@ -71,6 +71,6 @@ The client uses Supabase's PKCE flow and completes the code exchange at `/auth/c
 
 In Supabase Auth settings, also enable email/password if you want to retain password sign-in, and add local and deployed client URLs to the allowed redirect URLs.
 
-Run `npm run dev` in both `server/` and `client/` (two terminals). The Vite development server proxies `/api` requests to Express on port 3001. The frontend sends Pexels media requests, Gemini recommendations/image-keyword requests, and signed-in moodboard operations through this API. Pexels and Gemini endpoints are rate-limited. Guest moodboards remain in local storage and are merged into the signed-in account on first successful sync.
+Run `npm run dev` in both `server/` and `client/` (two terminals). The Vite development server proxies `/api` requests to Express on port 3001. The frontend sends Pexels media requests, Gemini recommendations/image-keyword requests, and moodboard operations through this API. Pexels and Gemini endpoints are rate-limited. Moodboards and bookmarks require a signed-in account and are loaded from and saved directly to Supabase; guests are prompted to sign in or create an account before accessing them.
 
 `GET /api/health` reports whether provider configuration is present. `GET /api/health/supabase`, `/api/health/pexels`, and `/api/health/gemini` check live provider connectivity. For production, deploy the Express server and configure `VITE_API_BASE_URL` in the client build to the API base URL including `/api`; set `CLIENT_ORIGIN` on the server to the deployed client origin(s).

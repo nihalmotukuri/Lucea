@@ -3,21 +3,13 @@ import axios from "axios"
 import type { Moodboard, MoodboardMedia } from "@/types/types"
 import { deleteCloudMoodboard, fetchMoodboards, saveMoodboard } from "@/api/moodboards"
 
-const guestStorageKey = "lucea-moodboards"
-const accountStorageKey = (userId: string) => `${guestStorageKey}:${userId}`
-
-interface PersistedMoodboards {
-    state?: { moodboards?: Moodboard[] }
-    moodboards?: Moodboard[]
-}
-
 interface MoodboardsState {
     moodboards: Moodboard[]
     accountId: string | null
     isSyncing: boolean
     isCloudSynced: boolean
     syncError: string | null
-    createMoodboard: (title: string) => string
+    createMoodboard: (title: string, media?: MoodboardMedia) => string | null
     addMedia: (moodboardId: string, media: MoodboardMedia) => void
     removeMedia: (moodboardId: string, mediaKey: string) => void
     deleteMoodboard: (moodboardId: string) => void
@@ -27,61 +19,12 @@ interface MoodboardsState {
 }
 
 let activeAccessToken: string | null = null
-const pendingDeletes = new Map<string, Set<string>>()
+const writeQueue = new Map<string, Promise<void>>()
+const pendingDeletes = new Set<string>()
 
-const readMoodboards = (key: string): Moodboard[] => {
-    try {
-        const raw = localStorage.getItem(key)
-        if (!raw) return []
-
-        const parsed: PersistedMoodboards = JSON.parse(raw)
-        const moodboards = parsed.state?.moodboards ?? parsed.moodboards
-        return Array.isArray(moodboards) ? moodboards : []
-    } catch (error) {
-        console.error(`Unable to load saved moodboards from ${key}:`, error)
-        return []
-    }
-}
-
-const writeMoodboards = (key: string, moodboards: Moodboard[]) => {
-    try {
-        localStorage.setItem(key, JSON.stringify({ state: { moodboards }, version: 0 }))
-    } catch (error) {
-        console.error("Unable to save moodboards locally:", error)
-        throw error
-    }
-}
-
-const mergeMoodboards = (...groups: Moodboard[][]) => {
-    const merged = new Map<string, Moodboard>()
-    for (const group of groups) {
-        for (const moodboard of group) {
-            const existing = merged.get(moodboard.id)
-            if (!existing) {
-                merged.set(moodboard.id, {
-                    ...moodboard,
-                    media: [...moodboard.media],
-                })
-                continue
-            }
-
-            const mediaByKey = new Map(existing.media.map(item => [item.key, item]))
-            for (const item of moodboard.media) {
-                if (!mediaByKey.has(item.key)) mediaByKey.set(item.key, item)
-            }
-            existing.media = [...mediaByKey.values()]
-        }
-    }
-    return [...merged.values()].sort((left, right) => left.createdAt - right.createdAt)
-}
-
-const persistForCurrentAccount = (accountId: string | null, moodboards: Moodboard[]) => {
-    writeMoodboards(accountId ? accountStorageKey(accountId) : guestStorageKey, moodboards)
-}
-
-const reportSyncError = (userId: string, error: unknown) => {
-    if (useMoodboards.getState().accountId !== userId) return
-    let message = error instanceof Error ? error.message : "Moodboard sync failed."
+const reportSyncError = (error: unknown, userId?: string) => {
+    if (userId && useMoodboards.getState().accountId !== userId) return
+    let message = error instanceof Error ? error.message : "Moodboard update failed."
     if (axios.isAxiosError(error)) {
         const response = error.response?.data as { error?: unknown; code?: unknown } | undefined
         const serverMessage = typeof response?.error === "string" ? response.error : null
@@ -99,84 +42,108 @@ const reportSyncError = (userId: string, error: unknown) => {
     useMoodboards.setState({ syncError: message, isCloudSynced: false })
 }
 
-const syncBoard = async (userId: string, accessToken: string, moodboard: Moodboard) => {
-    try {
-        await saveMoodboard(accessToken, moodboard)
-    } catch (error) {
-        reportSyncError(userId, error)
-        throw error
-    }
+const enqueueWrite = (key: string, userId: string, operation: () => Promise<void>) => {
+    const previous = writeQueue.get(key) ?? Promise.resolve()
+    const queued = previous.catch(() => undefined).then(operation)
+    writeQueue.set(key, queued)
+
+    void queued.then(
+        () => {
+            if (writeQueue.get(key) === queued) {
+                writeQueue.delete(key)
+                if (writeQueue.size === 0 && useMoodboards.getState().accountId === userId) {
+                    useMoodboards.setState({ isCloudSynced: true, syncError: null })
+                }
+            }
+        },
+        error => {
+            reportSyncError(error, userId)
+            if (writeQueue.get(key) === queued) writeQueue.delete(key)
+        },
+    )
+    return queued
 }
 
+const persistBoard = (userId: string, accessToken: string, moodboard: Moodboard) =>
+    enqueueWrite(moodboard.id, userId, async () => {
+        await saveMoodboard(accessToken, moodboard)
+        if (useMoodboards.getState().accountId === userId) {
+            pendingDeletes.delete(moodboard.id)
+        }
+    })
+
 export const useMoodboards = create<MoodboardsState>((set, get) => ({
-    moodboards: typeof window === "undefined" ? [] : readMoodboards(guestStorageKey),
+    moodboards: [],
     accountId: null,
     isSyncing: false,
     isCloudSynced: false,
     syncError: null,
-    createMoodboard: title => {
+    createMoodboard: (title, media) => {
+        const { accountId } = get()
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) return null
+
         const moodboard: Moodboard = {
             id: crypto.randomUUID(),
             title,
             createdAt: Date.now(),
-            media: [],
+            media: media ? [media] : [],
         }
-        const moodboards = [...get().moodboards, moodboard]
-        set({ moodboards })
-        persistForCurrentAccount(get().accountId, moodboards)
-
-        const { accountId } = get()
-        if (accountId && activeAccessToken) {
-            void syncBoard(accountId, activeAccessToken, moodboard).catch(() => undefined)
-        }
+        set(state => ({
+            moodboards: [...state.moodboards, moodboard],
+            isCloudSynced: false,
+            syncError: null,
+        }))
+        void persistBoard(accountId, accessToken, moodboard)
         return moodboard.id
     },
     addMedia: (moodboardId, media) => {
-        const moodboards = get().moodboards.map(moodboard =>
-            moodboard.id === moodboardId &&
-            !moodboard.media.some(item => item.key === media.key)
-                ? { ...moodboard, media: [...moodboard.media, media] }
-                : moodboard
-        )
-        set({ moodboards })
-        persistForCurrentAccount(get().accountId, moodboards)
+        const { accountId, moodboards } = get()
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) return
 
-        const { accountId } = get()
-        const updated = moodboards.find(item => item.id === moodboardId)
-        if (accountId && activeAccessToken && updated) {
-            void syncBoard(accountId, activeAccessToken, updated).catch(() => undefined)
-        }
+        const moodboard = moodboards.find(board => board.id === moodboardId)
+        if (!moodboard || moodboard.media.some(item => item.key === media.key)) return
+
+        const updated = { ...moodboard, media: [...moodboard.media, media] }
+        set(state => ({
+            moodboards: state.moodboards.map(board => board.id === moodboardId ? updated : board),
+            isCloudSynced: false,
+            syncError: null,
+        }))
+        void persistBoard(accountId, accessToken, updated)
     },
     removeMedia: (moodboardId, mediaKey) => {
-        const moodboards = get().moodboards.map(moodboard =>
-            moodboard.id === moodboardId
-                ? { ...moodboard, media: moodboard.media.filter(item => item.key !== mediaKey) }
-                : moodboard
-        )
-        set({ moodboards })
-        persistForCurrentAccount(get().accountId, moodboards)
+        const { accountId, moodboards } = get()
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) return
 
-        const { accountId } = get()
-        const updated = moodboards.find(item => item.id === moodboardId)
-        if (accountId && activeAccessToken && updated) {
-            void syncBoard(accountId, activeAccessToken, updated).catch(() => undefined)
-        }
+        const moodboard = moodboards.find(board => board.id === moodboardId)
+        if (!moodboard) return
+
+        const updated = { ...moodboard, media: moodboard.media.filter(item => item.key !== mediaKey) }
+        set(state => ({
+            moodboards: state.moodboards.map(board => board.id === moodboardId ? updated : board),
+            isCloudSynced: false,
+            syncError: null,
+        }))
+        void persistBoard(accountId, accessToken, updated)
     },
     deleteMoodboard: moodboardId => {
-        const moodboards = get().moodboards.filter(moodboard => moodboard.id !== moodboardId)
-        set({ moodboards })
-        persistForCurrentAccount(get().accountId, moodboards)
-
         const { accountId } = get()
-        const token = activeAccessToken
-        if (accountId && token) {
-            void deleteCloudMoodboard(token, moodboardId).catch(error => {
-                const deletedIds = pendingDeletes.get(accountId) ?? new Set<string>()
-                deletedIds.add(moodboardId)
-                pendingDeletes.set(accountId, deletedIds)
-                reportSyncError(accountId, error)
-            })
-        }
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) return
+
+        set(state => ({
+            moodboards: state.moodboards.filter(board => board.id !== moodboardId),
+            isCloudSynced: false,
+            syncError: null,
+        }))
+        pendingDeletes.add(moodboardId)
+        void enqueueWrite(moodboardId, accountId, async () => {
+            await deleteCloudMoodboard(accessToken, moodboardId)
+            pendingDeletes.delete(moodboardId)
+        })
     },
     syncWithAccount: async (userId, accessToken) => {
         if (get().accountId === userId && activeAccessToken) {
@@ -184,45 +151,32 @@ export const useMoodboards = create<MoodboardsState>((set, get) => ({
             return
         }
 
-        const guestMoodboards = get().accountId
-            ? readMoodboards(guestStorageKey)
-            : get().moodboards
-        const cachedAccountMoodboards = readMoodboards(accountStorageKey(userId))
         activeAccessToken = accessToken
         set({
             accountId: userId,
-            moodboards: mergeMoodboards(cachedAccountMoodboards, guestMoodboards),
+            moodboards: [],
             isSyncing: true,
             isCloudSynced: false,
             syncError: null,
         })
 
         try {
-            const remoteMoodboards = await fetchMoodboards(accessToken)
+            const moodboards = await fetchMoodboards(accessToken)
             if (get().accountId !== userId) return
-
-            const deletedIds = pendingDeletes.get(userId) ?? new Set<string>()
-            const moodboards = mergeMoodboards(remoteMoodboards, cachedAccountMoodboards, guestMoodboards)
-                .filter(moodboard => !deletedIds.has(moodboard.id))
-            set({ moodboards })
-            persistForCurrentAccount(userId, moodboards)
-            await Promise.all([...deletedIds].map(id => deleteCloudMoodboard(accessToken, id)))
-            pendingDeletes.delete(userId)
-            await Promise.all(moodboards.map(moodboard => saveMoodboard(accessToken, moodboard)))
-            if (get().accountId !== userId) return
-
-            localStorage.removeItem(guestStorageKey)
-            set({ isSyncing: false, isCloudSynced: true, syncError: null })
+            set({ moodboards, isSyncing: false, isCloudSynced: true, syncError: null })
         } catch (error) {
-            reportSyncError(userId, error)
-            if (get().accountId === userId) set({ isSyncing: false })
+            if (get().accountId !== userId) return
+            reportSyncError(error, userId)
+            set({ isSyncing: false })
         }
     },
     clearAccount: () => {
         activeAccessToken = null
+        pendingDeletes.clear()
+        writeQueue.clear()
         set({
+            moodboards: [],
             accountId: null,
-            moodboards: readMoodboards(guestStorageKey),
             isSyncing: false,
             isCloudSynced: false,
             syncError: null,
@@ -230,20 +184,37 @@ export const useMoodboards = create<MoodboardsState>((set, get) => ({
     },
     retrySync: async () => {
         const { accountId, moodboards } = get()
-        const token = activeAccessToken
-        if (!accountId || !token) return
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) return
 
         set({ isSyncing: true, syncError: null, isCloudSynced: false })
         try {
-            const deletedIds = pendingDeletes.get(accountId) ?? new Set<string>()
-            await Promise.all([...deletedIds].map(id => deleteCloudMoodboard(token, id)))
-            pendingDeletes.delete(accountId)
-            await Promise.all(moodboards.map(moodboard => saveMoodboard(token, moodboard)))
+            if (moodboards.length === 0 && pendingDeletes.size === 0) {
+                const remoteMoodboards = await fetchMoodboards(accessToken)
+                if (get().accountId === accountId) {
+                    set({
+                        moodboards: remoteMoodboards,
+                        isSyncing: false,
+                        isCloudSynced: true,
+                        syncError: null,
+                    })
+                }
+                return
+            }
+
+            await Promise.all([
+                ...[...pendingDeletes].map(id => enqueueWrite(id, accountId, async () => {
+                    await deleteCloudMoodboard(accessToken, id)
+                    pendingDeletes.delete(id)
+                })),
+                ...moodboards.map(moodboard => persistBoard(accountId, accessToken, moodboard)),
+            ])
             if (get().accountId === accountId) {
                 set({ isSyncing: false, isCloudSynced: true, syncError: null })
             }
         } catch (error) {
-            reportSyncError(accountId, error)
+            if (get().accountId !== accountId) return
+            reportSyncError(error, accountId)
             set({ isSyncing: false })
         }
     },

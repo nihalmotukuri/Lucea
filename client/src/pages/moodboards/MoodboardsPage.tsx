@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import Masonry, { ResponsiveMasonry, type MasonryProps } from "react-responsive-masonry"
-import { ArrowLeft, ArrowUpRight, Images, ImagePlus, LayoutGrid, Trash2, Video, X } from "lucide-react"
+import { ArrowLeft, ArrowUpRight, Images, ImagePlus, LayoutGrid, LockKeyhole, Trash2, Video, X } from "lucide-react"
 import type { Moodboard } from "@/types/types"
 import { useMoodboards } from "@/store/useMoodboards"
 import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
+import { useAuth } from "@/auth/useAuth"
 
 type MoodboardMediaFilter = "all" | "photos" | "videos"
 
@@ -147,6 +148,7 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
 const MoodboardsPage = () => {
     const { moodboardId } = useParams()
     const navigate = useNavigate()
+    const { user, isAuthLoading, openAuthDialog } = useAuth()
     const [title, setTitle] = useState("")
     const [createError, setCreateError] = useState("")
     const [moodboardToDelete, setMoodboardToDelete] = useState<Moodboard | null>(null)
@@ -154,7 +156,6 @@ const MoodboardsPage = () => {
     const moodboards = useMoodboards(state => state.moodboards)
     const accountId = useMoodboards(state => state.accountId)
     const isSyncing = useMoodboards(state => state.isSyncing)
-    const isCloudSynced = useMoodboards(state => state.isCloudSynced)
     const syncError = useMoodboards(state => state.syncError)
     const retrySync = useMoodboards(state => state.retrySync)
     const createMoodboard = useMoodboards(state => state.createMoodboard)
@@ -170,6 +171,40 @@ const MoodboardsPage = () => {
         setCreateError("")
         setMediaFilter("all")
     }, [moodboardId])
+
+    if (isAuthLoading || (user && (isSyncing || accountId !== user.id))) {
+        return (
+            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
+                <p className="inline-flex items-center gap-2 text-sm text-neutral-500" role="status">
+                    <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
+                    Loading your moodboards…
+                </p>
+            </section>
+        )
+    }
+
+    if (!user) {
+        return (
+            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
+                <div className="w-full max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm">
+                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700">
+                        <LockKeyhole size={20} aria-hidden="true" />
+                    </div>
+                    <h1 className="font-editorial mt-4 text-3xl text-neutral-700">Your moodboards</h1>
+                    <p className="mt-2 text-sm leading-6 text-neutral-500">
+                        Sign in or create an account to save bookmarks and access your moodboards across devices.
+                    </p>
+                    <button
+                        type="button"
+                        className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-neutral-900 px-5 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        onClick={() => openAuthDialog("Sign in to revisit and organize everything you have saved.")}
+                    >
+                        Sign in or create an account
+                    </button>
+                </div>
+            </section>
+        )
+    }
 
     const onCreateMoodboard = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -342,20 +377,11 @@ const MoodboardsPage = () => {
                     <h1 className="font-editorial text-4xl font-normal text-neutral-700 sm:text-[48px]">Moodboards</h1>
                     <p className="mt-1 text-xl text-neutral-800">Keep the things that move you.</p>
                     <p className="mt-2 text-sm text-neutral-500">Collect photos and videos for ideas you want to revisit.</p>
-                    <p className="mt-1 text-xs text-neutral-400">
-                        {accountId
-                            ? isCloudSynced
-                                ? "Synced to your account"
-                                : isSyncing
-                                    ? "Syncing your moodboards"
-                                    : "Saved to your account"
-                            : "Saved in this browser"}
-                    </p>
                 </header>
 
                 {accountId && syncError && (
                     <div className="mx-auto mt-5 flex max-w-xl flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
-                        <span>Moodboards couldn’t sync: {syncError}</span>
+                        <span>Moodboards couldn’t save: {syncError}</span>
                         <button
                             type="button"
                             disabled={isSyncing}
@@ -364,7 +390,7 @@ const MoodboardsPage = () => {
                             onClick={() => void retrySync()}
                         >
                             {isSyncing && <span aria-hidden="true" className="size-3 animate-spin rounded-full border-2 border-red-300 border-t-red-800" />}
-                            {isSyncing ? "Retrying…" : "Retry sync"}
+                            {isSyncing ? "Retrying…" : "Retry save"}
                         </button>
                     </div>
                 )}
@@ -391,9 +417,13 @@ const MoodboardsPage = () => {
                     <button
                         type="submit"
                         disabled={!title.trim()}
-                        className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:mt-0 sm:w-auto"
+                        className={`group mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold shadow-sm transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:mt-0 sm:w-auto ${
+                            title.trim()
+                                ? "bg-neutral-900 text-white hover:-translate-y-0.5 hover:bg-neutral-700 hover:shadow-md active:translate-y-0"
+                                : "cursor-not-allowed border border-[#e8dfd3] bg-[#f3eee7] text-[#927d67]"
+                        }`}
                     >
-                        <ImagePlus size={17} aria-hidden="true" /> Create board
+                        <ImagePlus size={17} className="transition-transform duration-200 group-hover:rotate-[-6deg] group-hover:scale-110" aria-hidden="true" /> Create board
                     </button>
                 </form>
 

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom"
 import { BookmarkCheck, BookmarkPlus, Check, X } from "lucide-react"
 import type { MoodboardMedia } from "@/types/types"
 import { useMoodboards } from "@/store/useMoodboards"
+import { useAuth } from "@/auth/useAuth"
 
 interface SaveToMoodboardButtonProps {
     media: MoodboardMedia
@@ -10,12 +11,15 @@ interface SaveToMoodboardButtonProps {
 }
 
 const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardButtonProps) => {
+    const { user, isAuthLoading, openAuthDialog } = useAuth()
     const [isOpen, setIsOpen] = useState(false)
     const [title, setTitle] = useState("")
     const [createError, setCreateError] = useState("")
     const [feedback, setFeedback] = useState("")
     const dialogRef = useRef<HTMLDialogElement>(null)
     const moodboards = useMoodboards(state => state.moodboards)
+    const accountId = useMoodboards(state => state.accountId)
+    const isSyncing = useMoodboards(state => state.isSyncing)
     const createMoodboard = useMoodboards(state => state.createMoodboard)
     const addMedia = useMoodboards(state => state.addMedia)
     const savedBoardCount = moodboards.filter(board => board.media.some(item => item.key === media.key)).length
@@ -44,8 +48,11 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
             return
         }
 
-        const moodboardId = createMoodboard(trimmedTitle)
-        addMedia(moodboardId, media)
+        const moodboardId = createMoodboard(trimmedTitle, media)
+        if (!moodboardId) {
+            setCreateError("Sign in to create a moodboard and save this item.")
+            return
+        }
         setFeedback(`Saved to ${trimmedTitle}`)
         setTitle("")
         setCreateError("")
@@ -56,13 +63,20 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
         <>
             <button
                 type="button"
+                disabled={isAuthLoading || (Boolean(user) && (isSyncing || !accountId))}
                 aria-label={savedBoardCount > 0 ? `Saved to ${savedBoardCount} moodboard${savedBoardCount === 1 ? "" : "s"}. Manage moodboards` : "Save to moodboard"}
-                title={savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
+                title={!user ? "Sign in to save this item" : savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
                 className={variant === "overlay"
                     ? "media-action absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                     : "inline-flex min-h-11 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 }
-                onClick={() => setIsOpen(true)}
+                onClick={() => {
+                    if (!user) {
+                        openAuthDialog("Create an account or sign in to keep this inspiration in your moodboards.")
+                        return
+                    }
+                    setIsOpen(true)
+                }}
             >
                 {savedBoardCount > 0
                     ? <BookmarkCheck size={18} aria-hidden="true" />

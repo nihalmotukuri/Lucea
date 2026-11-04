@@ -5,6 +5,10 @@ export interface AuthContextValue {
     user: User | null
     isAuthConfigured: boolean
     isAuthLoading: boolean
+    isAuthDialogOpen: boolean
+    authPrompt: string | null
+    openAuthDialog: (prompt?: string) => void
+    closeAuthDialog: () => void
     supabase: SupabaseClient | null
 }
 

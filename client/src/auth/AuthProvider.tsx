@@ -7,6 +7,8 @@ import { AuthContext, type AuthContextValue } from "./useAuth"
 const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [session, setSession] = useState<Session | null>(null)
     const [isAuthLoading, setIsAuthLoading] = useState(true)
+    const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false)
+    const [authPrompt, setAuthPrompt] = useState<string | null>(null)
 
     useEffect(() => {
         if (!supabase) {
@@ -49,8 +51,18 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         user: session?.user ?? null,
         isAuthConfigured: supabase !== null,
         isAuthLoading,
+        isAuthDialogOpen,
+        authPrompt,
+        openAuthDialog: (prompt?: string) => {
+            setAuthPrompt(prompt ?? null)
+            setIsAuthDialogOpen(true)
+        },
+        closeAuthDialog: () => {
+            setAuthPrompt(null)
+            setIsAuthDialogOpen(false)
+        },
         supabase,
-    }), [session, isAuthLoading])
+    }), [session, isAuthLoading, isAuthDialogOpen, authPrompt])
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
