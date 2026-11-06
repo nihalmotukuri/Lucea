@@ -151,7 +151,7 @@ export const MyProfilePage = () => {
                                         title: board.title,
                                         createdAt: board.createdAt,
                                         mediaCount: board.media.length,
-                                        preview: board.media[0] ?? null,
+                                        preview: board.media.slice(0, 3),
                                         handle: profileQuery.data?.handle ?? "",
                                         userId: user.id,
                                     }}
@@ -266,11 +266,15 @@ export const PublicMoodboardPage = () => {
                     </p>
                 </header>
                 {moodboard.media.length ? (
-                    <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
+                    <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
                         {moodboard.media.map(media => (
-                            <Link key={media.key} to={media.detailPath} className="mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-neutral-100">
-                                <img src={media.thumbnail} alt={media.alt} loading="lazy" className="h-auto w-full" />
-                                <span className="block truncate px-3 py-2 text-xs text-neutral-600">{media.creator}</span>
+                            <Link key={media.key} to={media.detailPath} className="group relative mb-3 block break-inside-avoid overflow-hidden rounded-3xl bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800">
+                                <img src={media.thumbnail} alt={media.alt} loading="lazy" className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.02]" />
+                                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/65 to-transparent" />
+                                <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 px-3.5 pb-3.5 text-xs text-white sm:px-4 sm:pb-4">
+                                    <span className="min-w-0 truncate font-medium">{media.creator}</span>
+                                    <span className="shrink-0 capitalize text-white/75">{media.type}</span>
+                                </span>
                             </Link>
                         ))}
                     </div>

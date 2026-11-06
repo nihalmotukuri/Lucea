@@ -74,7 +74,7 @@ export interface PublicMoodboardSummary {
   title: string;
   createdAt: number;
   mediaCount: number;
-  preview: MoodboardMedia | null;
+  preview: MoodboardMedia[];
   userId: string;
   handle: string;
 }

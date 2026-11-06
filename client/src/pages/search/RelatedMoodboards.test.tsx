@@ -12,7 +12,7 @@ vi.mock("@/api/moodboards", () => ({
         title: "Warm interiors",
         createdAt: 1,
         mediaCount: 1,
-        preview: {
+        preview: [{
             key: "photo-1",
             type: "photo",
             id: 1,
@@ -20,7 +20,7 @@ vi.mock("@/api/moodboards", () => ({
             thumbnail: "https://images.pexels.com/photo.jpg",
             alt: "Warm room",
             creator: "Photographer",
-        },
+        }],
         userId: "user-1",
         handle: "ramesh_gupta",
     }]),
@@ -41,8 +41,8 @@ describe("RelatedMoodboards", () => {
         )
 
         expect(await screen.findByRole("heading", { name: "Related moodboards" })).toBeTruthy()
-        expect((await screen.findByRole("link", { name: "ramesh_gupta" })).getAttribute("href")).toBe("/profiles/ramesh_gupta")
-        expect(screen.getByRole("link", { name: "Warm interiors 1 item" }).getAttribute("href")).toBe("/profiles/ramesh_gupta/boards/11111111-1111-4111-8111-111111111111")
+        expect((await screen.findByRole("link", { name: "by ramesh_gupta" })).getAttribute("href")).toBe("/profiles/ramesh_gupta")
+        expect(screen.getByRole("link", { name: "Warm interiors, 1 saved item" }).getAttribute("href")).toBe("/profiles/ramesh_gupta/boards/11111111-1111-4111-8111-111111111111")
         queryClient.clear()
     })
 })

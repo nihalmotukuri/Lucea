@@ -61,7 +61,7 @@ const serializePublicMoodboardSummary = (board, handle) => ({
     title: board.title,
     createdAt: new Date(board.created_at).getTime(),
     mediaCount: board.media.length,
-    preview: board.media[0] ?? null,
+    preview: board.media.slice(0, 3),
     userId: board.user_id,
     handle,
 })
