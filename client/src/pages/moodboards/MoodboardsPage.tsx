@@ -514,13 +514,9 @@ const MoodboardsPage = () => {
                     <button
                         type="submit"
                         disabled={!title.trim()}
-                        className={`group mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold shadow-sm transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:mt-0 sm:w-auto ${
-                            title.trim()
-                                ? "bg-neutral-900 text-white hover:-translate-y-0.5 hover:bg-neutral-700 hover:shadow-md active:translate-y-0"
-                                : "cursor-not-allowed border border-[#e8dfd3] bg-[#f3eee7] text-[#927d67]"
-                        }`}
+                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-gradient-to-r from-neutral-900 via-neutral-800 to-indigo-900 px-4 text-sm font-medium text-white shadow-[0_3px_10px_rgba(30,27,75,0.16)] transition duration-200 hover:-translate-y-px hover:from-neutral-800 hover:via-indigo-900 hover:to-violet-900 hover:shadow-[0_5px_14px_rgba(30,27,75,0.22)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-none disabled:from-[#e8e4de] disabled:via-[#e8e4de] disabled:to-[#e8e4de] disabled:text-neutral-600 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700 sm:mt-0 sm:w-auto"
                     >
-                        <ImagePlus size={17} className="transition-transform duration-200 group-hover:rotate-[-6deg] group-hover:scale-110" aria-hidden="true" /> Create board
+                        <ImagePlus size={17} aria-hidden="true" /> Create board
                     </button>
                 </form>
 

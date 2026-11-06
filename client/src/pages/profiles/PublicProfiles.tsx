@@ -113,7 +113,7 @@ export const MyProfilePage = () => {
                         <button
                             type="submit"
                             disabled={saveProfile.isPending || !handlePattern.test(handle.trim().toLowerCase())}
-                            className="min-h-11 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[13px] bg-gradient-to-r from-neutral-900 via-neutral-800 to-indigo-900 px-4 text-sm font-medium text-white shadow-[0_3px_10px_rgba(30,27,75,0.16)] transition duration-200 hover:-translate-y-px hover:from-neutral-800 hover:via-indigo-900 hover:to-violet-900 hover:shadow-[0_5px_14px_rgba(30,27,75,0.22)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-none disabled:from-[#e8e4de] disabled:via-[#e8e4de] disabled:to-[#e8e4de] disabled:text-neutral-600 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700"
                         >
                             {saveProfile.isPending ? "Saving…" : profileQuery.data ? "Save handle" : "Create profile"}
                         </button>
@@ -262,9 +262,6 @@ export const PublicMoodboardPage = () => {
     return (
         <section className={surfaceClass}>
             <div className="mx-auto max-w-6xl">
-                <Link to={`/profiles/${encodeURIComponent(moodboard.handle)}`} className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
-                    <ArrowLeft size={15} aria-hidden="true" /> Back to profile
-                </Link>
                 <header className="my-6 border-b border-black/[0.08] pb-5 text-center">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Public moodboard</p>
                     <h1 className="font-editorial mt-1 break-words text-4xl text-neutral-800">{moodboard.title}</h1>
