@@ -61,4 +61,26 @@ export interface Moodboard {
   title: string;
   createdAt: number;
   media: MoodboardMedia[];
+  isPublic: boolean;
+}
+
+export interface PublicMoodboard extends Moodboard {
+  userId: string;
+  handle: string;
+}
+
+export interface PublicMoodboardSummary {
+  id: string;
+  title: string;
+  createdAt: number;
+  mediaCount: number;
+  preview: MoodboardMedia | null;
+  userId: string;
+  handle: string;
+}
+
+export interface PublicProfile {
+  userId: string;
+  handle: string;
+  moodboards: PublicMoodboardSummary[];
 }

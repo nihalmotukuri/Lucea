@@ -3,6 +3,7 @@ import type { SupabaseClient, User } from "@supabase/supabase-js"
 
 export interface AuthContextValue {
     user: User | null
+    accessToken: string | null
     isAuthConfigured: boolean
     isAuthLoading: boolean
     isAuthDialogOpen: boolean

@@ -1,4 +1,5 @@
-import { Routes, Route, BrowserRouter, Navigate, useLocation } from 'react-router-dom'
+import { lazy, Suspense } from "react"
+import { Routes, Route, BrowserRouter, Navigate, useLocation, Link } from 'react-router-dom'
 import Navbar from "./components/layout/Navbar"
 import Home from './pages/home/Home'
 import Search from './pages/search/Search'
@@ -10,6 +11,28 @@ import VideoDetailModal from './components/media/VideoDetailModal'
 import MoodboardsPage from './pages/moodboards/MoodboardsPage'
 import AuthProvider from './auth/AuthProvider'
 import AuthCallback from './auth/AuthCallback'
+
+const MyProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.MyProfilePage })))
+const PublicMoodboardPage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicMoodboardPage })))
+const PublicProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicProfilePage })))
+
+function NotFound() {
+  return (
+    <section className="flex min-h-[65vh] flex-col items-center justify-center px-6 text-center">
+      <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-400">404 / Lost in the field</p>
+      <h1 className="mt-3 font-editorial text-3xl text-neutral-800">This page isn’t here.</h1>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-neutral-500">
+        The link may be out of date, or the page may have moved.
+      </p>
+      <Link
+        to="/"
+        className="mt-6 inline-flex min-h-10 items-center rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+      >
+        Back to explore
+      </Link>
+    </section>
+  )
+}
 
 function App() {
   const location = useLocation()
@@ -28,8 +51,12 @@ function App() {
           <Route path="/explore/*" element={<Navigate to="/" replace />} />
           <Route path="/moodboards" element={<MoodboardsPage />} />
           <Route path="/moodboards/:moodboardId" element={<MoodboardsPage />} />
+          <Route path="/profile" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading your profile…</p>}><MyProfilePage /></Suspense>} />
+          <Route path="/profiles/:handle/boards/:moodboardId" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading moodboard…</p>}><PublicMoodboardPage /></Suspense>} />
+          <Route path="/profiles/:handle" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading profile…</p>}><PublicProfilePage /></Suspense>} />
           <Route path="/photos/:photoId" element={<PhotoDetailPage />} />
           <Route path="/videos/:videoId" element={<VideoDetailPage />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
         {state?.photoBackgroundLocation && (

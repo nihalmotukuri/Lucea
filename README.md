@@ -25,6 +25,10 @@ Copy `server/.env.example` to `server/.env` and set `SUPABASE_URL`, `SUPABASE_PU
 
 For browser sign-in, copy `client/.env.example` to `client/.env` and set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` from the matching Supabase project. The publishable key is intended for browser use; the secret key is not. Apply `server/supabase/migrations/202611040001_moodboards.sql` in the Supabase SQL editor before using cloud moodboards.
 
+### Public profiles and moodboards
+
+Apply `server/supabase/migrations/202611060001_public_moodboards.sql` after the moodboards migration to enable public profiles and per-board visibility. Moodboards remain private by default. Signed-in users can choose a unique 3–30 character handle at `/profile`, then publish individual boards from their moodboard page. Public profile links use `/profiles/<handle>` and board links use `/profiles/<handle>/boards/<id>`. Only published boards appear in profile pages and related search results; the public API returns the profile handle and user ID, never account email addresses.
+
 ### Daily discovery topics
 
 The topic strip is backed by one replaceable `daily_topics` row. Supabase Cron runs a Supabase Edge Function once a day at **00:00 UTC**; the function asks Gemini for 10 fresh topics and replaces the row only after validating the complete response. If generation fails, the previously published topics remain in place. The existing topic list is seeded as the initial set. The client refreshes topics periodically and keeps its last loaded set if Supabase is temporarily unavailable.
@@ -71,6 +75,23 @@ The client uses Supabase's PKCE flow and completes the code exchange at `/auth/c
 
 In Supabase Auth settings, also enable email/password if you want to retain password sign-in, and add local and deployed client URLs to the allowed redirect URLs.
 
-Run `npm run dev` in both `server/` and `client/` (two terminals). The Vite development server proxies `/api` requests to Express on port 3001. The frontend sends Pexels media requests, Gemini recommendations/image-keyword requests, and moodboard operations through this API. Pexels and Gemini endpoints are rate-limited. Moodboards and bookmarks require a signed-in account and are loaded from and saved directly to Supabase; guests are prompted to sign in or create an account before accessing them.
+Run `npm run dev` in both `server/` and `client/` (two terminals). The Vite development server proxies `/api` requests to Express on port 3001. The frontend sends Pexels media requests, Gemini recommendations/image-keyword requests, public moodboard discovery, profile updates, and private moodboard operations through this API. Pexels and Gemini endpoints are rate-limited. Managing moodboards and profiles requires a signed-in account; public profiles and explicitly published boards are viewable without signing in.
 
-`GET /api/health` reports whether provider configuration is present. `GET /api/health/supabase`, `/api/health/pexels`, and `/api/health/gemini` check live provider connectivity. For production, deploy the Express server and configure `VITE_API_BASE_URL` in the client build to the API base URL including `/api`; set `CLIENT_ORIGIN` on the server to the deployed client origin(s).
+`GET /api/health` reports whether provider configuration is present. `GET /api/health/ready` reports API and rate-limit-store readiness. `GET /api/health/supabase`, `/api/health/pexels`, and `/api/health/gemini` check live provider connectivity. For production, deploy the Express server and configure `VITE_API_BASE_URL` in the client build to the API base URL including `/api`; set `CLIENT_ORIGIN` on the server to the deployed client origin(s).
+
+## CI, production, and release checks
+
+GitHub Actions runs the client tests, lint, production build, and server API tests for pull requests and pushes to `main`. Run the same checks locally with `npm test`, `npm run lint`, and `npm run build` in `client/`, and `npm test` in `server/`.
+
+The API uses per-process in-memory rate limits during local development. In production, configure `RATE_LIMIT_REDIS_URL` with a private Redis service URL (`rediss://` is recommended for managed services). All API replicas must use the same Redis service so rate limits are shared. Production startup fails without Redis unless `RATE_LIMIT_STORE=memory` is explicitly set; that opt-in is suitable only for a deliberate single-instance deployment, and startup logs a warning.
+
+Set `TRUST_PROXY_HOPS` to the exact number of trusted reverse proxies between clients and the API (usually `1` behind one ingress/load balancer; use `0` when the API is directly exposed). Do not enable broad proxy trust or forward client-provided `X-Forwarded-For` values through an untrusted proxy: this setting determines the client IP used by rate limiting. Set `NODE_ENV=production`, `CLIENT_ORIGIN` to the deployed frontend origin(s), and the server provider credentials in the API host's secret manager.
+
+Before promoting a release, apply and verify the SQL migrations in `server/supabase/migrations/` in staging and production. Keep the remote Supabase migration history in sync: if a migration was already applied manually, reconcile its history with the Supabase CLI before using `supabase db push`, rather than applying it twice. After deploying the API and migrations, run the staging/production smoke checks:
+
+```sh
+cd server
+SMOKE_API_BASE_URL=https://<api-domain>/api npm run smoke
+```
+
+The smoke check verifies API and Redis readiness, live Pexels and Gemini connectivity, Supabase connectivity, and that the moodboards and public-profile migrations are ready. Run it against staging before promotion and against production after deployment; configure the host's normal uptime/error monitoring to alert on failed checks and provider outages.

@@ -9,6 +9,7 @@ import SearchFilterDropdown from "@/components/features/SearchFilterDropdown"
 import type { SearchFilterOption } from "@/components/features/SearchFilterDropdown"
 import { ArrowDownWideNarrow, ArrowUpNarrowWide, RectangleHorizontal, RectangleVertical, Sparkles, Square } from "lucide-react"
 import Suggestions from "@/pages/home/Suggestions"
+import RelatedMoodboards from "./RelatedMoodboards"
 
 const orientationOptions: SearchFilterOption[] = [
   { value: "all", label: "Any shape", description: "Show every orientation", icon: Square },
@@ -152,6 +153,8 @@ const Search = () => {
           </div>
         )}
       </section>
+
+      <RelatedMoodboards query={urlQuery} />
 
       {mediaType === 'videos'
         ? <VideoSearch searchQuery={urlQuery} orientation={orientation} sortOrder={sortOrder} />

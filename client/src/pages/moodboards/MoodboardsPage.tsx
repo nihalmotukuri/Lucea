@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import Masonry, { ResponsiveMasonry, type MasonryProps } from "react-responsive-masonry"
-import { ArrowLeft, ArrowUpRight, Images, ImagePlus, LayoutGrid, LockKeyhole, Trash2, Video, X } from "lucide-react"
+import { useQuery } from "@tanstack/react-query"
+import { ArrowLeft, ArrowUpRight, Copy, Globe2, Images, ImagePlus, LayoutGrid, LockKeyhole, Trash2, Video, X } from "lucide-react"
 import type { Moodboard } from "@/types/types"
 import { useMoodboards } from "@/store/useMoodboards"
 import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
 import { useAuth } from "@/auth/useAuth"
+import { getOwnProfile } from "@/api/moodboards"
 
 type MoodboardMediaFilter = "all" | "photos" | "videos"
 
@@ -82,7 +84,7 @@ const DeleteMoodboardDialog = ({ moodboard, onCancel, onConfirm }: DeleteMoodboa
                 </div>
                 <h2 id="delete-moodboard-title" className="text-xl font-semibold">Delete this moodboard?</h2>
                 <p id="delete-moodboard-description" className="mt-2 text-sm leading-6 text-neutral-600">
-                    <span className="font-medium text-neutral-800">{moodboard.title}</span> and its {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"} will be permanently removed from this browser.
+                    <span className="font-medium text-neutral-800">{moodboard.title}</span> and its {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"} will be permanently removed from your account. Any public link will stop working.
                 </p>
                 <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <button
@@ -148,20 +150,28 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
 const MoodboardsPage = () => {
     const { moodboardId } = useParams()
     const navigate = useNavigate()
-    const { user, isAuthLoading, openAuthDialog } = useAuth()
+    const { user, accessToken, isAuthLoading, openAuthDialog } = useAuth()
     const [title, setTitle] = useState("")
     const [createError, setCreateError] = useState("")
     const [moodboardToDelete, setMoodboardToDelete] = useState<Moodboard | null>(null)
     const [mediaFilter, setMediaFilter] = useState<MoodboardMediaFilter>("all")
+    const [shareMessage, setShareMessage] = useState("")
+    const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false)
     const moodboards = useMoodboards(state => state.moodboards)
     const accountId = useMoodboards(state => state.accountId)
     const isSyncing = useMoodboards(state => state.isSyncing)
     const syncError = useMoodboards(state => state.syncError)
     const retrySync = useMoodboards(state => state.retrySync)
+    const setMoodboardVisibility = useMoodboards(state => state.setMoodboardVisibility)
     const createMoodboard = useMoodboards(state => state.createMoodboard)
     const removeMedia = useMoodboards(state => state.removeMedia)
     const deleteMoodboard = useMoodboards(state => state.deleteMoodboard)
     const moodboard = moodboards.find(item => item.id === moodboardId)
+    const profileQuery = useQuery({
+        queryKey: ["own-profile", user?.id],
+        queryFn: () => getOwnProfile(accessToken!),
+        enabled: Boolean(user && accessToken),
+    })
     const visibleMedia = moodboard?.media.filter(media =>
         mediaFilter === "all" || media.type === (mediaFilter === "photos" ? "photo" : "video")
     ) ?? []
@@ -170,6 +180,7 @@ const MoodboardsPage = () => {
         setTitle("")
         setCreateError("")
         setMediaFilter("all")
+        setShareMessage("")
     }, [moodboardId])
 
     if (isAuthLoading || (user && (isSyncing || accountId !== user.id))) {
@@ -229,6 +240,31 @@ const MoodboardsPage = () => {
         if (isCurrentMoodboard) navigate("/moodboards")
     }
 
+    const toggleVisibility = async () => {
+        if (!moodboard) return
+        setIsUpdatingVisibility(true)
+        setShareMessage("")
+        try {
+            await setMoodboardVisibility(moodboard.id, !moodboard.isPublic)
+        } catch (error) {
+            setShareMessage(error instanceof Error ? error.message : "Unable to update moodboard visibility.")
+        } finally {
+            setIsUpdatingVisibility(false)
+        }
+    }
+
+    const copyPublicLink = async () => {
+        if (!moodboard || !profileQuery.data?.handle) return
+        const publicPath = `/profiles/${encodeURIComponent(profileQuery.data.handle)}/boards/${encodeURIComponent(moodboard.id)}`
+        try {
+            if (!navigator.clipboard) throw new Error("Clipboard access is unavailable in this browser.")
+            await navigator.clipboard.writeText(new URL(publicPath, window.location.origin).toString())
+            setShareMessage("Public link copied.")
+        } catch (error) {
+            setShareMessage(error instanceof Error ? error.message : "Could not copy the public link.")
+        }
+    }
+
     if (moodboardId && !moodboard) {
         return (
             <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
@@ -269,6 +305,70 @@ const MoodboardsPage = () => {
                         <Trash2 size={16} aria-hidden="true" /> Delete
                     </button>
                 </div>
+
+                <section aria-label="Moodboard sharing" className="mb-6 rounded-2xl border border-black/[0.08] bg-white p-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
+                    <div className="flex items-start gap-3">
+                        {moodboard.isPublic
+                            ? <Globe2 size={18} className="mt-0.5 shrink-0 text-emerald-700" aria-hidden="true" />
+                            : <LockKeyhole size={18} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                        }
+                        <div>
+                            <h2 className="text-sm font-medium">{moodboard.isPublic ? "Public moodboard" : "Private moodboard"}</h2>
+                            <p className="mt-1 text-xs leading-5 text-neutral-500">
+                                {moodboard.isPublic
+                                    ? "Anyone with the link can view this board and it may appear in related search results."
+                                    : "Only you can see this board. Publishing makes it visible on your profile and in related searches."
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div className="mt-3 flex shrink-0 flex-wrap gap-2 sm:mt-0">
+                        {profileQuery.data?.handle ? (
+                            <>
+                                <button
+                                    type="button"
+                                    disabled={isUpdatingVisibility || profileQuery.isPending}
+                                    onClick={() => void toggleVisibility()}
+                                    className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04] disabled:cursor-wait disabled:opacity-60"
+                                >
+                                    {moodboard.isPublic ? <LockKeyhole size={14} aria-hidden="true" /> : <Globe2 size={14} aria-hidden="true" />}
+                                    {isUpdatingVisibility ? "Updating…" : moodboard.isPublic ? "Make private" : "Publish board"}
+                                </button>
+                                {moodboard.isPublic && (
+                                    <button
+                                        type="button"
+                                        onClick={() => void copyPublicLink()}
+                                        className="inline-flex min-h-9 items-center gap-2 rounded-lg bg-neutral-900 px-3 text-xs font-medium text-white hover:bg-neutral-700"
+                                    >
+                                        <Copy size={14} aria-hidden="true" /> Copy link
+                                    </button>
+                                )}
+                            </>
+                        ) : (
+                            <Link
+                                to="/profile"
+                                className="inline-flex min-h-9 items-center rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04]"
+                            >
+                                {profileQuery.isError ? "Profile unavailable — retry" : "Choose a profile handle"}
+                            </Link>
+                        )}
+                    </div>
+                    {shareMessage && <p className="mt-3 basis-full text-xs text-neutral-600" role="status">{shareMessage}</p>}
+                </section>
+
+                {accountId && syncError && (
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                        <span>Moodboard changes may not be saved: {syncError}</span>
+                        <button
+                            type="button"
+                            disabled={isSyncing}
+                            onClick={() => void retrySync()}
+                            className="min-h-9 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium disabled:opacity-60"
+                        >
+                            {isSyncing ? "Retrying…" : "Retry save"}
+                        </button>
+                    </div>
+                )}
 
                 {moodboard.media.length > 0 && (
                     <div className="mb-5 flex flex-wrap items-center justify-between gap-3">

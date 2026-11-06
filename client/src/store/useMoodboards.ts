@@ -12,6 +12,7 @@ interface MoodboardsState {
     createMoodboard: (title: string, media?: MoodboardMedia) => string | null
     addMedia: (moodboardId: string, media: MoodboardMedia) => void
     removeMedia: (moodboardId: string, mediaKey: string) => void
+    setMoodboardVisibility: (moodboardId: string, isPublic: boolean) => Promise<void>
     deleteMoodboard: (moodboardId: string) => void
     syncWithAccount: (userId: string, accessToken: string) => Promise<void>
     clearAccount: () => void
@@ -88,6 +89,7 @@ export const useMoodboards = create<MoodboardsState>((set, get) => ({
             title,
             createdAt: Date.now(),
             media: media ? [media] : [],
+            isPublic: false,
         }
         set(state => ({
             moodboards: [...state.moodboards, moodboard],
@@ -128,6 +130,34 @@ export const useMoodboards = create<MoodboardsState>((set, get) => ({
             syncError: null,
         }))
         void persistBoard(accountId, accessToken, updated)
+    },
+    setMoodboardVisibility: async (moodboardId, isPublic) => {
+        const { accountId, moodboards } = get()
+        const accessToken = activeAccessToken
+        if (!accountId || !accessToken) throw new Error("Sign in to change moodboard visibility.")
+
+        const moodboard = moodboards.find(board => board.id === moodboardId)
+        if (!moodboard) throw new Error("Moodboard not found.")
+        if (moodboard.isPublic === isPublic) return
+
+        const updated = { ...moodboard, isPublic }
+        set(state => ({
+            moodboards: state.moodboards.map(board => board.id === moodboardId ? updated : board),
+            isCloudSynced: false,
+            syncError: null,
+        }))
+        try {
+            await persistBoard(accountId, accessToken, updated)
+        } catch (error) {
+            if (get().accountId === accountId) {
+                set(state => ({
+                    moodboards: state.moodboards.map(board =>
+                        board.id === moodboardId && board.isPublic === isPublic ? moodboard : board
+                    ),
+                }))
+            }
+            throw error
+        }
     },
     deleteMoodboard: moodboardId => {
         const { accountId } = get()

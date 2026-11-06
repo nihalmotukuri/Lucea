@@ -49,6 +49,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const value = useMemo<AuthContextValue>(() => ({
         user: session?.user ?? null,
+        accessToken: session?.access_token ?? null,
         isAuthConfigured: supabase !== null,
         isAuthLoading,
         isAuthDialogOpen,

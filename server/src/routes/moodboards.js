@@ -6,11 +6,11 @@ const router = Router()
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const mediaTypes = new Set(["photo", "video"])
 
-const isHttpUrl = value => {
+const isPexelsImageUrl = value => {
     if (typeof value !== "string" || value.length > 2048) return false
     try {
         const url = new URL(value)
-        return url.protocol === "https:" || url.protocol === "http:"
+        return url.protocol === "https:" && url.hostname === "images.pexels.com"
     } catch {
         return false
     }
@@ -23,6 +23,9 @@ const validateMoodboard = value => {
         return "Moodboard title must contain 1 to 60 characters."
     }
     if (!Number.isFinite(value.createdAt) || value.createdAt < 0) return "Moodboard creation time is invalid."
+    if (value.isPublic !== undefined && typeof value.isPublic !== "boolean") {
+        return "Moodboard visibility must be public or private."
+    }
     if (!Array.isArray(value.media) || value.media.length > 500) {
         return "Moodboard media must be a list of at most 500 items."
     }
@@ -33,9 +36,8 @@ const validateMoodboard = value => {
             typeof item.key !== "string" || item.key.length > 100 ||
             !mediaTypes.has(item.type) ||
             !Number.isSafeInteger(item.id) || item.id < 0 ||
-            typeof item.detailPath !== "string" || item.detailPath.length > 300 ||
-            !item.detailPath.startsWith("/") || item.detailPath.startsWith("//") ||
-            !isHttpUrl(item.thumbnail) ||
+            item.detailPath !== `/${item.type === "photo" ? "photos" : "videos"}/${item.id}` ||
+            !isPexelsImageUrl(item.thumbnail) ||
             typeof item.alt !== "string" || item.alt.length > 500 ||
             typeof item.creator !== "string" || item.creator.length > 200
         ) {
@@ -46,7 +48,214 @@ const validateMoodboard = value => {
     return null
 }
 
+const serializeMoodboard = board => ({
+    id: board.id,
+    title: board.title,
+    createdAt: new Date(board.created_at).getTime(),
+    media: board.media,
+    isPublic: board.is_public,
+})
+
+const serializePublicMoodboardSummary = (board, handle) => ({
+    id: board.id,
+    title: board.title,
+    createdAt: new Date(board.created_at).getTime(),
+    mediaCount: board.media.length,
+    preview: board.media[0] ?? null,
+    userId: board.user_id,
+    handle,
+})
+
+const publicProfileFields = "user_id, handle"
+const publicMoodboardFields = "id, user_id, title, created_at, media, is_public"
+const handlePattern = /^[a-z0-9_]{3,30}$/
+
+router.get("/public/search", async (request, response, next) => {
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+
+    const query = typeof request.query.q === "string" ? request.query.q.trim() : ""
+    if (query.length < 2 || query.length > 60) {
+        response.status(400).json({ error: "Search query must contain 2 to 60 characters." })
+        return
+    }
+
+    try {
+        const { data: boards, error: boardsError } = await getSupabaseClient()
+            .from("moodboards")
+            .select(publicMoodboardFields)
+            .eq("is_public", true)
+            .ilike("title", `%${query}%`)
+            .order("created_at", { ascending: false })
+            .limit(12)
+        if (boardsError) throw boardsError
+
+        const userIds = [...new Set(boards.map(board => board.user_id))]
+        const { data: profiles, error: profilesError } = userIds.length
+            ? await getSupabaseClient()
+                .from("public_profiles")
+                .select(publicProfileFields)
+                .in("user_id", userIds)
+            : { data: [], error: null }
+        if (profilesError) throw profilesError
+
+        const handlesByUserId = new Map(profiles.map(profile => [profile.user_id, profile.handle]))
+        response.json({
+            moodboards: boards
+                .filter(board => handlesByUserId.has(board.user_id))
+                .map(board => serializePublicMoodboardSummary(board, handlesByUserId.get(board.user_id))),
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.get("/public/profiles/:handle", async (request, response, next) => {
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+    if (!handlePattern.test(request.params.handle)) {
+        response.status(400).json({ error: "Profile handle is invalid." })
+        return
+    }
+
+    try {
+        const supabase = getSupabaseClient()
+        const { data: profile, error: profileError } = await supabase
+            .from("public_profiles")
+            .select(publicProfileFields)
+            .eq("handle", request.params.handle)
+            .maybeSingle()
+        if (profileError) throw profileError
+        if (!profile) {
+            response.status(404).json({ error: "This profile could not be found." })
+            return
+        }
+
+        const { data: boards, error: boardsError } = await supabase
+            .from("moodboards")
+            .select(publicMoodboardFields)
+            .eq("user_id", profile.user_id)
+            .eq("is_public", true)
+            .order("created_at", { ascending: false })
+        if (boardsError) throw boardsError
+
+        response.json({
+            profile: {
+                userId: profile.user_id,
+                handle: profile.handle,
+                moodboards: boards.map(board => serializePublicMoodboardSummary(board, profile.handle)),
+            },
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.get("/public/profiles/:handle/boards/:id", async (request, response, next) => {
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+    if (!handlePattern.test(request.params.handle) || !uuidPattern.test(request.params.id)) {
+        response.status(400).json({ error: "Profile handle or moodboard ID is invalid." })
+        return
+    }
+
+    try {
+        const supabase = getSupabaseClient()
+        const { data: profile, error: profileError } = await supabase
+            .from("public_profiles")
+            .select(publicProfileFields)
+            .eq("handle", request.params.handle)
+            .maybeSingle()
+        if (profileError) throw profileError
+        if (!profile) {
+            response.status(404).json({ error: "This profile could not be found." })
+            return
+        }
+
+        const { data: board, error: boardError } = await supabase
+            .from("moodboards")
+            .select(publicMoodboardFields)
+            .eq("id", request.params.id)
+            .eq("user_id", profile.user_id)
+            .eq("is_public", true)
+            .maybeSingle()
+        if (boardError) throw boardError
+        if (!board) {
+            response.status(404).json({ error: "This public moodboard could not be found." })
+            return
+        }
+
+        response.json({
+            moodboard: {
+                ...serializeMoodboard(board),
+                userId: board.user_id,
+                handle: profile.handle,
+            },
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.use(requireUser)
+
+router.get("/profile", async (request, response, next) => {
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+
+    try {
+        const { data, error } = await getSupabaseClient()
+            .from("public_profiles")
+            .select(publicProfileFields)
+            .eq("user_id", request.user.id)
+            .maybeSingle()
+        if (error) throw error
+
+        response.json({
+            profile: data ? { userId: data.user_id, handle: data.handle } : null,
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.put("/profile", async (request, response, next) => {
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+
+    const handle = typeof request.body?.handle === "string" ? request.body.handle.trim().toLowerCase() : ""
+    if (!handlePattern.test(handle)) {
+        response.status(400).json({ error: "Handle must be 3 to 30 characters using lowercase letters, numbers, or underscores." })
+        return
+    }
+
+    try {
+        const { data, error } = await getSupabaseClient()
+            .from("public_profiles")
+            .upsert({ user_id: request.user.id, handle }, { onConflict: "user_id" })
+            .select(publicProfileFields)
+            .single()
+        if (error?.code === "23505") {
+            response.status(409).json({ error: "That handle is already taken. Try another one." })
+            return
+        }
+        if (error) throw error
+
+        response.json({ profile: { userId: data.user_id, handle: data.handle } })
+    } catch (error) {
+        next(error)
+    }
+})
 
 router.get("/", async (request, response, next) => {
     if (!isSupabaseConfigured()) {
@@ -57,18 +266,13 @@ router.get("/", async (request, response, next) => {
     try {
         const { data, error } = await getSupabaseClient()
             .from("moodboards")
-            .select("id, title, created_at, media")
+            .select("id, title, created_at, media, is_public")
             .eq("user_id", request.user.id)
             .order("created_at", { ascending: false })
         if (error) throw error
 
         response.json({
-            moodboards: data.map(board => ({
-                id: board.id,
-                title: board.title,
-                createdAt: new Date(board.created_at).getTime(),
-                media: board.media,
-            })),
+            moodboards: data.map(serializeMoodboard),
         })
     } catch (error) {
         next(error)
@@ -97,6 +301,7 @@ router.post("/", async (request, response, next) => {
                 title: moodboard.title.trim(),
                 created_at: new Date(moodboard.createdAt).toISOString(),
                 media: moodboard.media,
+                is_public: moodboard.isPublic ?? false,
             }, { onConflict: "user_id,id" })
         if (error) throw error
 
