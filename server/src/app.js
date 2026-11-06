@@ -151,7 +151,26 @@ app.get("/api/health/supabase", healthCheckLimiter, async (_request, response, n
         }
         if (profileSchemaError) throw profileSchemaError
 
-        response.json({ status: "connected", moodboards: "ready", profiles: "ready" })
+        const { error: searchSchemaError } = await getSupabaseClient()
+            .rpc("search_public_moodboards", { search_query: "" })
+        if (["PGRST202", "42883"].includes(searchSchemaError?.code)) {
+            response.status(503).json({
+                status: "connected",
+                moodboards: "ready",
+                profiles: "ready",
+                publicMoodboardSearch: "migration_required",
+                error: "Apply the public moodboard search migration in server/supabase/migrations.",
+            })
+            return
+        }
+        if (searchSchemaError) throw searchSchemaError
+
+        response.json({
+            status: "connected",
+            moodboards: "ready",
+            profiles: "ready",
+            publicMoodboardSearch: "ready",
+        })
     } catch (error) {
         next(error)
     }

@@ -102,6 +102,13 @@ test("public moodboard discovery reports missing Supabase configuration", async 
     assert.match((await response.json()).error, /Supabase database/i)
 })
 
+test("public moodboard discovery rejects queries outside its supported length", async () => {
+    const response = await fetch(`${baseUrl}/api/moodboards/public/search?q=x`)
+
+    assert.equal(response.status, 400)
+    assert.match((await response.json()).error, /2 to 60 characters/i)
+})
+
 test("public profile routes report missing Supabase configuration", async () => {
     const response = await fetch(`${baseUrl}/api/moodboards/public/profiles/ramesh_gupta`)
 

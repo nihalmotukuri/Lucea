@@ -61,8 +61,9 @@ if (!configuredBaseUrl) {
                         payload.status !== "connected"
                         || payload.moodboards !== "ready"
                         || payload.profiles !== "ready"
+                        || payload.publicMoodboardSearch !== "ready"
                     ) {
-                        throw new Error(payload.error ?? "Supabase or the public moodboards migrations are not ready.")
+                        throw new Error(payload.error ?? "Supabase or the public moodboard migrations are not ready.")
                     }
                 },
             },

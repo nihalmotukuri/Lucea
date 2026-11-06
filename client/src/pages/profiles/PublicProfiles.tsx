@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { ArrowLeft, ArrowUpRight, LockKeyhole, UserRound } from "lucide-react"
 import { getOwnProfile, getPublicMoodboard, getPublicProfile, saveOwnProfile } from "@/api/moodboards"
 import PublicMoodboardCard from "@/components/features/PublicMoodboardCard"
+import LoadingIndicator, { fullScreenLoadingClass, useMinimumLoading } from "@/components/features/LoadingIndicator"
 import { useAuth } from "@/auth/useAuth"
 import { useMoodboards } from "@/store/useMoodboards"
 
@@ -21,6 +22,7 @@ export const MyProfilePage = () => {
         queryFn: () => getOwnProfile(accessToken!),
         enabled: Boolean(user && accessToken),
     })
+    const showLoading = useMinimumLoading(Boolean(isAuthLoading || (user && profileQuery.isPending)))
     const saveProfile = useMutation({
         mutationFn: (nextHandle: string) => saveOwnProfile(accessToken!, nextHandle),
         onSuccess: profile => {
@@ -37,8 +39,8 @@ export const MyProfilePage = () => {
         if (profileQuery.data?.handle) setHandle(profileQuery.data.handle)
     }, [profileQuery.data?.handle])
 
-    if (isAuthLoading || (user && profileQuery.isPending)) {
-        return <section className={`${surfaceClass} grid place-items-center`}><p role="status">Loading your profile…</p></section>
+    if (showLoading) {
+        return <LoadingIndicator label="Loading your profile" className={fullScreenLoadingClass} />
     }
 
     if (!user) {
@@ -146,6 +148,7 @@ export const MyProfilePage = () => {
                             {publicMoodboards.map(board => (
                                 <PublicMoodboardCard
                                     key={board.id}
+                                    showCreator={false}
                                     moodboard={{
                                         id: board.id,
                                         title: board.title,
@@ -180,8 +183,11 @@ export const PublicProfilePage = () => {
         queryFn: () => getPublicProfile(handle),
         enabled: handle.length > 0,
     })
+    const showLoading = useMinimumLoading(isPending)
 
-    if (isPending) return <section className={`${surfaceClass} grid place-items-center`}><p role="status">Loading profile…</p></section>
+    if (showLoading) {
+        return <LoadingIndicator label="Loading profile" className={fullScreenLoadingClass} />
+    }
     if (isError || !profile) {
         return (
             <section className={`${surfaceClass} grid place-items-center`}>
@@ -212,6 +218,7 @@ export const PublicProfilePage = () => {
                         {profile.moodboards.map(board => (
                             <PublicMoodboardCard
                                 key={board.id}
+                                showCreator={false}
                                 moodboard={board}
                             />
                         ))}
@@ -233,8 +240,11 @@ export const PublicMoodboardPage = () => {
         queryFn: () => getPublicMoodboard(handle, moodboardId),
         enabled: Boolean(handle && moodboardId),
     })
+    const showLoading = useMinimumLoading(isPending)
 
-    if (isPending) return <section className={`${surfaceClass} grid place-items-center`}><p role="status">Loading moodboard…</p></section>
+    if (showLoading) {
+        return <LoadingIndicator label="Loading moodboard" className={fullScreenLoadingClass} />
+    }
     if (isError || !moodboard) {
         return (
             <section className={`${surfaceClass} grid place-items-center`}>
@@ -252,8 +262,8 @@ export const PublicMoodboardPage = () => {
     return (
         <section className={surfaceClass}>
             <div className="mx-auto max-w-6xl">
-                <Link to={`/profiles/${encodeURIComponent(moodboard.handle)}`} className="inline-flex min-h-9 items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900">
-                    <ArrowLeft size={15} aria-hidden="true" /> @{moodboard.handle}
+                <Link to={`/profiles/${encodeURIComponent(moodboard.handle)}`} className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
+                    <ArrowLeft size={15} aria-hidden="true" /> Back to profile
                 </Link>
                 <header className="my-6 border-b border-black/[0.08] pb-5 text-center">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Public moodboard</p>

@@ -6,6 +6,7 @@ import MediaLoadingState from "@/components/features/MediaLoadingState"
 import MediaDetailModalFrame from "@/components/media/MediaDetailModalFrame"
 import MediaDetailView from "@/components/media/MediaDetailView"
 import { getVideo } from "@/api/pexels"
+import { useMinimumLoading } from "@/components/features/LoadingIndicator"
 
 const VideoDetailModal = () => {
     const navigate = useNavigate()
@@ -30,14 +31,15 @@ const VideoDetailModal = () => {
         },
         enabled: Boolean(videoId),
     })
+    const showLoading = useMinimumLoading(isPending && !video)
 
     return (
         <MediaDetailModalFrame label="Video details" onClose={close}>
             {video
                 ? <MediaDetailView item={{ type: "video", media: video }} onBack={close} isModal />
                 : <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8">
-                    {isPending && <MediaLoadingState />}
-                    {!video && isError && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
+                    {showLoading && <MediaLoadingState className="min-h-[40vh] w-full" />}
+                    {!video && isError && !showLoading && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
                 </div>
             }
         </MediaDetailModalFrame>

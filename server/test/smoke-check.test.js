@@ -19,7 +19,12 @@ test("smoke check verifies API readiness and all production providers", async ()
             "/api/health/ready": { status: "ready", rateLimitStore: "connected" },
             "/api/health/pexels": { status: "connected" },
             "/api/health/gemini": { status: "connected" },
-            "/api/health/supabase": { status: "connected", moodboards: "ready", profiles: "ready" },
+            "/api/health/supabase": {
+                status: "connected",
+                moodboards: "ready",
+                profiles: "ready",
+                publicMoodboardSearch: "ready",
+            },
         }
         response.setHeader("Content-Type", "application/json")
         response.end(JSON.stringify(payloads[request.url] ?? { error: "Not found" }))

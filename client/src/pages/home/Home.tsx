@@ -35,7 +35,7 @@ const Home = () => {
     return (
         <div className="relative bg-[#fdfcfb] px-[18px] pb-[24px] pt-[140px]">
             <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb] px-4 pt-4 md:left-[80px] md:px-5 md:pt-5">
-                <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearchMedia} />
+                <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearchMedia} showRelatedSearches />
                 <Suggestions />
             </div>
 

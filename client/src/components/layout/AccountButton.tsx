@@ -103,10 +103,10 @@ const AccountButton = () => {
         <>
             <button
                 type="button"
-                aria-label={user ? `Account: ${user.email}` : "Sign in"}
-                title={user?.email ?? "Sign in"}
+                aria-label={user ? `Account and sign out: ${user.email}` : "Sign in"}
+                title={user ? "Account / sign out" : "Sign in"}
                 disabled={isAuthLoading}
-                className="grid size-[42px] shrink-0 place-items-center rounded-full border border-black/[0.09] bg-white/70 text-neutral-600 transition-all duration-200 hover:-translate-y-0.5 hover:border-black/15 hover:bg-[#f1ece5] hover:text-neutral-900 hover:shadow-sm active:translate-y-0 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                className="grid size-[42px] shrink-0 place-items-center rounded-full border border-black/[0.09] bg-white/70 text-neutral-600 hover:border-black/15 hover:bg-[#f1ece5] hover:text-neutral-900 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                 onClick={() => {
                     setError("")
                     setMessage("")
@@ -116,7 +116,7 @@ const AccountButton = () => {
                 {isAuthLoading
                     ? <LoaderCircle size={19} className="animate-spin" aria-hidden="true" />
                     : user
-                        ? <CircleUserRound size={20} aria-hidden="true" />
+                        ? <LogOut size={19} aria-hidden="true" />
                         : <LogIn size={19} aria-hidden="true" />
                 }
             </button>

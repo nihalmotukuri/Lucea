@@ -2,7 +2,13 @@ import { Link } from "react-router-dom"
 import { ArrowUpRight, ImagePlus } from "lucide-react"
 import type { PublicMoodboardSummary } from "@/types/types"
 
-const PublicMoodboardCard = ({ moodboard }: { moodboard: PublicMoodboardSummary }) => {
+const PublicMoodboardCard = ({
+    moodboard,
+    showCreator = true,
+}: {
+    moodboard: PublicMoodboardSummary
+    showCreator?: boolean
+}) => {
     const preview = moodboard.preview.slice(0, 3)
 
     return (
@@ -49,20 +55,25 @@ const PublicMoodboardCard = ({ moodboard }: { moodboard: PublicMoodboardSummary 
                 <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
                     <span className="min-w-0">
-                        <span className="block truncate text-2xl font-normal uppercase tracking-tight text-white">{moodboard.title}</span>
-                        <span className="mt-1 block text-sm text-white/85">
+                        <span className="block truncate text-md font-normal uppercase tracking-tight text-white">{moodboard.title}</span>
+                        <span className="mt-0.2 block text-[10px] text-white/85">
                             {moodboard.mediaCount} {moodboard.mediaCount === 1 ? "item" : "items"}
                         </span>
                     </span>
                     <ArrowUpRight size={19} className="mb-1 shrink-0 text-white/85" aria-hidden="true" />
                 </span>
             </Link>
-            <Link
-                to={`/profiles/${encodeURIComponent(moodboard.handle)}`}
-                className="absolute right-4 top-4 rounded-full border border-white/35 bg-black/25 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm transition hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-5 sm:top-5"
-            >
-                by {moodboard.handle}
-            </Link>
+            {showCreator && (
+                <div className="border-t border-black/[0.06] bg-[#fdfcfb] px-4 py-2.5 text-xs text-neutral-500 sm:px-5">
+                    by{" "}
+                    <Link
+                        to={`/profiles/${encodeURIComponent(moodboard.handle)}`}
+                        className="font-medium text-neutral-700 transition hover:text-neutral-950 hover:underline hover:underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                    >
+                        {moodboard.handle}
+                    </Link>
+                </div>
+            )}
         </article>
     )
 }

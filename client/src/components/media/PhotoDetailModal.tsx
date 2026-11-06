@@ -6,6 +6,7 @@ import MediaLoadingState from "@/components/features/MediaLoadingState"
 import MediaDetailModalFrame from "@/components/media/MediaDetailModalFrame"
 import MediaDetailView from "@/components/media/MediaDetailView"
 import { getPhoto } from "@/api/pexels"
+import { useMinimumLoading } from "@/components/features/LoadingIndicator"
 
 const PhotoDetailModal = () => {
     const navigate = useNavigate()
@@ -30,14 +31,15 @@ const PhotoDetailModal = () => {
         },
         enabled: Boolean(photoId),
     })
+    const showLoading = useMinimumLoading(isPending && !photo)
 
     return (
         <MediaDetailModalFrame label="Photo details" onClose={close}>
             {photo
                 ? <MediaDetailView item={{ type: "photo", media: photo }} onBack={close} isModal />
                 : <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8">
-                    {isPending && <MediaLoadingState />}
-                    {!photo && isError && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
+                    {showLoading && <MediaLoadingState className="min-h-[40vh] w-full" />}
+                    {!photo && isError && !showLoading && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
                 </div>
             }
         </MediaDetailModalFrame>

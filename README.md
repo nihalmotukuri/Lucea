@@ -27,7 +27,7 @@ For browser sign-in, copy `client/.env.example` to `client/.env` and set `VITE_S
 
 ### Public profiles and moodboards
 
-Apply `server/supabase/migrations/202611060001_public_moodboards.sql` after the moodboards migration to enable public profiles and per-board visibility. Moodboards remain private by default. Signed-in users can choose a unique 3–30 character handle at `/profile`, then publish individual boards from their moodboard page. Public profile links use `/profiles/<handle>` and board links use `/profiles/<handle>/boards/<id>`. Only published boards appear in profile pages and related search results; the public API returns the profile handle and user ID, never account email addresses.
+Apply `server/supabase/migrations/202611060001_public_moodboards.sql` after the moodboards migration to enable public profiles and per-board visibility, then apply `server/supabase/migrations/202611070001_public_moodboard_search.sql` to enable relevance-ranked public-board search. Moodboards remain private by default. Signed-in users can choose a unique 3–30 character handle at `/profile`, then publish individual boards from their moodboard page. Public profile links use `/profiles/<handle>` and board links use `/profiles/<handle>/boards/<id>`. Only published boards appear in profile pages and search recommendations; matching uses board titles and saved-item descriptions/creators. The public API returns the profile handle and user ID, never account email addresses.
 
 ### Daily discovery topics
 

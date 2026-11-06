@@ -8,6 +8,7 @@ import { useMoodboards } from "@/store/useMoodboards"
 import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
 import { useAuth } from "@/auth/useAuth"
 import { getOwnProfile } from "@/api/moodboards"
+import LoadingIndicator, { fullScreenLoadingClass, useMinimumLoading } from "@/components/features/LoadingIndicator"
 
 type MoodboardMediaFilter = "all" | "photos" | "videos"
 
@@ -175,6 +176,9 @@ const MoodboardsPage = () => {
     const visibleMedia = moodboard?.media.filter(media =>
         mediaFilter === "all" || media.type === (mediaFilter === "photos" ? "photo" : "video")
     ) ?? []
+    const showLoading = useMinimumLoading(Boolean(
+        isAuthLoading || (user && (isSyncing || accountId !== user.id)),
+    ))
 
     useEffect(() => {
         setTitle("")
@@ -183,15 +187,8 @@ const MoodboardsPage = () => {
         setShareMessage("")
     }, [moodboardId])
 
-    if (isAuthLoading || (user && (isSyncing || accountId !== user.id))) {
-        return (
-            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
-                <p className="inline-flex items-center gap-2 text-sm text-neutral-500" role="status">
-                    <span aria-hidden="true" className="size-4 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-800" />
-                    Loading your moodboards…
-                </p>
-            </section>
-        )
+    if (showLoading) {
+        return <LoadingIndicator label="Loading your moodboards" className={fullScreenLoadingClass} />
     }
 
     if (!user) {

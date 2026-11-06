@@ -11,6 +11,7 @@ import VideoDetailModal from './components/media/VideoDetailModal'
 import MoodboardsPage from './pages/moodboards/MoodboardsPage'
 import AuthProvider from './auth/AuthProvider'
 import AuthCallback from './auth/AuthCallback'
+import { fullScreenLoadingClass } from "./components/features/LoadingIndicator"
 
 const MyProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.MyProfilePage })))
 const PublicMoodboardPage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicMoodboardPage })))
@@ -51,9 +52,9 @@ function App() {
           <Route path="/explore/*" element={<Navigate to="/" replace />} />
           <Route path="/moodboards" element={<MoodboardsPage />} />
           <Route path="/moodboards/:moodboardId" element={<MoodboardsPage />} />
-          <Route path="/profile" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading your profile…</p>}><MyProfilePage /></Suspense>} />
-          <Route path="/profiles/:handle/boards/:moodboardId" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading moodboard…</p>}><PublicMoodboardPage /></Suspense>} />
-          <Route path="/profiles/:handle" element={<Suspense fallback={<p role="status" className="pt-32 text-center text-sm text-neutral-500">Loading profile…</p>}><PublicProfilePage /></Suspense>} />
+          <Route path="/profile" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><MyProfilePage /></Suspense>} />
+          <Route path="/profiles/:handle/boards/:moodboardId" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><PublicMoodboardPage /></Suspense>} />
+          <Route path="/profiles/:handle" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><PublicProfilePage /></Suspense>} />
           <Route path="/photos/:photoId" element={<PhotoDetailPage />} />
           <Route path="/videos/:videoId" element={<VideoDetailPage />} />
           <Route path="*" element={<NotFound />} />

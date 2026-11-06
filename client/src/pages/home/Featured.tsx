@@ -5,39 +5,39 @@ import { Link } from "react-router-dom"
 
 const featuredStories = [
     {
-        title: "The Vintage Edit",
-        query: "vintage aesthetic",
-        image: "https://images.pexels.com/photos/9965687/pexels-photo-9965687.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        title: "Wild Neighbors",
+        query: "wildlife in natural habitats",
+        image: "/images/wild-neighbors.jpg",
     },
     {
-        title: "Analog Portraits",
-        query: "analog portrait photography",
-        image: "https://images.pexels.com/photos/851584/pexels-photo-851584.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "Open Road",
+        query: "classic cars on scenic roads",
+        image: "/images/open-road.jpg",
     },
     {
-        title: "Classic Cars",
-        query: "classic vintage cars",
-        image: "https://images.pexels.com/photos/2097278/pexels-photo-2097278.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "Retro Futures",
+        query: "retro futurism vintage design",
+        image: "/images/retro-futures.jpg",
     },
     {
-        title: "Collected Objects",
-        query: "vintage collected objects",
-        image: "https://images.pexels.com/photos/2323654/pexels-photo-2323654.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "Birds in Flight",
+        query: "birds in flight",
+        image: "/images/birds-in-flight.jpg",
     },
     {
-        title: "Warm Interiors",
-        query: "warm vintage interiors",
-        image: "https://images.pexels.com/photos/3021322/pexels-photo-3021322.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "Desert Bloom",
+        query: "desert wildflowers landscape",
+        image: "/images/desert-bloom.jpg",
     },
     {
-        title: "Faded Color",
-        query: "faded film color photography",
-        image: "https://images.pexels.com/photos/11065468/pexels-photo-11065468.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "Blue Horizons",
+        query: "ocean waves and coastal waters",
+        image: "/images/blue-horizons.jpg",
     },
     {
-        title: "Old World Craft",
-        query: "old world vintage craftsmanship",
-        image: "https://images.pexels.com/photos/9890091/pexels-photo-9890091.jpeg?auto=compress&cs=tinysrgb&w=720",
+        title: "The Workshop",
+        query: "traditional crafts at work",
+        image: "/images/the-workshop.jpg",
     },
 ]
 
@@ -137,7 +137,7 @@ const Featured = () => {
                         <Link
                             to={getSearchLink(activeStory.query)}
                             aria-label={`Explore ${activeStory.title}`}
-                            className="group relative flex h-full min-h-[300px] w-full overflow-hidden rounded-[24px] bg-neutral-900 bg-cover bg-center text-white outline-none focus-visible:ring-4 focus-visible:ring-neutral-900/20 sm:min-h-[350px] md:min-h-[390px] md:rounded-[28px]"
+                            className="group relative flex h-full min-h-[300px] w-full overflow-hidden rounded-[24px] bg-neutral-950 bg-cover bg-center text-white outline-none focus-visible:ring-4 focus-visible:ring-neutral-900/20 sm:min-h-[350px] md:min-h-[390px] md:rounded-[28px]"
                             style={{
                                 backgroundImage: `linear-gradient(90deg, rgba(20,19,16,.48), rgba(20,19,16,.02) 95%), linear-gradient(0deg, rgba(20,19,16,.4), transparent 68%), url(${activeStory.image.replace("w=720", "w=1600")})`,
                             }}
@@ -166,7 +166,7 @@ const Featured = () => {
                                     className="mb-1 inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-neutral-900 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:bg-[#f1e8da] group-hover:shadow-md"
                                 >
                                     Explore
-                                        <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                                    <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                 </m.span>
                             </span>
                         </Link>

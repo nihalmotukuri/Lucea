@@ -1,88 +1,61 @@
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import HorizontalScroller from "@/components/features/HorizontalScroller"
-import { LoaderCircle, RotateCw, Sparkles } from "lucide-react"
 import { getSearchRecommendations } from "@/api/gemini"
 
 interface SearchRecommendationsProps {
     urlQuery: string
+    onSelect: (query: string) => void
 }
 
-const SearchRecommendations = ({ urlQuery }: SearchRecommendationsProps) => {
-    const {
-        data: suggestions,
-        isPending,
-        isError,
-        isFetching,
-        refetch,
-    } = useQuery({
-        queryKey: ['recommendations', urlQuery],
+const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProps) => {
+    const { data: suggestions, isError } = useQuery({
+        queryKey: ["recommendations", urlQuery.trim().toLowerCase()],
         queryFn: ({ signal }) => getSearchRecommendations(urlQuery, signal),
         staleTime: 1000 * 60 * 5,
         retry: 1,
     })
 
-    if (isPending) {
-        return (
-            <div className="flex h-[46px] min-w-0 items-center gap-2.5" role="status" aria-label="Finding related search ideas">
-                <span className="flex shrink-0 items-center gap-2 text-[11px] font-medium text-neutral-400">
-                    <Sparkles size={13} aria-hidden="true" /> Related
-                </span>
-                <LoaderCircle size={13} className="animate-spin text-neutral-400" aria-hidden="true" />
-                <span className="text-xs text-neutral-400">Finding ideas</span>
-            </div>
+    const normalizedQuery = urlQuery.trim().toLowerCase()
+    const fallbackSuggestions = ["photography", "inspiration", "aesthetic"]
+        .map(term => `${urlQuery.trim()} ${term}`)
+    const relatedSuggestions = (suggestions?.length ? suggestions : fallbackSuggestions)
+        .map(suggestion => suggestion.trim())
+        .filter((suggestion, index, list) =>
+            suggestion.length > 0
+            && suggestion.toLowerCase() !== normalizedQuery
+            && list.findIndex(item => item.toLowerCase() === suggestion.toLowerCase()) === index,
         )
-    }
 
-    if (isError && !suggestions?.length) {
-        return (
-            <div role="status" className="flex h-[46px] min-w-0 items-center gap-2.5">
-                <Sparkles size={13} className="shrink-0 text-neutral-400" aria-hidden="true" />
-                <span className="shrink-0 text-[11px] font-medium text-neutral-400">Related</span>
-                <span className="truncate text-xs text-neutral-400">Ideas unavailable</span>
-                <button
-                    type="button"
-                    onClick={() => void refetch()}
-                    disabled={isFetching}
-                    className="inline-flex min-h-8 shrink-0 items-center gap-1.5 px-1 text-xs text-neutral-500 underline decoration-neutral-300 underline-offset-4 transition hover:text-neutral-900 disabled:cursor-wait disabled:opacity-70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                >
-                    {isFetching
-                        ? <LoaderCircle size={13} className="animate-spin" aria-hidden="true" />
-                        : <RotateCw size={13} aria-hidden="true" />
-                    }
-                    <span>{isFetching ? "Trying" : "Retry"}</span>
-                </button>
-            </div>
-        )
-    }
+    if (!relatedSuggestions.length) return null
 
     return (
-        <div className="flex h-[46px] min-w-0 items-center gap-2.5">
-            <span className="flex shrink-0 items-center gap-2 text-[11px] font-medium text-neutral-400">
-                <Sparkles size={13} aria-hidden="true" />
-                <span>Related</span>
-            </span>
-            <HorizontalScroller label="related search suggestions">
-                <ul aria-label="Related search suggestions" className="flex h-[46px] w-full items-center gap-5 whitespace-nowrap pr-8">
-                    {suggestions?.map((suggestion, idx) => (
-                        <li key={`${suggestion}-${idx}`} className="relative shrink-0">
-                            <Link
-                                to={`/search?query=${encodeURIComponent(suggestion)}&type=photos`}
-                                className="text-xs text-neutral-500 transition hover:text-neutral-900 hover:underline hover:underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-[13px]"
-                            >
-                                {suggestion}
-                            </Link>
-                            {idx < (suggestions?.length ?? 0) - 1 && (
-                                <span aria-hidden="true" className="pointer-events-none absolute -right-3 top-1/2 size-0.5 -translate-y-1/2 rounded-full bg-neutral-300" />
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </HorizontalScroller>
-            {isFetching && (
-                <span className="sr-only" role="status">Refreshing related ideas</span>
-            )}
-        </div>
+        <section aria-label="Search recommendations" className="mt-2">
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+                <h2 className="text-xs font-semibold text-neutral-800">Search recommendations</h2>
+                {isError && (
+                    <span role="status" className="text-[11px] text-neutral-500">
+                        Showing quick ideas
+                    </span>
+                )}
+            </div>
+            <ul aria-label="Related search suggestions" className="flex min-w-0 gap-2 overflow-x-auto scrollbar-hide">
+                {relatedSuggestions.map(suggestion => (
+                    <li key={suggestion}>
+                        <Link
+                            to={`/search?query=${encodeURIComponent(suggestion)}&type=photos`}
+                            onMouseDown={event => event.preventDefault()}
+                            onClick={event => {
+                                event.preventDefault()
+                                onSelect(suggestion)
+                            }}
+                            className="inline-flex min-h-9 shrink-0 items-center rounded-full border border-black/[0.08] bg-white px-3 text-xs font-medium text-neutral-700 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        >
+                            {suggestion}
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+        </section>
     )
 }
 

@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { requireUser } from "../middleware/requireUser.js"
 import { getSupabaseClient, isSupabaseConfigured } from "../lib/supabase.js"
+import { getMoodboardSearchMatch, normalizeMoodboardSearchText } from "../lib/moodboardSearch.js"
 
 const router = Router()
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
@@ -60,52 +61,87 @@ const serializePublicMoodboardSummary = (board, handle) => ({
     id: board.id,
     title: board.title,
     createdAt: new Date(board.created_at).getTime(),
-    mediaCount: board.media.length,
+    mediaCount: board.media_count ?? board.media.length,
     preview: board.media.slice(0, 3),
     userId: board.user_id,
     handle,
 })
+
+const rankPublicMoodboardsFallback = async (supabase, query) => {
+    const { data: boards, error: boardsError } = await supabase
+        .from("moodboards")
+        .select(publicMoodboardFields)
+        .eq("is_public", true)
+        .order("created_at", { ascending: false })
+        .limit(500)
+    if (boardsError) throw boardsError
+
+    const userIds = [...new Set((boards ?? []).map(board => board.user_id))]
+    const { data: profiles, error: profilesError } = userIds.length
+        ? await supabase
+            .from("public_profiles")
+            .select(publicProfileFields)
+            .in("user_id", userIds)
+        : { data: [], error: null }
+    if (profilesError) throw profilesError
+
+    const handlesByUserId = new Map((profiles ?? []).map(profile => [profile.user_id, profile.handle]))
+    const normalizedQuery = normalizeMoodboardSearchText(query)
+
+    return (boards ?? [])
+        .filter(board => handlesByUserId.has(board.user_id))
+        .map(board => {
+            const match = getMoodboardSearchMatch(query, board.title, board.media.map(item => item.alt))
+            const score = (normalizeMoodboardSearchText(board.title).includes(normalizedQuery) ? 12 : 0)
+                + match.titleMatches * 4
+                + (match.matchingTokens - match.titleMatches) * 1.5
+            return { board, score, ...match }
+        })
+        .filter(result => result.isMatch)
+        .sort((left, right) =>
+            right.score - left.score
+            || new Date(right.board.created_at).getTime() - new Date(left.board.created_at).getTime(),
+        )
+        .slice(0, 12)
+        .map(({ board, score }) => ({
+            ...board,
+            media: board.media.slice(0, 3),
+            media_count: board.media.length,
+            handle: handlesByUserId.get(board.user_id),
+            relevance: score,
+        }))
+}
 
 const publicProfileFields = "user_id, handle"
 const publicMoodboardFields = "id, user_id, title, created_at, media, is_public"
 const handlePattern = /^[a-z0-9_]{3,30}$/
 
 router.get("/public/search", async (request, response, next) => {
-    if (!isSupabaseConfigured()) {
-        response.status(503).json({ error: "Supabase database is not configured on the server." })
-        return
-    }
-
     const query = typeof request.query.q === "string" ? request.query.q.trim() : ""
     if (query.length < 2 || query.length > 60) {
         response.status(400).json({ error: "Search query must contain 2 to 60 characters." })
         return
     }
 
+    if (!isSupabaseConfigured()) {
+        response.status(503).json({ error: "Supabase database is not configured on the server." })
+        return
+    }
+
     try {
-        const { data: boards, error: boardsError } = await getSupabaseClient()
-            .from("moodboards")
-            .select(publicMoodboardFields)
-            .eq("is_public", true)
-            .ilike("title", `%${query}%`)
-            .order("created_at", { ascending: false })
-            .limit(12)
-        if (boardsError) throw boardsError
+        const supabase = getSupabaseClient()
+        const { data, error } = await supabase.rpc("search_public_moodboards", { search_query: query })
+        let boards
+        if (["PGRST202", "42883"].includes(error?.code)) {
+            boards = await rankPublicMoodboardsFallback(supabase, query)
+        } else if (error) {
+            throw error
+        } else {
+            boards = data ?? []
+        }
 
-        const userIds = [...new Set(boards.map(board => board.user_id))]
-        const { data: profiles, error: profilesError } = userIds.length
-            ? await getSupabaseClient()
-                .from("public_profiles")
-                .select(publicProfileFields)
-                .in("user_id", userIds)
-            : { data: [], error: null }
-        if (profilesError) throw profilesError
-
-        const handlesByUserId = new Map(profiles.map(profile => [profile.user_id, profile.handle]))
         response.json({
-            moodboards: boards
-                .filter(board => handlesByUserId.has(board.user_id))
-                .map(board => serializePublicMoodboardSummary(board, handlesByUserId.get(board.user_id))),
+            moodboards: boards.map(board => serializePublicMoodboardSummary(board, board.handle)),
         })
     } catch (error) {
         next(error)

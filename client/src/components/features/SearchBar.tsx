@@ -1,62 +1,20 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import type { FormEvent, KeyboardEvent } from "react"
-import { ArrowRight, ArrowUpRight, Search, X } from "lucide-react"
+import { ArrowRight, Clock3, Search, X } from "lucide-react"
+import SearchRecommendations from "@/pages/search/SearchRecommendations"
+import RelatedMoodboards from "@/pages/search/RelatedMoodboards"
 
 interface SearchBarProps {
     value: string
     onChange: (value: string) => void
     onSubmit: (query: string) => void
     placeholder?: string
+    showRelatedSearches?: boolean
 }
-
-const SEARCH_IDEAS = [
-    "birds nature",
-    "birds flying",
-    "birds in the sky",
-    "birds in flight",
-    "birds chirping",
-    "nature photography",
-    "nature at golden hour",
-    "nature details",
-    "vintage film photography",
-    "vintage interiors",
-    "vintage objects",
-    "architecture details",
-    "modern architecture",
-    "landscape photography",
-    "mountain landscape",
-    "street photography",
-    "portrait photography",
-    "abstract forms",
-]
-
-const QUICK_TOPICS = [
-    "Golden hour",
-    "Vintage film",
-    "Nature",
-    "Architecture",
-    "Portraits",
-    "Abstract",
-]
 
 const RECENT_SEARCHES_KEY = "lucea.recentSearches"
 const MAX_RECENT_SEARCHES = 5
 const DEBOUNCE_MS = 260
-
-const getSuggestions = (query: string, recentSearches: string[]) => {
-    const normalized = query.trim().replace(/\s+/g, " ")
-    if (!normalized) return []
-
-    const lowerQuery = normalized.toLocaleLowerCase()
-    const matches = [...recentSearches, ...SEARCH_IDEAS].filter(idea =>
-        idea.toLocaleLowerCase().startsWith(lowerQuery) && idea.toLocaleLowerCase() !== lowerQuery
-    )
-    return [normalized, ...matches]
-        .filter((idea, index, ideas) =>
-            ideas.findIndex(candidate => candidate.toLocaleLowerCase() === idea.toLocaleLowerCase()) === index
-        )
-        .slice(0, MAX_RECENT_SEARCHES)
-}
 
 const readRecentSearches = () => {
     try {
@@ -75,15 +33,14 @@ const SearchBar = ({
     onChange,
     onSubmit,
     placeholder = "Search photos, videos, moods…",
+    showRelatedSearches = false,
 }: SearchBarProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [debouncedValue, setDebouncedValue] = useState(value)
-    const [activeIndex, setActiveIndex] = useState(-1)
     const [recentSearches, setRecentSearches] = useState(readRecentSearches)
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
-    const listboxId = useId()
     const normalizedValue = value.trim().replace(/\s+/g, " ")
 
     useEffect(() => {
@@ -92,14 +49,9 @@ const SearchBar = ({
     }, [value])
 
     useEffect(() => {
-        setActiveIndex(-1)
-    }, [debouncedValue])
-
-    useEffect(() => {
         const closeOnOutsideClick = (event: PointerEvent) => {
             if (!containerRef.current?.contains(event.target as Node)) {
                 setIsOpen(false)
-                setActiveIndex(-1)
             }
         }
         document.addEventListener("pointerdown", closeOnOutsideClick)
@@ -119,18 +71,11 @@ const SearchBar = ({
         return () => document.removeEventListener("keydown", focusSearchShortcut)
     }, [])
 
-    const suggestions = useMemo(
-        () => getSuggestions(debouncedValue, recentSearches),
-        [debouncedValue, recentSearches],
-    )
-    const showSuggestions = normalizedValue.length > 0 && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
-
     const submitQuery = (query: string) => {
         const trimmedQuery = query.trim().replace(/\s+/g, " ")
         if (!trimmedQuery) return
 
         setIsOpen(false)
-        setActiveIndex(-1)
         inputRef.current?.blur()
         submitRef.current?.blur()
         const nextRecentSearches = [
@@ -154,22 +99,7 @@ const SearchBar = ({
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === "Escape") {
             setIsOpen(false)
-            setActiveIndex(-1)
             inputRef.current?.blur()
-            return
-        }
-
-        if (!isOpen || !showSuggestions || suggestions.length === 0) return
-        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-            event.preventDefault()
-            const direction = event.key === "ArrowDown" ? 1 : -1
-            const nextIndex = activeIndex === -1
-                ? (direction === 1 ? 0 : suggestions.length - 1)
-                : (activeIndex + direction + suggestions.length) % suggestions.length
-            setActiveIndex(nextIndex)
-        } else if (event.key === "Enter" && activeIndex >= 0) {
-            event.preventDefault()
-            submitQuery(suggestions[activeIndex])
         }
     }
 
@@ -185,12 +115,8 @@ const SearchBar = ({
                 </span>
                 <input
                     ref={inputRef}
-                    id={`${listboxId}-input`}
                     aria-label="Search photos and videos"
-                    aria-autocomplete="list"
-                    aria-controls={listboxId}
-                    aria-expanded={isOpen && showSuggestions}
-                    aria-activedescendant={activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined}
+                    aria-expanded={isOpen}
                     className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 sm:text-base"
                     type="text"
                     autoComplete="off"
@@ -199,13 +125,14 @@ const SearchBar = ({
                     onFocus={() => setIsOpen(true)}
                     onChange={event => {
                         onChange(event.target.value)
-                        setActiveIndex(-1)
                         setIsOpen(true)
                     }}
                     onKeyDown={handleKeyDown}
-                    onBlur={() => {
-                        setIsOpen(false)
-                        setActiveIndex(-1)
+                    onBlur={event => {
+                        const nextTarget = event.relatedTarget
+                        if (!(nextTarget instanceof Node) || !containerRef.current?.contains(nextTarget)) {
+                            setIsOpen(false)
+                        }
                     }}
                 />
                 {value && (
@@ -214,7 +141,6 @@ const SearchBar = ({
                         aria-label="Clear search"
                         onClick={() => {
                             onChange("")
-                            setActiveIndex(-1)
                             setIsOpen(true)
                             inputRef.current?.focus()
                         }}
@@ -236,121 +162,54 @@ const SearchBar = ({
             </form>
 
             {isOpen && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-black/[0.08] bg-white shadow-[0_16px_48px_rgba(35,29,22,0.12)]">
-                    {showSuggestions ? (
-                        <div className="p-2.5 sm:p-3">
-                            <p className="px-2 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
-                                Search ideas
-                            </p>
-                            <ul id={listboxId} role="listbox" aria-label="Search suggestions" className="max-h-60 overflow-y-auto">
-                                {suggestions.map((suggestion, index) => (
-                                    <li
-                                        key={suggestion}
-                                        id={`${listboxId}-option-${index}`}
-                                        role="option"
-                                        aria-selected={activeIndex === index}
-                                    >
-                                        <button
-                                            type="button"
-                                            tabIndex={-1}
-                                            onMouseDown={event => event.preventDefault()}
-                                            onMouseEnter={() => setActiveIndex(index)}
-                                            onClick={() => submitQuery(suggestion)}
-                                            className={`flex min-h-10 w-full items-center gap-3 rounded-xl px-2.5 text-left text-sm transition ${
-                                                activeIndex === index
-                                                    ? "bg-[#f6f3ee] text-neutral-900"
-                                                    : "text-neutral-700 hover:bg-[#f8f6f2]"
-                                            }`}
-                                        >
-                                            <Search size={15} strokeWidth={1.7} className="shrink-0 text-neutral-400" aria-hidden="true" />
-                                            <span className="min-w-0 flex-1 truncate">
-                                                <span className="font-medium text-neutral-900">{normalizedValue}</span>
-                                                {suggestion.slice(normalizedValue.length)}
-                                            </span>
-                                            <ArrowUpRight size={14} className="shrink-0 text-neutral-300" aria-hidden="true" />
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="mt-2 border-t border-black/[0.06] px-2 pt-2.5">
-                                <p className="pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
-                                    Explore a mood
-                                </p>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {QUICK_TOPICS.slice(0, 4).map(topic => (
-                                        <button
-                                            key={topic}
-                                            type="button"
-                                            onMouseDown={event => event.preventDefault()}
-                                            onClick={() => submitQuery(topic)}
-                                            className="min-h-7 rounded-full border border-black/[0.07] px-2.5 text-[11px] text-neutral-500 transition hover:border-black/[0.15] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                                        >
-                                            {topic}
-                                        </button>
-                                    ))}
-                                </div>
+                <div className="absolute left-0 right-0 top-full z-50 mt-1.5 flex max-h-[min(75vh,600px)] flex-col gap-3 overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_12px_36px_rgba(35,29,22,0.12)] sm:gap-4 sm:p-4">
+                    {recentSearches.length > 0 && (
+                        <div>
+                            <div className="mb-2 flex items-center justify-between">
+                                <p className="text-xs font-semibold text-neutral-800">Recent searches</p>
+                                <button
+                                    type="button"
+                                    onMouseDown={event => event.preventDefault()}
+                                    onClick={() => {
+                                        setRecentSearches([])
+                                        try {
+                                            window.localStorage.removeItem(RECENT_SEARCHES_KEY)
+                                        } catch (error) {
+                                            console.warn("Unable to clear recent searches from local storage.", error)
+                                        }
+                                    }}
+                                    className="rounded px-1 py-0.5 text-xs text-neutral-500 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                >
+                                    Clear
+                                </button>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="p-3 sm:p-4">
-                            {recentSearches.length > 0 && (
-                                <div className="mb-3 border-b border-black/[0.06] pb-3">
-                                    <div className="flex items-center justify-between px-1 pb-2">
-                                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
-                                            Recent searches
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onMouseDown={event => event.preventDefault()}
-                                            onClick={() => {
-                                                setRecentSearches([])
-                                                try {
-                                                    window.localStorage.removeItem(RECENT_SEARCHES_KEY)
-                                                } catch (error) {
-                                                    console.warn("Unable to clear recent searches from local storage.", error)
-                                                }
-                                            }}
-                                            className="rounded px-1 py-0.5 text-[11px] text-neutral-500 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                                        >
-                                            Clear
-                                        </button>
-                                    </div>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {recentSearches.map(search => (
-                                            <button
-                                                key={search}
-                                                type="button"
-                                                onMouseDown={event => event.preventDefault()}
-                                                onClick={() => submitQuery(search)}
-                                                className="inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-full border border-black/[0.08] px-2.5 text-xs text-neutral-600 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                                            >
-                                                <span className="max-w-48 truncate">{search}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            <p className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
-                                Explore a mood
-                            </p>
                             <div className="flex flex-wrap gap-2">
-                                {QUICK_TOPICS.map(topic => (
+                                {recentSearches.map(search => (
                                     <button
-                                        key={topic}
+                                        key={search}
                                         type="button"
                                         onMouseDown={event => event.preventDefault()}
-                                        onClick={() => submitQuery(topic)}
-                                        className="min-h-8 rounded-full border border-black/[0.08] px-3 text-xs text-neutral-600 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                        onClick={() => submitQuery(search)}
+                                        className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 text-[13px] text-neutral-700 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                                     >
-                                        {topic}
+                                        <Clock3 size={15} className="shrink-0 text-neutral-400" aria-hidden="true" />
+                                        <span className="max-w-56 truncate">{search}</span>
+                                        <Search size={14} className="shrink-0 text-neutral-400" aria-hidden="true" />
                                     </button>
                                 ))}
                             </div>
                         </div>
                     )}
-                    <div className="border-t border-black/[0.06] px-4 py-2 text-[10px] text-neutral-400">
-                        Press / to search · Use ↑ ↓ to browse · Enter to search
-                    </div>
+                    {showRelatedSearches
+                        && normalizedValue.length >= 2
+                        && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
+                        && <SearchRecommendations urlQuery={normalizedValue} onSelect={submitQuery} />
+                    }
+                    {showRelatedSearches
+                        && normalizedValue.length >= 2
+                        && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
+                        && <RelatedMoodboards query={normalizedValue} />
+                    }
                 </div>
             )}
         </div>
