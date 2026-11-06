@@ -19,17 +19,11 @@ export const DEFAULT_TOPICS: Topic[] = [
 ]
 
 interface TopicStates {
-    activeTopic: string
     topics: Topic[]
-    setActiveTopic: (topic: string) => void
     setTopics: (topics: Topic[]) => void
 }
 
 export const useTopic = create<TopicStates>((set) => ({
-    activeTopic: '',
     topics: [],
-    setActiveTopic: (topic) => set({
-        activeTopic: topic
-    }),
     setTopics: topics => set({ topics }),
 }))

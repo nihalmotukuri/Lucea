@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useTopic } from "@/store/useTopic"
 import HorizontalScroller from "@/components/features/HorizontalScroller"
 import useDailyTopics from "@/hooks/useDailyTopics"
@@ -7,8 +7,7 @@ import { Sparkles } from "lucide-react"
 const Suggestions = () => {
     const { isError, topicsReady } = useDailyTopics()
     const topics = useTopic(state => state.topics)
-    const activeTopic = useTopic(state => state.activeTopic)
-    const setActiveTopic = useTopic(state => state.setActiveTopic)
+    const { topicSlug: activeTopic } = useParams()
 
     return (
         <div className="flex h-[46px] min-w-0 items-center gap-4">
@@ -28,7 +27,6 @@ const Suggestions = () => {
                             {topics.map((topic, index) => (
                                 <li key={topic.slug} className="relative shrink-0">
                                     <Link
-                                        onClick={() => setActiveTopic(topic.slug)}
                                         to={`/t/${topic.slug}`}
                                         aria-current={activeTopic === topic.slug ? "page" : undefined}
                                         className={`relative inline-flex items-center py-1 text-[13px] leading-none transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:bg-neutral-900 after:content-[''] motion-safe:after:transition-transform motion-safe:after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm ${

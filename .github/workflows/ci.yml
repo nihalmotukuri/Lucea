@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm ci
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Audit dependencies
+        run: |
+          cd client && npm audit
+          cd ../server && npm audit
+      - name: Test client
+        working-directory: client
+        run: npm test
+      - name: Lint client
+        working-directory: client
+        run: npm run lint
+      - name: Build client
+        working-directory: client
+        run: npm run build
+      - name: Test server
+        working-directory: server
+        env:
+          RATE_LIMIT_REDIS_URL: redis://localhost:6379
+        run: npm test

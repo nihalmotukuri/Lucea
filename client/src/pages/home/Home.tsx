@@ -18,15 +18,8 @@ const Home = () => {
     const [searchQuery, setSearchQuery] = useState('')
     const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all")
     const { topicSlug } = useParams()
-    const setActiveTopic = useTopic(state => state.setActiveTopic)
     const topics = useTopic(state => state.topics)
     const { topicsReady } = useDailyTopics()
-
-    if (!topicSlug) { 
-        setActiveTopic('') 
-    } else { 
-        setActiveTopic(topicSlug) 
-    }
 
     if (topicSlug && !topics.some(t => t.slug === topicSlug)) {
         if (!topicsReady) return <p role="status" className="pt-40 text-center text-sm text-neutral-500">Finding today’s topics…</p>

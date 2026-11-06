@@ -4,28 +4,39 @@ import helmet from "helmet"
 import rateLimit from "express-rate-limit"
 import { getSupabaseClient, isSupabaseConfigured } from "./lib/supabase.js"
 import { fetchPexels } from "./lib/pexels.js"
+import { createRateLimitStore, getRateLimitStoreStatus } from "./lib/rateLimitStore.js"
 import geminiRouter, { testGeminiConnection } from "./routes/gemini.js"
 import moodboardsRouter from "./routes/moodboards.js"
 import pexelsRouter from "./routes/pexels.js"
 
 const app = express()
+const trustProxyHops = Number(process.env.TRUST_PROXY_HOPS ?? 0)
+if (!Number.isInteger(trustProxyHops) || trustProxyHops < 0) {
+    throw new Error("TRUST_PROXY_HOPS must be a non-negative integer.")
+}
+
+app.set("trust proxy", trustProxyHops)
+
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 120,
     standardHeaders: "draft-8",
     legacyHeaders: false,
+    store: createRateLimitStore("api"),
 })
 const geminiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 20,
     standardHeaders: "draft-8",
     legacyHeaders: false,
+    store: createRateLimitStore("gemini"),
 })
 const healthCheckLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     limit: 10,
     standardHeaders: "draft-8",
     legacyHeaders: false,
+    store: createRateLimitStore("health"),
 })
 const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173")
     .split(",")
@@ -49,6 +60,16 @@ app.get("/api/health", (_request, response) => {
             gemini: process.env.GEMINI_API_KEY ? "configured" : "not_configured",
         },
     })
+})
+
+app.get("/api/health/ready", (_request, response) => {
+    const rateLimitStore = getRateLimitStoreStatus()
+    if (rateLimitStore === "unavailable") {
+        response.status(503).json({ status: "not_ready", rateLimitStore })
+        return
+    }
+
+    response.json({ status: "ready", rateLimitStore })
 })
 
 app.get("/api/health/pexels", healthCheckLimiter, async (_request, response) => {
@@ -103,9 +124,9 @@ app.get("/api/health/supabase", healthCheckLimiter, async (_request, response, n
 
         const { error: schemaError } = await getSupabaseClient()
             .from("moodboards")
-            .select("id")
+            .select("id, is_public")
             .limit(0)
-        if (schemaError?.code === "PGRST205" || schemaError?.code === "42P01") {
+        if (["PGRST204", "PGRST205", "42P01"].includes(schemaError?.code)) {
             response.status(503).json({
                 status: "connected",
                 moodboards: "migration_required",
@@ -115,7 +136,22 @@ app.get("/api/health/supabase", healthCheckLimiter, async (_request, response, n
         }
         if (schemaError) throw schemaError
 
-        response.json({ status: "connected", moodboards: "ready" })
+        const { error: profileSchemaError } = await getSupabaseClient()
+            .from("public_profiles")
+            .select("user_id, handle")
+            .limit(0)
+        if (["PGRST204", "PGRST205", "42P01"].includes(profileSchemaError?.code)) {
+            response.status(503).json({
+                status: "connected",
+                moodboards: "ready",
+                profiles: "migration_required",
+                error: "Apply the public moodboards migration in server/supabase/migrations.",
+            })
+            return
+        }
+        if (profileSchemaError) throw profileSchemaError
+
+        response.json({ status: "connected", moodboards: "ready", profiles: "ready" })
     } catch (error) {
         next(error)
     }
