@@ -8,7 +8,8 @@ import { useMoodboards } from "@/store/useMoodboards"
 import { MASONRY_COLUMNS, MASONRY_GUTTER } from "@/lib/masonry"
 import { useAuth } from "@/auth/useAuth"
 import { getOwnProfile } from "@/api/moodboards"
-import LoadingIndicator, { fullScreenLoadingClass, useMinimumLoading } from "@/components/features/LoadingIndicator"
+import LoadingIndicator from "@/components/features/LoadingIndicator"
+import { fullScreenLoadingClass, useMinimumLoading } from "@/lib/loadingIndicator"
 
 type MoodboardMediaFilter = "all" | "photos" | "videos"
 

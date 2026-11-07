@@ -11,7 +11,7 @@ import VideoDetailModal from './components/media/VideoDetailModal'
 import MoodboardsPage from './pages/moodboards/MoodboardsPage'
 import AuthProvider from './auth/AuthProvider'
 import AuthCallback from './auth/AuthCallback'
-import { fullScreenLoadingClass } from "./components/features/LoadingIndicator"
+import { fullScreenLoadingClass } from "./lib/loadingIndicator"
 
 const MyProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.MyProfilePage })))
 const PublicMoodboardPage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicMoodboardPage })))

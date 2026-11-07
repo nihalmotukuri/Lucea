@@ -6,7 +6,7 @@ import MediaLoadingState from "@/components/features/MediaLoadingState"
 import MediaDetailModalFrame from "@/components/media/MediaDetailModalFrame"
 import MediaDetailView from "@/components/media/MediaDetailView"
 import { getVideo } from "@/api/pexels"
-import { useMinimumLoading } from "@/components/features/LoadingIndicator"
+import { useMinimumLoading } from "@/lib/loadingIndicator"
 
 const VideoDetailModal = () => {
     const navigate = useNavigate()
