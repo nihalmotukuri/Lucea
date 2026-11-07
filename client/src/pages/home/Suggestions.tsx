@@ -18,7 +18,7 @@ const Suggestions = () => {
                     aria-hidden="true"
                     className="text-amber-500 [fill:#fcd34d] [stroke:#f97316] drop-shadow-[0_1px_2px_rgba(249,115,22,0.22)]"
                 />
-                <span>Today’s sparks</span>
+                <span>Today’s picks</span>
             </span>
             <div className="min-w-0 flex-1">
                 {topicsReady ? (

@@ -42,6 +42,10 @@ const SearchBar = ({
     const inputRef = useRef<HTMLInputElement>(null)
     const submitRef = useRef<HTMLButtonElement>(null)
     const normalizedValue = value.trim().replace(/\s+/g, " ")
+    const showQuerySuggestions = showRelatedSearches
+        && normalizedValue.length >= 2
+        && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
+    const hasSuggestions = recentSearches.length > 0 || showQuerySuggestions
 
     useEffect(() => {
         const timer = window.setTimeout(() => setDebouncedValue(value), DEBOUNCE_MS)
@@ -116,7 +120,7 @@ const SearchBar = ({
                 <input
                     ref={inputRef}
                     aria-label="Search photos and videos"
-                    aria-expanded={isOpen}
+                    aria-expanded={isOpen && hasSuggestions}
                     className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 sm:text-base"
                     type="text"
                     autoComplete="off"
@@ -161,8 +165,12 @@ const SearchBar = ({
                 </button>
             </form>
 
-            {isOpen && (
-                <div className="absolute left-0 right-0 top-full z-50 mt-1.5 flex max-h-[min(75vh,600px)] flex-col gap-3 overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_12px_36px_rgba(35,29,22,0.12)] sm:gap-4 sm:p-4">
+            {isOpen && hasSuggestions && (
+                <div
+                    role="region"
+                    aria-label="Search suggestions"
+                    className="absolute left-0 right-0 top-full z-50 mt-1.5 flex max-h-[min(75vh,600px)] flex-col gap-3 overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_12px_36px_rgba(35,29,22,0.12)] sm:gap-4 sm:p-4"
+                >
                     {recentSearches.length > 0 && (
                         <div>
                             <div className="mb-2 flex items-center justify-between">
@@ -200,14 +208,10 @@ const SearchBar = ({
                             </div>
                         </div>
                     )}
-                    {showRelatedSearches
-                        && normalizedValue.length >= 2
-                        && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
+                    {showQuerySuggestions
                         && <SearchRecommendations urlQuery={normalizedValue} onSelect={submitQuery} />
                     }
-                    {showRelatedSearches
-                        && normalizedValue.length >= 2
-                        && normalizedValue === debouncedValue.trim().replace(/\s+/g, " ")
+                    {showQuerySuggestions
                         && <RelatedMoodboards query={normalizedValue} />
                     }
                 </div>

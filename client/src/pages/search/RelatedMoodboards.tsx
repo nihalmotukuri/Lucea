@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
 import { searchPublicMoodboards } from "@/api/moodboards"
+import SearchDropdownLoading from "@/components/features/SearchDropdownLoading"
 
 interface RelatedMoodboardsProps {
     query: string
@@ -52,11 +53,11 @@ const RelatedMoodboards = ({ query }: RelatedMoodboardsProps) => {
 
     return (
         <section aria-label="Community moodboard recommendations">
-            <h2 className="mb-2 text-xs font-semibold text-neutral-800">Moodboards</h2>
+            <h2 className="mb-1.5 text-xs font-semibold text-neutral-800">Moodboards</h2>
             {isError
                 ? <p role="status" className="px-1 text-xs text-neutral-500">Unavailable</p>
                 : isPending
-                    ? <p role="status" className="px-1 text-xs text-neutral-400">Finding matching boards…</p>
+                    ? <SearchDropdownLoading label="Finding matching boards…" />
                 : (
                     <div className="min-w-0 overflow-x-auto scrollbar-hide">
                         <ul className="flex w-max items-center gap-2">

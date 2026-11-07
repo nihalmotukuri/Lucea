@@ -31,6 +31,7 @@ describe("Suggestions", () => {
             </MemoryRouter>,
         )
 
+        expect(screen.getByText("Today’s picks")).toBeTruthy()
         expect(screen.getByRole("link", { name: "Travel" }).getAttribute("aria-current")).toBe("page")
         expect(screen.getByRole("link", { name: "Nature" }).getAttribute("aria-current")).toBeNull()
     })

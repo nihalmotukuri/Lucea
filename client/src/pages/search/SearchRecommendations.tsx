@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { getSearchRecommendations } from "@/api/gemini"
+import SearchDropdownLoading from "@/components/features/SearchDropdownLoading"
 
 interface SearchRecommendationsProps {
     urlQuery: string
@@ -8,7 +9,7 @@ interface SearchRecommendationsProps {
 }
 
 const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProps) => {
-    const { data: suggestions, isError } = useQuery({
+    const { data: suggestions, isError, isPending } = useQuery({
         queryKey: ["recommendations", urlQuery.trim().toLowerCase()],
         queryFn: ({ signal }) => getSearchRecommendations(urlQuery, signal),
         staleTime: 1000 * 60 * 5,
@@ -18,13 +19,22 @@ const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProp
     const normalizedQuery = urlQuery.trim().toLowerCase()
     const fallbackSuggestions = ["photography", "inspiration", "aesthetic"]
         .map(term => `${urlQuery.trim()} ${term}`)
-    const relatedSuggestions = (suggestions?.length ? suggestions : fallbackSuggestions)
+    const relatedSuggestions = (isError ? fallbackSuggestions : suggestions ?? [])
         .map(suggestion => suggestion.trim())
         .filter((suggestion, index, list) =>
             suggestion.length > 0
             && suggestion.toLowerCase() !== normalizedQuery
             && list.findIndex(item => item.toLowerCase() === suggestion.toLowerCase()) === index,
         )
+
+    if (isPending) {
+        return (
+            <section aria-label="Search recommendations" className="mt-2">
+                <h2 className="mb-1.5 text-xs font-semibold text-neutral-800">Search recommendations</h2>
+                <SearchDropdownLoading label="Loading recommendations…" />
+            </section>
+        )
+    }
 
     if (!relatedSuggestions.length) return null
 
