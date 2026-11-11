@@ -15,8 +15,19 @@ export interface AuthContextValue {
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
+const defaultAuthContext: AuthContextValue = {
+    user: null,
+    accessToken: null,
+    isAuthConfigured: false,
+    isAuthLoading: false,
+    isAuthDialogOpen: false,
+    authPrompt: null,
+    openAuthDialog: () => {},
+    closeAuthDialog: () => {},
+    supabase: null,
+}
+
 export const useAuth = () => {
     const context = useContext(AuthContext)
-    if (!context) throw new Error("useAuth must be used within AuthProvider.")
-    return context
+    return context ?? defaultAuthContext
 }

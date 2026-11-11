@@ -6,7 +6,7 @@ const THEME_STORAGE_KEY = "lucea-theme"
 const THEME_EVENT = "lucea-theme-change"
 
 const getSystemPreference = (): "dark" | "light" => {
-    if (typeof window === "undefined") return "light"
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return "light"
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
@@ -55,7 +55,7 @@ export const useTheme = () => {
             applyTheme(nextTheme)
         }
 
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+        const mediaQuery = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-color-scheme: dark)") : null
         const handleSystemChange = () => {
             if (getStoredTheme() === "system") {
                 applyTheme("system")
@@ -65,12 +65,12 @@ export const useTheme = () => {
 
         window.addEventListener("storage", handleStorage)
         window.addEventListener(THEME_EVENT, handleCustomEvent)
-        mediaQuery.addEventListener("change", handleSystemChange)
+        mediaQuery?.addEventListener?.("change", handleSystemChange)
 
         return () => {
             window.removeEventListener("storage", handleStorage)
             window.removeEventListener(THEME_EVENT, handleCustomEvent)
-            mediaQuery.removeEventListener("change", handleSystemChange)
+            mediaQuery?.removeEventListener?.("change", handleSystemChange)
         }
     }, [theme])
 

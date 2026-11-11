@@ -18,15 +18,8 @@ const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProp
     })
 
     const normalizedQuery = urlQuery.trim().toLowerCase()
-    const trimmed = urlQuery.trim()
-    const fallbackSuggestions = [
-        `${trimmed} aesthetic`,
-        `${trimmed} editorial`,
-        `${trimmed} cinematic`,
-        `${trimmed} minimalist`,
-        `${trimmed} vintage`,
-        `${trimmed} ambient`,
-    ]
+    const fallbackSuggestions = ["photography", "inspiration", "aesthetic", "editorial", "cinematic", "minimalist"]
+        .map(term => `${urlQuery.trim()} ${term}`)
     const relatedSuggestions = (isError ? fallbackSuggestions : suggestions ?? [])
         .map(suggestion => suggestion.trim())
         .filter((suggestion, index, list) =>
@@ -42,7 +35,7 @@ const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProp
                     <Sparkles size={13} className="text-amber-600 dark:text-amber-400" aria-hidden="true" />
                     Recommended ideas
                 </h2>
-                <SearchDropdownLoading label="Curating aesthetic ideas…" />
+                <SearchDropdownLoading label="Loading recommendations…" />
             </section>
         )
     }
@@ -58,7 +51,7 @@ const SearchRecommendations = ({ urlQuery, onSelect }: SearchRecommendationsProp
                 </h2>
                 {isError && (
                     <span role="status" className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                        Curated tags
+                        Showing quick ideas
                     </span>
                 )}
             </div>
