@@ -112,16 +112,16 @@ const SearchBar = ({
             <form
                 role="search"
                 onSubmit={handleSubmit}
-                className="group flex min-h-14 w-full items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 p-1.5 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition duration-200 hover:border-black/[0.15] focus-within:border-neutral-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-neutral-900/[0.04]"
+                className="group flex min-h-14 w-full items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 p-1.5 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition duration-200 hover:border-black/[0.15] focus-within:border-neutral-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-neutral-900/[0.04] dark:border-white/[0.1] dark:bg-[#1a1917]/95 dark:focus-within:border-neutral-500 dark:focus-within:bg-[#1a1917] dark:focus-within:ring-white/[0.04]"
             >
-                <span className="ml-1 grid size-10 shrink-0 place-items-center rounded-[13px] bg-[#f4f0e9] text-neutral-600 transition-colors group-focus-within:bg-[#eee7dc] group-focus-within:text-neutral-900">
+                <span className="ml-1 grid size-10 shrink-0 place-items-center rounded-[13px] bg-[#f4f0e9] text-neutral-600 transition-colors group-focus-within:bg-[#eee7dc] group-focus-within:text-neutral-900 dark:bg-[#262421] dark:text-neutral-300 dark:group-focus-within:bg-[#2f2b27] dark:group-focus-within:text-white">
                     <Search size={18} strokeWidth={1.8} aria-hidden="true" />
                 </span>
                 <input
                     ref={inputRef}
                     aria-label="Search photos and videos"
                     aria-expanded={isOpen && hasSuggestions}
-                    className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 sm:text-base"
+                    className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 dark:text-neutral-100 dark:placeholder:text-neutral-500 sm:text-base"
                     type="text"
                     autoComplete="off"
                     placeholder={placeholder}
@@ -139,6 +139,11 @@ const SearchBar = ({
                         }
                     }}
                 />
+                {!value && !isOpen && (
+                    <kbd className="hidden sm:inline-flex h-6 select-none items-center gap-1 rounded-md border border-black/[0.08] bg-[#f8f6f2] px-2 font-mono text-[11px] font-medium text-neutral-400 dark:border-white/[0.08] dark:bg-[#262421] dark:text-neutral-400">
+                        /
+                    </kbd>
+                )}
                 {value && (
                     <button
                         type="button"
@@ -148,7 +153,7 @@ const SearchBar = ({
                             setIsOpen(true)
                             inputRef.current?.focus()
                         }}
-                        className="grid size-9 shrink-0 place-items-center rounded-full text-neutral-400 transition hover:bg-black/[0.05] hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="grid size-9 shrink-0 place-items-center rounded-full text-neutral-400 transition hover:bg-black/[0.05] hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-500 dark:hover:bg-white/[0.08] dark:hover:text-white"
                     >
                         <X size={16} aria-hidden="true" />
                     </button>
@@ -158,7 +163,7 @@ const SearchBar = ({
                     type="submit"
                     disabled={!value.trim()}
                     aria-label="Search"
-                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-gradient-to-r from-neutral-900 via-neutral-800 to-indigo-900 px-3 text-sm font-medium text-white shadow-[0_3px_10px_rgba(30,27,75,0.16)] transition duration-200 hover:-translate-y-px hover:from-neutral-800 hover:via-indigo-900 hover:to-violet-900 hover:shadow-[0_5px_14px_rgba(30,27,75,0.22)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-none disabled:from-[#e8e4de] disabled:via-[#e8e4de] disabled:to-[#e8e4de] disabled:text-neutral-600 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700 sm:px-4"
+                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-3.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-neutral-800 hover:shadow active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600 sm:px-4"
                 >
                     <span className="hidden sm:inline">Search</span>
                     <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" className="transition-transform duration-200 group-hover/search:translate-x-0.5" />
@@ -169,12 +174,12 @@ const SearchBar = ({
                 <div
                     role="region"
                     aria-label="Search suggestions"
-                    className="absolute left-0 right-0 top-full z-50 mt-1.5 flex max-h-[min(75vh,600px)] flex-col gap-3 overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_12px_36px_rgba(35,29,22,0.12)] sm:gap-4 sm:p-4"
+                    className="absolute left-0 right-0 top-full z-50 mt-1.5 flex max-h-[min(75vh,600px)] flex-col gap-3 overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-3 shadow-[0_12px_36px_rgba(35,29,22,0.12)] dark:border-white/[0.09] dark:bg-[#1a1917] dark:text-neutral-100 sm:gap-4 sm:p-4"
                 >
                     {recentSearches.length > 0 && (
                         <div>
                             <div className="mb-2 flex items-center justify-between">
-                                <p className="text-xs font-semibold text-neutral-800">Recent searches</p>
+                                <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Recent searches</p>
                                 <button
                                     type="button"
                                     onMouseDown={event => event.preventDefault()}
@@ -186,7 +191,7 @@ const SearchBar = ({
                                             console.warn("Unable to clear recent searches from local storage.", error)
                                         }
                                     }}
-                                    className="rounded px-1 py-0.5 text-xs text-neutral-500 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                    className="rounded px-1 py-0.5 text-xs text-neutral-500 transition hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                                 >
                                     Clear
                                 </button>
@@ -198,7 +203,7 @@ const SearchBar = ({
                                         type="button"
                                         onMouseDown={event => event.preventDefault()}
                                         onClick={() => submitQuery(search)}
-                                        className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 text-[13px] text-neutral-700 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                        className="inline-flex min-h-10 max-w-full items-center gap-2 rounded-full border border-black/[0.08] bg-white px-3 text-[13px] text-neutral-700 transition hover:border-black/[0.16] hover:bg-[#f8f6f2] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.08] dark:bg-[#24211e] dark:text-neutral-300 dark:hover:bg-[#2c2824] dark:hover:text-white"
                                     >
                                         <Clock3 size={15} className="shrink-0 text-neutral-400" aria-hidden="true" />
                                         <span className="max-w-56 truncate">{search}</span>

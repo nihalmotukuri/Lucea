@@ -52,10 +52,10 @@ const RelatedMoodboards = ({ query }: RelatedMoodboardsProps) => {
     if (normalizedQuery.length < 2 || (!isPending && !isError && !moodboards.length)) return null
 
     return (
-        <section aria-label="Community moodboard recommendations">
-            <h2 className="mb-1.5 text-xs font-semibold text-neutral-800">Moodboards</h2>
+        <section aria-label="Community moodboard recommendations" className="animate-subtle-reveal">
+            <h2 className="mb-1.5 text-xs font-semibold text-neutral-800 dark:text-neutral-200">Moodboards</h2>
             {isError
-                ? <p role="status" className="px-1 text-xs text-neutral-500">Unavailable</p>
+                ? <p role="status" className="px-1 text-xs text-neutral-500 dark:text-neutral-400">Unavailable</p>
                 : isPending
                     ? <SearchDropdownLoading label="Finding matching boards…" />
                 : (
@@ -67,7 +67,7 @@ const RelatedMoodboards = ({ query }: RelatedMoodboardsProps) => {
                                         to={`/profiles/${encodeURIComponent(board.handle)}/boards/${encodeURIComponent(board.id)}`}
                                         aria-label={`${board.title} by ${board.handle}`}
                                         onMouseDown={event => event.preventDefault()}
-                                        className="flex h-12 w-56 items-center gap-2 overflow-hidden rounded-xl border border-black/[0.08] bg-white pr-2 text-left transition hover:border-black/20 hover:bg-[#f8f6f2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                        className="flex h-12 w-56 items-center gap-2 overflow-hidden rounded-xl border border-black/[0.08] bg-white pr-2 text-left transition hover:border-black/20 hover:bg-[#f8f6f2] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/10 dark:bg-[#24211e] dark:hover:border-white/20 dark:hover:bg-[#2c2824]"
                                     >
                                         {board.preview[0] && (
                                             <img
@@ -78,8 +78,8 @@ const RelatedMoodboards = ({ query }: RelatedMoodboardsProps) => {
                                             />
                                         )}
                                         <span className="min-w-0">
-                                            <span className="block truncate text-xs font-medium text-neutral-800">{board.title}</span>
-                                            <span className="block truncate text-[10px] text-neutral-500">by {board.handle}</span>
+                                            <span className="block truncate text-xs font-medium text-neutral-800 dark:text-neutral-200">{board.title}</span>
+                                            <span className="block truncate text-[10px] text-neutral-500 dark:text-neutral-400">by {board.handle}</span>
                                         </span>
                                     </Link>
                                 </li>

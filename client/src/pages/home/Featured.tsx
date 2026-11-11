@@ -85,12 +85,29 @@ const Featured = () => {
             }}
         >
             <div className="mb-3 flex items-center justify-between gap-3 px-1">
-                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-500 sm:text-[11px]">
-                    The Lucea field note
-                </p>
+                <div className="flex items-center gap-3">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-neutral-500 sm:text-[11px]">
+                        The Lucea field note
+                    </p>
+                    <div className="hidden sm:flex items-center gap-1.5" aria-hidden="true">
+                        {featuredStories.map((story, i) => (
+                            <button
+                                key={story.title}
+                                type="button"
+                                onClick={() => setActiveIndex(i)}
+                                aria-label={`Go to slide ${i + 1}`}
+                                className={`h-1 rounded-full transition-all duration-300 ${
+                                    i === activeIndex
+                                        ? "w-5 bg-neutral-800 dark:bg-white"
+                                        : "w-1.5 bg-neutral-300 hover:bg-neutral-500 dark:bg-neutral-700 dark:hover:bg-neutral-500"
+                                }`}
+                            />
+                        ))}
+                    </div>
+                </div>
                 <div className="flex items-center gap-1">
-                    <span className="mr-2 font-mono text-[11px] tabular-nums text-neutral-500" aria-label={`Story ${activeIndex + 1} of ${featuredStories.length}`}>
-                        {String(activeIndex + 1).padStart(2, "0")} <span className="text-neutral-300">/</span> {String(featuredStories.length).padStart(2, "0")}
+                    <span className="mr-2 font-mono text-[11px] tabular-nums text-neutral-500 dark:text-neutral-400" aria-label={`Story ${activeIndex + 1} of ${featuredStories.length}`}>
+                        {String(activeIndex + 1).padStart(2, "0")} <span className="text-neutral-300 dark:text-neutral-600">/</span> {String(featuredStories.length).padStart(2, "0")}
                     </span>
                     {!prefersReducedMotion && (
                         <button
@@ -100,7 +117,7 @@ const Featured = () => {
                                 setIsPlaying(playing => !playing)
                                 setIsInteracting(false)
                             }}
-                            className="grid size-8 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                            className="grid size-8 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                         >
                             {isPlaying ? <Pause size={14} aria-hidden="true" /> : <Play size={14} aria-hidden="true" />}
                         </button>
@@ -109,7 +126,7 @@ const Featured = () => {
                         type="button"
                         aria-label="Previous featured story"
                         onClick={() => move(-1)}
-                        className="grid size-8 place-items-center rounded-full text-neutral-600 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="grid size-8 place-items-center rounded-full text-neutral-600 transition hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                     >
                         <ArrowLeft size={16} aria-hidden="true" />
                     </button>
@@ -117,7 +134,7 @@ const Featured = () => {
                         type="button"
                         aria-label="Next featured story"
                         onClick={() => move(1)}
-                        className="grid size-8 place-items-center rounded-full text-neutral-600 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="grid size-8 place-items-center rounded-full text-neutral-600 transition hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                     >
                         <ArrowRight size={16} aria-hidden="true" />
                     </button>
@@ -173,11 +190,11 @@ const Featured = () => {
                     </m.div>
                 </AnimatePresence>
 
-                <div className="grid min-h-[300px] flex-1 grid-cols-2 grid-rows-3 gap-2 sm:min-h-[350px] sm:grid-cols-3 sm:grid-rows-2 md:min-h-[390px]">
+                <div className="flex overflow-x-auto pb-1 gap-2 scrollbar-hide sm:grid sm:min-h-[350px] sm:grid-cols-3 sm:grid-rows-2 md:min-h-[390px] flex-1">
                     {visibleStories.slice(1).map((story, index) => (
                             <div
                                 key={story.title}
-                                className="min-h-[92px] sm:min-h-[112px]"
+                                className="min-h-[92px] w-[140px] shrink-0 sm:w-auto sm:min-h-[112px]"
                             >
                                 <Link
                                     to={getSearchLink(story.query)}

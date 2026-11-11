@@ -62,16 +62,16 @@ const AuthCallback = () => {
     }, [navigate])
 
     return (
-        <section className="grid min-h-[65vh] place-items-center bg-[#fdfcfb] px-5 text-neutral-800">
+        <section className="grid min-h-[65vh] place-items-center bg-[#fdfcfb] px-5 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100">
             <div className="max-w-md text-center">
                 {error
                     ? (
                         <>
-                            <h1 className="text-2xl font-medium">Sign-in couldn’t be completed</h1>
-                            <p role="alert" className="mt-3 break-words text-sm leading-6 text-neutral-500">{error}</p>
+                            <h1 className="text-2xl font-medium text-neutral-900 dark:text-neutral-100">Sign-in couldn’t be completed</h1>
+                            <p role="alert" className="mt-3 break-words text-sm leading-6 text-neutral-500 dark:text-neutral-400">{error}</p>
                             <Link
                                 to="/"
-                                className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.03]"
+                                className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1a1917] dark:text-neutral-200 dark:hover:bg-white/[0.05]"
                             >
                                 <RotateCw size={16} aria-hidden="true" /> Return to Lucea
                             </Link>
@@ -79,9 +79,9 @@ const AuthCallback = () => {
                     )
                     : (
                         <>
-                            <LoaderCircle size={25} className="mx-auto animate-spin text-neutral-500" aria-hidden="true" />
-                            <h1 className="mt-4 text-xl font-medium">Finishing sign-in</h1>
-                            <p className="mt-2 text-sm text-neutral-500">You’ll be redirected in a moment.</p>
+                            <LoaderCircle size={25} className="mx-auto animate-spin text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
+                            <h1 className="mt-4 text-xl font-medium text-neutral-900 dark:text-neutral-100">Finishing sign-in</h1>
+                            <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">You’ll be redirected in a moment.</p>
                         </>
                     )
                 }

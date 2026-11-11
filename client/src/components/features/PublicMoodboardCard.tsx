@@ -12,15 +12,15 @@ const PublicMoodboardCard = ({
     const preview = moodboard.preview.slice(0, 3)
 
     return (
-        <article className="group relative overflow-hidden rounded-[28px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg">
+        <article className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-neutral-800">
             <Link
                 to={`/profiles/${encodeURIComponent(moodboard.handle)}/boards/${encodeURIComponent(moodboard.id)}`}
                 aria-label={`${moodboard.title}, ${moodboard.mediaCount} saved ${moodboard.mediaCount === 1 ? "item" : "items"}`}
                 className="relative block aspect-[4/3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
             >
-                <div className={`absolute inset-0 overflow-hidden ${preview.length > 1 ? "grid grid-cols-3 grid-rows-2 gap-1 bg-[#fdfcfb]" : "bg-gradient-to-br from-neutral-100 to-[#f4efe9]"}`}>
+                <div className={`absolute inset-0 overflow-hidden ${preview.length > 1 ? "grid grid-cols-3 grid-rows-2 gap-1 bg-[#fdfcfb] dark:bg-[#121110]" : "bg-gradient-to-br from-neutral-100 to-[#f4efe9] dark:from-neutral-900 dark:to-[#1a1917]"}`}>
                     {preview.length === 0 ? (
-                        <span className="grid h-full place-items-center text-neutral-500">
+                        <span className="grid h-full place-items-center text-neutral-500 dark:text-neutral-400">
                             <span className="flex items-center gap-2 text-sm"><ImagePlus size={17} aria-hidden="true" /> No saved items yet</span>
                         </span>
                     ) : (
@@ -52,23 +52,23 @@ const PublicMoodboardCard = ({
                         ))
                     )}
                 </div>
-                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                 <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
                     <span className="min-w-0">
-                        <span className="block truncate text-md font-normal uppercase tracking-tight text-white">{moodboard.title}</span>
-                        <span className="mt-0.2 block text-[10px] text-white/85">
+                        <span className="block truncate font-editorial text-xl font-normal text-white sm:text-2xl">{moodboard.title}</span>
+                        <span className="mt-0.5 block text-xs text-white/85">
                             {moodboard.mediaCount} {moodboard.mediaCount === 1 ? "item" : "items"}
                         </span>
                     </span>
-                    <ArrowUpRight size={19} className="mb-1 shrink-0 text-white/85" aria-hidden="true" />
+                    <ArrowUpRight size={19} className="mb-1 shrink-0 text-white/85 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
                 </span>
             </Link>
             {showCreator && (
-                <div className="border-t border-black/[0.06] bg-[#fdfcfb] px-4 py-2.5 text-xs text-neutral-500 sm:px-5">
+                <div className="border-t border-black/[0.06] bg-[#fdfcfb] px-4 py-2.5 text-xs text-neutral-500 dark:border-white/[0.06] dark:bg-[#1a1917] dark:text-neutral-400 sm:px-5">
                     by{" "}
                     <Link
                         to={`/profiles/${encodeURIComponent(moodboard.handle)}`}
-                        className="font-medium text-neutral-700 transition hover:text-neutral-950 hover:underline hover:underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="font-medium text-neutral-700 transition hover:text-neutral-950 hover:underline hover:underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-200 dark:hover:text-white"
                     >
                         {moodboard.handle}
                     </Link>

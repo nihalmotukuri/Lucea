@@ -78,16 +78,16 @@ const SearchFilterDropdown = ({ label, value, options, onChange }: SearchFilterD
                     }
                 }}
                 className={`group flex min-h-9 w-full items-center gap-2 border-b px-1 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
-                    isOpen ? "border-neutral-700" : "border-transparent hover:border-black/20"
+                    isOpen ? "border-neutral-700 dark:border-neutral-300" : "border-transparent hover:border-black/20 dark:hover:border-white/20"
                 }`}
             >
-                <span className="text-[11px] text-neutral-400">{label}</span>
-                <span className="min-w-0 truncate text-[13px] font-medium text-neutral-800">
+                <span className="text-[11px] text-neutral-400 dark:text-neutral-500">{label}</span>
+                <span className="min-w-0 truncate text-[13px] font-medium text-neutral-800 dark:text-neutral-200">
                     {selectedOption.label}
                 </span>
                 <ChevronDown
                     size={13}
-                    className={`shrink-0 text-neutral-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                    className={`shrink-0 text-neutral-400 dark:text-neutral-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                     aria-hidden="true"
                 />
             </button>
@@ -102,7 +102,7 @@ const SearchFilterDropdown = ({ label, value, options, onChange }: SearchFilterD
                             setIsOpen(false)
                         }
                     }}
-                    className="absolute right-0 top-[calc(100%+8px)] z-40 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-black/[0.08] bg-white p-1.5 shadow-[0_14px_38px_rgba(35,29,22,0.12)]"
+                    className="absolute right-0 top-[calc(100%+8px)] z-40 w-[min(17rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-black/[0.08] bg-white p-1.5 shadow-[0_14px_38px_rgba(35,29,22,0.12)] dark:border-white/10 dark:bg-[#1a1917]"
                 >
                     {options.map((option, index) => {
                         const OptionIcon = option.icon
@@ -117,21 +117,21 @@ const SearchFilterDropdown = ({ label, value, options, onChange }: SearchFilterD
                                 onFocus={() => setActiveIndex(index)}
                                 onClick={() => chooseOption(option)}
                                 className={`flex min-h-[54px] w-full items-center gap-3 rounded-xl px-2.5 text-left transition focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-neutral-500 ${
-                                    isSelected ? "bg-[#f6f3ee]" : "hover:bg-[#faf8f5]"
+                                    isSelected ? "bg-[#f6f3ee] dark:bg-[#282420]" : "hover:bg-[#faf8f5] dark:hover:bg-[#221f1c]"
                                 }`}
                             >
                                 <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${
-                                    isSelected ? "bg-white text-neutral-800 shadow-sm" : "bg-[#f7f5f1] text-neutral-500"
+                                    isSelected ? "bg-white text-neutral-800 shadow-sm dark:bg-[#34302b] dark:text-neutral-100" : "bg-[#f7f5f1] text-neutral-500 dark:bg-[#25221e] dark:text-neutral-400"
                                 }`}>
                                     <OptionIcon size={15} strokeWidth={1.7} aria-hidden="true" />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                    <span className={`block text-sm ${isSelected ? "font-medium text-neutral-900" : "text-neutral-700"}`}>
+                                    <span className={`block text-sm ${isSelected ? "font-medium text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-300"}`}>
                                         {option.label}
                                     </span>
-                                    <span className="block truncate text-xs text-neutral-400">{option.description}</span>
+                                    <span className="block truncate text-xs text-neutral-400 dark:text-neutral-500">{option.description}</span>
                                 </span>
-                                {isSelected && <Check size={15} className="shrink-0 text-neutral-700" aria-hidden="true" />}
+                                {isSelected && <Check size={15} className="shrink-0 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />}
                             </button>
                         )
                     })}

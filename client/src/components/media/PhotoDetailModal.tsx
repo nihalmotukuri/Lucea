@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import QueryFeedback from "@/components/features/QueryFeedback"
-import MediaLoadingState from "@/components/features/MediaLoadingState"
 import MediaDetailModalFrame from "@/components/media/MediaDetailModalFrame"
+import MediaDetailModalSkeleton from "@/components/media/MediaDetailModalSkeleton"
 import MediaDetailView from "@/components/media/MediaDetailView"
 import { getPhoto } from "@/api/pexels"
 import { useMinimumLoading } from "@/lib/loadingIndicator"
@@ -36,13 +36,15 @@ const PhotoDetailModal = () => {
 
     return (
         <MediaDetailModalFrame label="Photo details" onClose={close}>
-            {photo
-                ? <MediaDetailView item={{ type: "photo", media: photo }} onBack={goBack} onClose={close} isModal />
-                : <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8">
-                    {showLoading && <MediaLoadingState className="min-h-[40vh] w-full" />}
-                    {!photo && isError && !showLoading && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
+            {photo ? (
+                <MediaDetailView item={{ type: "photo", media: photo }} onBack={goBack} onClose={close} isModal />
+            ) : showLoading ? (
+                <MediaDetailModalSkeleton onBack={goBack} onClose={close} mediaType="photo" />
+            ) : isError ? (
+                <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8 dark:bg-[#1a1917] dark:text-neutral-100">
+                    <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />
                 </div>
-            }
+            ) : null}
         </MediaDetailModalFrame>
     )
 }

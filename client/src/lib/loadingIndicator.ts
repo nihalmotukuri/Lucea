@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-export const fullScreenLoadingClass = "relative left-1/2 min-h-screen w-screen -translate-x-1/2 bg-white md:-translate-x-[calc(50%+40px)]"
+export const fullScreenLoadingClass = "relative left-1/2 min-h-screen w-screen -translate-x-1/2 bg-[#fdfcfb] dark:bg-[#121110] md:-translate-x-[calc(50%+40px)]"
 
 export const useMinimumLoading = (isLoading: boolean, minimumVisibleMs = 500) => {
     const [isVisible, setIsVisible] = useState(isLoading)

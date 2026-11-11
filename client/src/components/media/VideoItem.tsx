@@ -12,6 +12,12 @@ interface VideoItemProps {
     openInModal?: boolean
 }
 
+const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${String(secs).padStart(2, '0')}`
+}
+
 const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
     const navigate = useNavigate()
     const location = useLocation()
@@ -84,10 +90,10 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
     }
 
     return (
-        <div className="group relative z-0 w-full">
+        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.14)] dark:bg-neutral-800 dark:hover:shadow-[0_16px_36px_rgba(0,0,0,0.55)] sm:rounded-[24px]">
             <button
                 type="button"
-                className='relative block w-full cursor-pointer overflow-hidden rounded-3xl border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800'
+                className="relative block w-full cursor-pointer overflow-hidden border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                 aria-label={`View video by ${video.user.name}`}
                 onClick={onVideo}
                 onPointerEnter={onPointerEnter}
@@ -98,15 +104,23 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                 }}
             >
                 <img
-                    className='absolute inset-0 h-full w-full object-cover'
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.2,0,0,1)] motion-safe:group-hover:scale-[1.03]"
                     src={video.image}
                     alt=""
                     loading="lazy"
                     decoding="async"
                 />
+
+                {/* Dark gradient scrim on hover */}
+                <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+                />
+
+                {/* Play/Progress circle on top-left */}
                 <svg
                     viewBox="0 0 36 36"
-                    className="pointer-events-none absolute left-3 top-3 z-[1] size-9 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]"
+                    className="pointer-events-none absolute left-3 top-3 z-[2] size-9 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]"
                     aria-hidden="true"
                 >
                     <circle
@@ -124,8 +138,27 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                     />
                     <Play x="11.5" y="11.5" size="13" fill="white" stroke="white" strokeWidth="1.5" />
                 </svg>
+
+                {/* Video Duration Pill (bottom-right) */}
+                <span className="pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-md transition-opacity duration-200">
+                    <Play size={10} fill="currentColor" aria-hidden="true" />
+                    {formatDuration(video.duration)}
+                </span>
+
+                {/* Creator Attribution (bottom-left) */}
+                <span
+                    className="pointer-events-none absolute bottom-3.5 left-3.5 z-10 flex max-w-[calc(100%-6.5rem)] items-center gap-2 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-1.5 group-hover:translate-y-0 group-hover:opacity-100"
+                >
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-white/30 text-[10px] font-semibold text-white backdrop-blur-md">
+                        {video.user.name.charAt(0).toUpperCase()}
+                    </span>
+                    <span className="truncate text-xs font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                        {video.user.name}
+                    </span>
+                </span>
+
                 <video
-                    className='fade-in'
+                    className="fade-in"
                     src={isPreviewActive ? previewFile?.link : undefined}
                     ref={videoRef}
                     aria-hidden="true"

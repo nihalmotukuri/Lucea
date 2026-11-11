@@ -31,7 +31,7 @@ const VideoDetailPage = () => {
     })
 
     return (
-        <div className="min-h-full bg-[#fdfcfb] pt-[140px]">
+        <div className="min-h-full bg-[#fdfcfb] pt-[140px] dark:bg-[#121110]">
             <MediaDetailPageHeader />
             {!video && isPending && <MediaLoadingState />}
             {!video && isError && <div className="mx-auto max-w-3xl px-5 py-10"><QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} /></div>}

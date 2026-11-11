@@ -54,7 +54,7 @@ const DeleteMoodboardDialog = ({ moodboard, onCancel, onConfirm }: DeleteMoodboa
             ref={dialogRef}
             aria-labelledby="delete-moodboard-title"
             aria-describedby="delete-moodboard-description"
-            className="fixed inset-0 m-auto w-[min(92vw,26rem)] rounded-3xl border border-black/10 bg-[#fdfcfb] p-0 text-neutral-800 shadow-2xl backdrop:bg-neutral-950/45 backdrop:backdrop-blur-[2px]"
+            className="fixed inset-0 m-auto w-[min(92vw,26rem)] rounded-3xl border border-black/10 bg-[#fdfcfb] p-0 text-neutral-800 shadow-2xl backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:border-white/[0.09] dark:bg-[#181615] dark:text-neutral-100"
             onCancel={event => {
                 event.preventDefault()
                 onCancel()
@@ -72,33 +72,33 @@ const DeleteMoodboardDialog = ({ moodboard, onCancel, onConfirm }: DeleteMoodboa
         >
             <div className="p-5 sm:p-6">
                 <div className="mb-4 flex items-start justify-between gap-4">
-                    <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-700">
+                    <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400">
                         <Trash2 size={19} aria-hidden="true" />
                     </div>
                     <button
                         type="button"
                         aria-label="Close dialog"
-                        className="rounded-full p-2 text-neutral-500 transition hover:bg-black/5 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                        className="rounded-full p-2 text-neutral-500 transition hover:bg-black/5 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                         onClick={onCancel}
                     >
                         <X size={18} aria-hidden="true" />
                     </button>
                 </div>
-                <h2 id="delete-moodboard-title" className="text-xl font-semibold">Delete this moodboard?</h2>
-                <p id="delete-moodboard-description" className="mt-2 text-sm leading-6 text-neutral-600">
-                    <span className="font-medium text-neutral-800">{moodboard.title}</span> and its {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"} will be permanently removed from your account. Any public link will stop working.
+                <h2 id="delete-moodboard-title" className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Delete this moodboard?</h2>
+                <p id="delete-moodboard-description" className="mt-2 text-sm leading-6 text-neutral-600 dark:text-neutral-400">
+                    <span className="font-medium text-neutral-800 dark:text-neutral-200">{moodboard.title}</span> and its {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"} will be permanently removed from your account. Any public link will stop working.
                 </p>
                 <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <button
                         type="button"
-                        className="min-h-11 rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="min-h-11 rounded-xl border border-black/10 px-4 text-sm font-medium transition hover:bg-black/[0.04] dark:border-white/10 dark:text-neutral-200 dark:hover:bg-white/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                         onClick={onCancel}
                     >
                         Keep moodboard
                     </button>
                     <button
                         type="button"
-                        className="min-h-11 rounded-xl bg-red-700 px-4 text-sm font-medium text-white transition hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
+                        className="min-h-11 rounded-xl bg-red-700 px-4 text-sm font-medium text-white transition hover:bg-red-800 dark:bg-red-600 dark:hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700"
                         onClick={onConfirm}
                     >
                         Delete moodboard
@@ -114,7 +114,7 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
 
     if (media.length === 0) {
         return (
-            <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-neutral-100 to-[#f4efe9] text-neutral-500">
+            <div className="grid aspect-[4/3] place-items-center bg-gradient-to-br from-neutral-100 to-[#f4efe9] text-neutral-500 dark:from-neutral-900 dark:to-[#1a1917] dark:text-neutral-400">
                 <span className="flex items-center gap-2 text-sm"><ImagePlus size={17} aria-hidden="true" /> No saved items yet</span>
             </div>
         )
@@ -125,7 +125,7 @@ const MoodboardPreview = ({ moodboard }: { moodboard: Moodboard }) => {
     }
 
     return (
-        <div className="grid aspect-[4/3] grid-cols-3 grid-rows-2 gap-1 overflow-hidden bg-[#fdfcfb]">
+        <div className="grid aspect-[4/3] grid-cols-3 grid-rows-2 gap-1 overflow-hidden bg-[#fdfcfb] dark:bg-[#121110]">
             {media.map((item, index) => (
                 <div
                     key={item.key}
@@ -194,18 +194,18 @@ const MoodboardsPage = () => {
 
     if (!user) {
         return (
-            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
-                <div className="w-full max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm">
-                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700">
+            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:pt-12">
+                <div className="w-full max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
+                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
                         <LockKeyhole size={20} aria-hidden="true" />
                     </div>
-                    <h1 className="font-editorial mt-4 text-3xl text-neutral-700">Your moodboards</h1>
-                    <p className="mt-2 text-sm leading-6 text-neutral-500">
+                    <h1 className="font-editorial mt-4 text-3xl text-neutral-700 dark:text-neutral-100">Your moodboards</h1>
+                    <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
                         Sign in or create an account to save bookmarks and access your moodboards across devices.
                     </p>
                     <button
                         type="button"
-                        className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-neutral-900 px-5 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                        className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-neutral-900 px-5 text-sm font-medium text-white transition hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
                         onClick={() => openAuthDialog("Sign in to revisit and organize everything you have saved.")}
                     >
                         Sign in or create an account
@@ -265,14 +265,14 @@ const MoodboardsPage = () => {
 
     if (moodboardId && !moodboard) {
         return (
-            <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:pt-12">
-                <div className="mx-auto mt-10 max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm">
-                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-neutral-100 text-neutral-600">
+            <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:pt-12">
+                <div className="mx-auto mt-10 max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
+                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                         <ImagePlus size={20} aria-hidden="true" />
                     </div>
-                    <h1 className="mt-4 text-2xl font-semibold">Moodboard not found</h1>
-                    <p className="mt-2 text-sm leading-6 text-neutral-500">It may have been deleted or is not available in this browser.</p>
-                    <Link className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700" to="/moodboards">
+                    <h1 className="mt-4 text-2xl font-semibold text-neutral-900 dark:text-white">Moodboard not found</h1>
+                    <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">It may have been deleted or is not available in this browser.</p>
+                    <Link className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200" to="/moodboards">
                         <ArrowLeft size={16} aria-hidden="true" /> Back to moodboards
                     </Link>
                 </div>
@@ -282,37 +282,37 @@ const MoodboardsPage = () => {
 
     if (moodboard) {
         return (
-            <section className="min-h-screen bg-[#fdfcfb] px-4 pb-10 pt-24 text-neutral-800 sm:px-5 md:px-8 md:pt-12">
+            <section className="min-h-screen bg-[#fdfcfb] px-4 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 sm:px-5 md:px-8 md:pt-12">
                 <div className="mx-auto max-w-[1500px]">
-                <Link to="/moodboards" className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
+                <Link to="/moodboards" className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:text-white">
                     <ArrowLeft size={16} aria-hidden="true" /> All moodboards
                 </Link>
-                <div className="relative mb-7 mt-5 flex flex-wrap items-end justify-center gap-3 border-b border-black/[0.08] pb-6 text-center sm:mb-9">
+                <div className="relative mb-7 mt-5 flex flex-wrap items-end justify-center gap-3 border-b border-black/[0.08] pb-6 text-center dark:border-white/[0.08] sm:mb-9">
                     <div className="w-full">
-                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Your collection</p>
-                        <h1 className="font-editorial break-words pt-1 text-4xl font-normal text-neutral-700 sm:text-[48px]">{moodboard.title}</h1>
-                        <p className="mt-2 text-base text-neutral-500 sm:text-lg" aria-live="polite">
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">Your collection</p>
+                        <h1 className="font-editorial break-words pt-1 text-4xl font-normal text-neutral-700 dark:text-neutral-100 sm:text-[48px]">{moodboard.title}</h1>
+                        <p className="mt-2 text-base text-neutral-500 dark:text-neutral-400 sm:text-lg" aria-live="polite">
                             {moodboard.media.length} saved {moodboard.media.length === 1 ? "item" : "items"}
                         </p>
                     </div>
                     <button
                         type="button"
-                        className="relative inline-flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm text-neutral-500 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                        className="relative inline-flex min-h-9 items-center gap-2 rounded-lg px-2 text-sm text-neutral-500 transition hover:bg-red-50 hover:text-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-red-950/30 dark:hover:text-red-400"
                         onClick={() => setMoodboardToDelete(moodboard)}
                     >
                         <Trash2 size={16} aria-hidden="true" /> Delete
                     </button>
                 </div>
 
-                <section aria-label="Moodboard sharing" className="mb-6 rounded-2xl border border-black/[0.08] bg-white p-4 sm:flex sm:items-center sm:justify-between sm:gap-5">
+                <section aria-label="Moodboard sharing" className="mb-6 rounded-2xl border border-black/[0.08] bg-white p-4 dark:border-white/[0.08] dark:bg-[#1a1917] sm:flex sm:items-center sm:justify-between sm:gap-5">
                     <div className="flex items-start gap-3">
                         {moodboard.isPublic
-                            ? <Globe2 size={18} className="mt-0.5 shrink-0 text-emerald-700" aria-hidden="true" />
-                            : <LockKeyhole size={18} className="mt-0.5 shrink-0 text-neutral-500" aria-hidden="true" />
+                            ? <Globe2 size={18} className="mt-0.5 shrink-0 text-emerald-700 dark:text-emerald-400" aria-hidden="true" />
+                            : <LockKeyhole size={18} className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
                         }
                         <div>
-                            <h2 className="text-sm font-medium">{moodboard.isPublic ? "Public moodboard" : "Private moodboard"}</h2>
-                            <p className="mt-1 text-xs leading-5 text-neutral-500">
+                            <h2 className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{moodboard.isPublic ? "Public moodboard" : "Private moodboard"}</h2>
+                            <p className="mt-1 text-xs leading-5 text-neutral-500 dark:text-neutral-400">
                                 {moodboard.isPublic
                                     ? "Anyone with the link can view this board and it may appear in related search results."
                                     : "Only you can see this board. Publishing makes it visible on your profile and in related searches."
@@ -327,7 +327,7 @@ const MoodboardsPage = () => {
                                     type="button"
                                     disabled={isUpdatingVisibility || profileQuery.isPending}
                                     onClick={() => void toggleVisibility()}
-                                    className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04] disabled:cursor-wait disabled:opacity-60"
+                                    className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04] disabled:cursor-wait disabled:opacity-60 dark:border-white/10 dark:text-neutral-300 dark:hover:bg-white/[0.05]"
                                 >
                                     {moodboard.isPublic ? <LockKeyhole size={14} aria-hidden="true" /> : <Globe2 size={14} aria-hidden="true" />}
                                     {isUpdatingVisibility ? "Updating…" : moodboard.isPublic ? "Make private" : "Publish board"}
@@ -336,7 +336,7 @@ const MoodboardsPage = () => {
                                     <button
                                         type="button"
                                         onClick={() => void copyPublicLink()}
-                                        className="inline-flex min-h-9 items-center gap-2 rounded-lg bg-neutral-900 px-3 text-xs font-medium text-white hover:bg-neutral-700"
+                                        className="inline-flex min-h-9 items-center gap-2 rounded-lg bg-neutral-900 px-3 text-xs font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
                                     >
                                         <Copy size={14} aria-hidden="true" /> Copy link
                                     </button>
@@ -345,23 +345,23 @@ const MoodboardsPage = () => {
                         ) : (
                             <Link
                                 to="/profile"
-                                className="inline-flex min-h-9 items-center rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04]"
+                                className="inline-flex min-h-9 items-center rounded-lg border border-black/10 px-3 text-xs font-medium text-neutral-700 hover:bg-black/[0.04] dark:border-white/10 dark:text-neutral-300 dark:hover:bg-white/[0.05]"
                             >
                                 {profileQuery.isError ? "Profile unavailable — retry" : "Choose a profile handle"}
                             </Link>
                         )}
                     </div>
-                    {shareMessage && <p className="mt-3 basis-full text-xs text-neutral-600" role="status">{shareMessage}</p>}
+                    {shareMessage && <p className="mt-3 basis-full text-xs text-neutral-600 dark:text-neutral-400" role="status">{shareMessage}</p>}
                 </section>
 
                 {accountId && syncError && (
-                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400" role="alert">
                         <span>Moodboard changes may not be saved: {syncError}</span>
                         <button
                             type="button"
                             disabled={isSyncing}
                             onClick={() => void retrySync()}
-                            className="min-h-9 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium disabled:opacity-60"
+                            className="min-h-9 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium disabled:opacity-60 dark:border-red-900/40 dark:bg-[#1f1d1a] dark:text-red-300"
                         >
                             {isSyncing ? "Retrying…" : "Retry save"}
                         </button>
@@ -370,13 +370,13 @@ const MoodboardsPage = () => {
 
                 {moodboard.media.length > 0 && (
                     <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                        <p className="text-sm text-neutral-500" aria-live="polite">
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400" aria-live="polite">
                             {visibleMedia.length} {mediaFilter === "all" ? "saved" : mediaFilter} {visibleMedia.length === 1 ? "item" : "items"}
                         </p>
                         <div
                             role="group"
                             aria-label="Filter moodboard items by media type"
-                            className="inline-flex max-w-full items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1"
+                            className="inline-flex max-w-full items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1 dark:border-white/[0.08] dark:bg-[#1a1917]/80"
                         >
                             {([
                                 { value: "all", label: "Everything", Icon: LayoutGrid },
@@ -390,8 +390,8 @@ const MoodboardsPage = () => {
                                     onClick={() => setMediaFilter(value)}
                                     className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:px-4 sm:text-sm ${
                                         mediaFilter === value
-                                            ? "bg-neutral-900 text-white"
-                                            : "text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900"
+                                            ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                                            : "text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white"
                                     }`}
                                 >
                                     <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
@@ -410,7 +410,7 @@ const MoodboardsPage = () => {
                             style={{ justifyContent: "flex-start" }}
                         >
                             {visibleMedia.map(media => (
-                                <figure key={media.key} className="group relative w-full min-w-0 overflow-hidden rounded-3xl bg-neutral-200">
+                                <figure key={media.key} className="group relative w-full min-w-0 overflow-hidden rounded-3xl bg-neutral-200 dark:bg-neutral-800">
                                     <Link
                                         to={media.detailPath}
                                         className="relative block w-full min-w-0 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
@@ -441,20 +441,20 @@ const MoodboardsPage = () => {
                         </MoodboardMasonry>
                     </ResponsiveMasonry>
                 ) : moodboard.media.length === 0 ? (
-                    <div className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center sm:py-14">
-                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-600">
+                    <div className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center dark:border-white/15 dark:bg-[#1a1917]/60 sm:py-14">
+                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-600 dark:bg-[#25221e] dark:text-neutral-300">
                             <ImagePlus size={20} aria-hidden="true" />
                         </div>
-                        <h2 className="mt-4 text-lg font-semibold">Start collecting inspiration</h2>
-                        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-neutral-500">
+                        <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">Start collecting inspiration</h2>
+                        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-neutral-500 dark:text-neutral-400">
                             Save photos and videos from your feed to build this moodboard.
                         </p>
-                        <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
+                        <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">
                             Explore media <ArrowUpRight size={16} aria-hidden="true" />
                         </Link>
                     </div>
                 ) : (
-                    <div role="status" className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center text-sm text-neutral-500">
+                    <div role="status" className="rounded-3xl border border-dashed border-black/15 bg-white/60 px-5 py-10 text-center text-sm text-neutral-500 dark:border-white/15 dark:bg-[#1a1917]/60 dark:text-neutral-400">
                         No {mediaFilter} saved to this moodboard yet.
                     </div>
                 )}
@@ -469,22 +469,22 @@ const MoodboardsPage = () => {
     }
 
     return (
-        <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 md:px-8 md:pt-12">
+        <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:px-8 md:pt-12">
             <div className="mx-auto max-w-6xl">
                 <header className="pt-1 text-center">
-                    <h1 className="font-editorial text-4xl font-normal text-neutral-700 sm:text-[48px]">Moodboards</h1>
-                    <p className="mt-1 text-xl text-neutral-800">Keep the things that move you.</p>
-                    <p className="mt-2 text-sm text-neutral-500">Collect photos and videos for ideas you want to revisit.</p>
+                    <h1 className="font-editorial text-4xl font-normal text-neutral-700 dark:text-neutral-100 sm:text-[48px]">Moodboards</h1>
+                    <p className="mt-1 text-xl text-neutral-800 dark:text-neutral-200">Keep the things that move you.</p>
+                    <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">Collect photos and videos for ideas you want to revisit.</p>
                 </header>
 
                 {accountId && syncError && (
-                    <div className="mx-auto mt-5 flex max-w-xl flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                    <div className="mx-auto mt-5 flex max-w-xl flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400" role="alert">
                         <span>Moodboards couldn’t save: {syncError}</span>
                         <button
                             type="button"
                             disabled={isSyncing}
                             aria-busy={isSyncing}
-                            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium text-red-800 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-70"
+                            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-red-200 bg-white px-3 text-xs font-medium text-red-800 transition hover:bg-red-100 disabled:cursor-wait disabled:opacity-70 dark:border-red-900/40 dark:bg-[#1f1d1a] dark:text-red-300"
                             onClick={() => void retrySync()}
                         >
                             {isSyncing && <span aria-hidden="true" className="size-3 animate-spin rounded-full border-2 border-red-300 border-t-red-800" />}
@@ -493,14 +493,14 @@ const MoodboardsPage = () => {
                     </div>
                 )}
 
-                <form onSubmit={onCreateMoodboard} className="mx-auto mt-7 max-w-xl border-y border-black/[0.08] py-4 sm:flex sm:items-end sm:gap-3 sm:py-5">
+                <form onSubmit={onCreateMoodboard} className="mx-auto mt-7 max-w-xl border-y border-black/[0.08] py-4 dark:border-white/[0.08] sm:flex sm:items-end sm:gap-3 sm:py-5">
                     <div className="min-w-0 flex-1">
-                        <label htmlFor="moodboard-name" className="mb-2 block text-sm font-medium text-neutral-700">Create a moodboard</label>
+                        <label htmlFor="moodboard-name" className="mb-2 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Create a moodboard</label>
                         <input
                             id="moodboard-name"
                             aria-describedby={createError ? "moodboard-name-hint moodboard-name-error" : "moodboard-name-hint"}
                             aria-invalid={Boolean(createError)}
-                            className="min-h-11 w-full rounded-xl border border-black/10 bg-[#fdfcfb] px-3 text-sm outline-none transition placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-500 aria-[invalid=true]:border-red-500"
+                            className="min-h-11 w-full rounded-xl border border-black/10 bg-[#fdfcfb] px-3 text-sm outline-none transition placeholder:text-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-500 aria-[invalid=true]:border-red-500 dark:border-white/10 dark:bg-[#1a1917] dark:text-neutral-100 dark:placeholder:text-neutral-500"
                             maxLength={60}
                             placeholder="e.g. Warm autumn tones"
                             value={title}
@@ -509,13 +509,13 @@ const MoodboardsPage = () => {
                                 if (createError) setCreateError("")
                             }}
                         />
-                        <p id="moodboard-name-hint" className="mt-1.5 text-xs text-neutral-500">Choose a name you’ll recognize later · 60 characters max</p>
-                        {createError && <p id="moodboard-name-error" className="mt-1 text-xs text-red-700" role="alert">{createError}</p>}
+                        <p id="moodboard-name-hint" className="mt-1.5 text-xs text-neutral-500 dark:text-neutral-400">Choose a name you’ll recognize later · 60 characters max</p>
+                        {createError && <p id="moodboard-name-error" className="mt-1 text-xs text-red-700 dark:text-red-400" role="alert">{createError}</p>}
                     </div>
                     <button
                         type="submit"
                         disabled={!title.trim()}
-                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-gradient-to-r from-neutral-900 via-neutral-800 to-indigo-900 px-4 text-sm font-medium text-white shadow-[0_3px_10px_rgba(30,27,75,0.16)] transition duration-200 hover:-translate-y-px hover:from-neutral-800 hover:via-indigo-900 hover:to-violet-900 hover:shadow-[0_5px_14px_rgba(30,27,75,0.22)] active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-none disabled:from-[#e8e4de] disabled:via-[#e8e4de] disabled:to-[#e8e4de] disabled:text-neutral-600 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-700 sm:mt-0 sm:w-auto"
+                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-neutral-800 hover:shadow active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:mt-0 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
                     >
                         <ImagePlus size={17} aria-hidden="true" /> Create board
                     </button>
@@ -523,25 +523,28 @@ const MoodboardsPage = () => {
 
                 {moodboards.length > 0 ? (
                     <div className="mt-8">
-                        <h2 className="mb-4 text-sm font-semibold text-neutral-700">Saved boards <span className="ml-1 font-normal text-neutral-500">({moodboards.length})</span></h2>
+                        <h2 className="mb-4 text-sm font-semibold text-neutral-700 dark:text-neutral-300">Saved boards <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">({moodboards.length})</span></h2>
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {moodboards.map(board => (
-                            <article key={board.id} className="group relative overflow-hidden rounded-3xl bg-neutral-200 transition-shadow duration-300 hover:shadow-lg">
+                            <article key={board.id} className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-neutral-800">
                                 <Link
                                     to={`/moodboards/${board.id}`}
                                     aria-label={`${board.title}, ${board.media.length} saved ${board.media.length === 1 ? "item" : "items"}`}
                                     className="relative block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                                 >
                                     <MoodboardPreview moodboard={board} />
-                                    <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                                    <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
                                     <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
                                         <span className="min-w-0">
-                                            <span className="block truncate text-2xl text-white">{board.title}</span>
-                                            <span className="mt-1 block text-sm text-white/80" aria-hidden="true">
-                                                {board.media.length} {board.media.length === 1 ? "item" : "items"}
+                                            <span className="block truncate text-xl font-medium text-white sm:text-2xl">{board.title}</span>
+                                            <span className="mt-1 flex items-center gap-1.5 text-xs text-white/80" aria-hidden="true">
+                                                {board.isPublic ? <Globe2 size={12} className="text-emerald-400" /> : <LockKeyhole size={12} />}
+                                                <span>{board.media.length} {board.media.length === 1 ? "item" : "items"}</span>
+                                                <span className="text-white/40">·</span>
+                                                <span>{board.isPublic ? "Public" : "Private"}</span>
                                             </span>
                                         </span>
-                                        <ArrowUpRight size={18} className="mb-1 shrink-0 text-white/80" aria-hidden="true" />
+                                        <ArrowUpRight size={18} className="mb-1 shrink-0 text-white/80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
                                     </span>
                                 </Link>
                                 <button
@@ -558,15 +561,15 @@ const MoodboardsPage = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="mt-8 rounded-3xl border border-dashed border-black/15 bg-white/50 px-5 py-10 text-center sm:py-14">
-                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-600">
+                    <div className="mt-8 rounded-3xl border border-dashed border-black/15 bg-white/50 px-5 py-10 text-center dark:border-white/15 dark:bg-[#1a1917]/50 sm:py-14">
+                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-600 dark:bg-[#25221e] dark:text-neutral-300">
                             <ImagePlus size={20} aria-hidden="true" />
                         </div>
-                        <h2 className="mt-4 text-lg font-semibold">Your inspiration starts here</h2>
-                        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-neutral-500">
+                        <h2 className="mt-4 text-lg font-semibold text-neutral-900 dark:text-white">Your inspiration starts here</h2>
+                        <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-neutral-500 dark:text-neutral-400">
                             Create a moodboard above, then save photos and videos as you browse.
                         </p>
-                        <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700">
+                        <Link to="/" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/10 dark:bg-[#1a1917] dark:text-neutral-200 dark:hover:bg-white/[0.05]">
                             Explore media <ArrowUpRight size={16} aria-hidden="true" />
                         </Link>
                     </div>

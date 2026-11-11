@@ -49,7 +49,7 @@ const formatDuration = (duration: number) => {
     return `${minutes}:${String(seconds).padStart(2, "0")}`
 }
 
-const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-white/[0.1] dark:bg-[#201e1b] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#292622] dark:hover:text-white"
 
 const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: MediaDetailViewProps) => {
     const [shareMessage, setShareMessage] = useState("")
@@ -146,20 +146,20 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
         <article
             id={isModal ? "mediaDetailScrollable" : undefined}
             aria-labelledby="media-detail-title"
-            className={`mx-auto w-full bg-[#fdfcfb] ${
+            className={`mx-auto w-full bg-[#fdfcfb] text-neutral-850 transition-colors dark:bg-[#161413] dark:text-neutral-100 ${
                 isModal
-                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(27,24,20,0.2)] sm:max-h-[94dvh] sm:rounded-[34px]"
+                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[34px] dark:border dark:border-white/[0.08]"
                     : "min-h-full max-w-[1440px]"
             }`}
         >
             <div className="px-4 pb-8 pt-4 sm:px-7 sm:pb-10 sm:pt-6 lg:px-10 lg:pb-12">
                 {isModal && (
-                    <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10">
+                    <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10 dark:border-white/[0.08] dark:bg-[#161413]/95">
                         <button
                             type="button"
                             autoFocus
                             onClick={onBack}
-                            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
                             <ArrowLeft size={17} aria-hidden="true" />
                             Back to your trail
@@ -168,7 +168,7 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             type="button"
                             aria-label="Close media details"
                             onClick={onClose}
-                            className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                            className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
                             <X size={18} strokeWidth={1.8} aria-hidden="true" />
                         </button>
@@ -205,10 +205,10 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             />
                         )}
                         {mediaError && (
-                            <div role="alert" className="max-w-sm rounded-2xl bg-white/90 p-6 text-center shadow-lg">
-                                <h2 className="font-semibold text-neutral-900">This visual could not load</h2>
-                                <p className="mt-1 text-sm leading-6 text-neutral-600">The original is still available from its creator.</p>
-                                <a href={detailUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white hover:bg-neutral-700">
+                            <div role="alert" className="max-w-sm rounded-2xl bg-white/90 p-6 text-center shadow-lg dark:border dark:border-white/10 dark:bg-[#1a1917]/90 dark:text-neutral-100">
+                                <h2 className="font-semibold text-neutral-900 dark:text-white">This visual could not load</h2>
+                                <p className="mt-1 text-sm leading-6 text-neutral-600 dark:text-neutral-400">The original is still available from its creator.</p>
+                                <a href={detailUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-neutral-900 px-4 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">
                                     Open source <ArrowUpRight size={15} aria-hidden="true" />
                                 </a>
                             </div>
@@ -220,15 +220,15 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
                                 {isPhoto ? "Photographer" : "Video creator"}
                             </p>
-                            <h2 className="mt-1 text-lg font-medium text-neutral-900">
+                            <h2 className="mt-1 text-lg font-medium text-neutral-900 dark:text-neutral-100">
                                 {creatorUrl
-                                    ? <a href={creatorUrl} target="_blank" rel="noreferrer" className="underline decoration-black/20 underline-offset-4 hover:decoration-black">{creator}</a>
+                                    ? <a href={creatorUrl} target="_blank" rel="noreferrer" className="underline decoration-black/20 underline-offset-4 hover:decoration-black dark:decoration-white/20 dark:hover:decoration-white">{creator}</a>
                                     : creator
                                 }
                             </h2>
                         </header>
 
-                        <div className="flex flex-wrap items-center gap-2 border-y border-black/[0.08] py-4">
+                        <div className="flex flex-wrap items-center gap-2 border-y border-black/[0.08] py-4 dark:border-white/[0.08]">
                             <SaveToMoodboardButton
                                 variant="inline"
                                 media={{
@@ -278,22 +278,37 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             </p>
                         )}
 
-                        <dl className="grid grid-cols-2 gap-4">
+                        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                             {photo && (
-                                <div>
-                                    <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Dimensions</dt>
-                                    <dd className="mt-1 text-sm text-neutral-700">{photo.width} × {photo.height}</dd>
-                                </div>
+                                <>
+                                    <div>
+                                        <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Dimensions</dt>
+                                        <dd className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{photo.width} × {photo.height}</dd>
+                                    </div>
+                                    {photo.avg_color && (
+                                        <div>
+                                            <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Tone</dt>
+                                            <dd className="mt-1 flex items-center gap-1.5 text-sm text-neutral-700 dark:text-neutral-200">
+                                                <span
+                                                    className="size-3.5 shrink-0 rounded-full border border-black/10 shadow-xs"
+                                                    style={{ backgroundColor: photo.avg_color }}
+                                                    aria-hidden="true"
+                                                />
+                                                <span className="font-mono text-xs text-neutral-600 dark:text-neutral-400">{photo.avg_color.toUpperCase()}</span>
+                                            </dd>
+                                        </div>
+                                    )}
+                                </>
                             )}
                             {video && (
                                 <>
                                     <div>
                                         <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Duration</dt>
-                                        <dd className="mt-1 text-sm text-neutral-700">{formatDuration(video.duration)}</dd>
+                                        <dd className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{formatDuration(video.duration)}</dd>
                                     </div>
                                     <div>
                                         <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Dimensions</dt>
-                                        <dd className="mt-1 text-sm text-neutral-700">{video.width} × {video.height}</dd>
+                                        <dd className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">{video.width} × {video.height}</dd>
                                     </div>
                                 </>
                             )}
@@ -303,23 +318,34 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Description</p>
                             <h1
                                 id="media-detail-title"
-                                className="font-editorial mt-2 text-xl leading-snug tracking-[-0.025em] text-neutral-900 sm:text-2xl"
+                                className="font-editorial mt-2 text-xl leading-snug tracking-[-0.025em] text-neutral-900 sm:text-2xl dark:text-neutral-100"
                             >
                                 {heading}
                             </h1>
+                            <p className="mt-3 text-xs text-neutral-400">
+                                Free to use under the{" "}
+                                <a
+                                    href="https://www.pexels.com/license/"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="underline decoration-neutral-300 underline-offset-2 transition-colors hover:text-neutral-700 dark:decoration-neutral-600 dark:hover:text-neutral-200"
+                                >
+                                    Pexels License
+                                </a>
+                            </p>
                         </section>
                     </aside>
                 </div>
 
-                <section className="mt-10 border-t border-black/[0.08] pt-7 sm:mt-12 sm:pt-9">
+                <section className="mt-10 border-t border-black/[0.08] pt-7 sm:mt-12 sm:pt-9 dark:border-white/[0.08]">
                     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                         <div>
                             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400">Keep exploring</p>
-                            <h2 className="font-editorial mt-1 text-2xl tracking-[-0.025em] text-neutral-900 sm:text-3xl">
+                            <h2 className="font-editorial mt-1 text-2xl tracking-[-0.025em] text-neutral-900 sm:text-3xl dark:text-neutral-100">
                                 More {isPhoto ? "photos" : "videos"} for this mood
                             </h2>
                         </div>
-                        <p className="max-w-sm text-xs leading-5 text-neutral-500">
+                        <p className="max-w-sm text-xs leading-5 text-neutral-500 dark:text-neutral-400">
                             A trail inspired by {searchQuery}.
                         </p>
                     </div>

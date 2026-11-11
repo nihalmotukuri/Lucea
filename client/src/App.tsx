@@ -16,6 +16,7 @@ import { fullScreenLoadingClass } from "./lib/loadingIndicator"
 const MyProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.MyProfilePage })))
 const PublicMoodboardPage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicMoodboardPage })))
 const PublicProfilePage = lazy(() => import("./pages/profiles/PublicProfiles").then(module => ({ default: module.PublicProfilePage })))
+const SettingsPage = lazy(() => import("./pages/settings/SettingsPage"))
 
 function NotFound() {
   return (
@@ -43,7 +44,7 @@ function App() {
     <>
       <Navbar />
 
-      <main className='min-h-screen pb-[76px] md:h-screen md:pb-0 md:pl-[80px]'>
+      <main className='min-h-screen pb-[calc(76px+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-[80px]'>
         <Routes location={state?.photoBackgroundLocation || state?.videoBackgroundLocation || location}>
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<Home />} />
@@ -53,6 +54,7 @@ function App() {
           <Route path="/moodboards" element={<MoodboardsPage />} />
           <Route path="/moodboards/:moodboardId" element={<MoodboardsPage />} />
           <Route path="/profile" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><MyProfilePage /></Suspense>} />
+          <Route path="/settings" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><SettingsPage /></Suspense>} />
           <Route path="/profiles/:handle/boards/:moodboardId" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><PublicMoodboardPage /></Suspense>} />
           <Route path="/profiles/:handle" element={<Suspense fallback={<div aria-hidden="true" className={fullScreenLoadingClass} />}><PublicProfilePage /></Suspense>} />
           <Route path="/photos/:photoId" element={<PhotoDetailPage />} />

@@ -4,6 +4,10 @@ import './styles/index.css'
 import App from './App.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import axios from 'axios'
+import { applyTheme, getStoredTheme } from './hooks/useTheme'
+
+// Initialize theme on initial load
+applyTheme(getStoredTheme())
 
 const queryClient = new QueryClient({
   defaultOptions: {

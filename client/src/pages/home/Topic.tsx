@@ -31,33 +31,33 @@ interface TopicResultsHeaderProps {
 }
 
 const TopicResultsHeader = ({ title, mediaFilter, onFilterChange }: TopicResultsHeaderProps) => (
-    <header className="mb-5 border-b border-black/[0.08] pb-4">
+    <header className="mb-6 border-b border-black/[0.08] pb-5 dark:border-white/[0.08]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="min-w-0">
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
-                    Today’s visual field <span className="mx-1.5 text-neutral-300">/</span> Curated search
+            <div className="min-w-0 animate-subtle-reveal">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-neutral-400">
+                    Today’s visual field <span className="mx-1.5 text-neutral-300 dark:text-neutral-600">/</span> Curated search
                 </p>
                 <h1
-                    className="font-editorial break-words text-[26px] leading-tight text-neutral-800 sm:text-[32px]"
+                    className="font-editorial break-words text-[28px] sm:text-[38px] font-normal leading-tight text-neutral-900 dark:text-white tracking-[-0.015em]"
                 >
                     {title}
                 </h1>
-                <p className="mt-1 text-xs text-neutral-500">
+                <p className="mt-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-300 font-normal">
                     A fresh trail of photos and motion, chosen for today.
                 </p>
             </div>
 
-            <div role="group" aria-label="Filter topic results by media type" className="flex items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1">
+            <div role="group" aria-label="Filter topic results by media type" className="flex items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1 dark:border-white/[0.08] dark:bg-[#1a1917]/80">
                 {mediaFilters.map(({ value, label, Icon }) => (
                     <button
                         key={value}
                         type="button"
                         aria-pressed={mediaFilter === value}
                         onClick={() => onFilterChange(value)}
-                        className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                        className={`inline-flex min-h-9 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
                             mediaFilter === value
-                                ? 'bg-neutral-900 text-white'
-                                : 'text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900'
+                                ? 'bg-neutral-900 text-white shadow-xs dark:bg-white dark:text-neutral-900'
+                                : 'text-neutral-500 hover:bg-black/[0.05] hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white'
                         }`}
                     >
                         <Icon size={15} strokeWidth={1.8} aria-hidden="true" />

@@ -13,8 +13,8 @@ export const AuroraText = memo(
   ({
     children,
     className = "",
-    colors = ["#FF0080", "#7928CA", "#0070F3", "#38bdf8"],
-    speed = 1,
+    colors = ["#1c1917", "#78350f", "#b45309", "#92400e", "#1c1917"],
+    speed = 0.8,
   }: AuroraTextProps) => {
     const gradientStyle = {
       backgroundImage: `linear-gradient(135deg, ${colors.join(", ")}, ${

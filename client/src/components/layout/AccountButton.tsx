@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react"
-import { BookmarkPlus, CircleUserRound, LoaderCircle, LogIn, LogOut, Sparkles, X } from "lucide-react"
+import { Link } from "react-router-dom"
+import { ArrowUpRight, BookmarkPlus, ChevronDown, CircleUserRound, LoaderCircle, LogIn, LogOut, Settings, Sparkles, UserRound, X } from "lucide-react"
 import { useAuth } from "@/auth/useAuth"
 
 const returnPathKey = "lucea-auth-return-path"
@@ -103,39 +104,48 @@ const AccountButton = () => {
         <>
             <button
                 type="button"
-                aria-label={user ? `Account and sign out: ${user.email}` : "Sign in"}
-                title={user ? "Account / sign out" : "Sign in"}
+                aria-label={user ? `Account: ${user.email}` : "Sign in"}
+                title={user ? "Your account" : "Sign in"}
                 disabled={isAuthLoading}
-                className="grid size-[42px] shrink-0 place-items-center rounded-full border border-black/[0.09] bg-white/70 text-neutral-600 hover:border-black/15 hover:bg-[#f1ece5] hover:text-neutral-900 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                className="group relative flex h-14 shrink-0 items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 px-3 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:bg-white hover:shadow-md active:translate-y-0 active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.1] dark:bg-[#1a1917] dark:hover:border-white/25 dark:hover:bg-[#23211e]"
                 onClick={() => {
                     setError("")
                     setMessage("")
                     openAuthDialog()
                 }}
             >
-                {isAuthLoading
-                    ? <LoaderCircle size={19} className="animate-spin" aria-hidden="true" />
-                    : user
-                        ? <LogOut size={19} aria-hidden="true" />
-                        : <LogIn size={19} aria-hidden="true" />
-                }
+                {isAuthLoading ? (
+                    <LoaderCircle size={19} className="animate-spin text-neutral-500" aria-hidden="true" />
+                ) : user ? (
+                    <div className="flex items-center gap-1.5">
+                        <div className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-200 to-amber-400 font-semibold text-xs text-amber-950 shadow-2xs select-none dark:from-amber-600 dark:to-amber-800 dark:text-amber-100">
+                            {user.email ? user.email[0].toUpperCase() : <CircleUserRound size={17} aria-hidden="true" />}
+                        </div>
+                        <ChevronDown size={14} className="shrink-0 text-neutral-400 transition-transform duration-200 group-hover:text-neutral-700 dark:text-neutral-500 dark:group-hover:text-neutral-300" aria-hidden="true" />
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 text-neutral-700 dark:text-neutral-200 sm:px-1">
+                        <LogIn size={18} strokeWidth={1.8} className="shrink-0 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-white" aria-hidden="true" />
+                        <span className="hidden sm:inline text-xs font-medium">Sign in</span>
+                    </div>
+                )}
             </button>
 
             {isAuthDialogOpen && (
                 <dialog
                     ref={dialogRef}
                     aria-labelledby="account-dialog-title"
-                    className="fixed inset-0 m-auto max-h-[min(90dvh,46rem)] w-[min(92vw,28rem)] overflow-y-auto rounded-[28px] border border-black/[0.08] bg-[#fdfcfb] p-0 text-neutral-800 shadow-[0_24px_80px_rgba(35,29,22,0.18)] backdrop:bg-neutral-950/40 backdrop:backdrop-blur-[3px]"
+                    className="fixed inset-0 m-auto max-h-[min(92dvh,48rem)] w-[min(92vw,28rem)] overflow-y-auto rounded-[28px] border border-black/[0.08] bg-[#fdfcfb] p-0 text-neutral-800 shadow-[0_24px_80px_rgba(35,29,22,0.18)] backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:border-white/[0.09] dark:bg-[#181615] dark:text-neutral-100"
                     onCancel={event => {
                         event.preventDefault()
                         closeAuthDialog()
                     }}
                     onClose={closeAuthDialog}
                 >
-                    <div className="p-5 sm:p-7">
+                    <div className="p-6 sm:p-7">
                         <div className="mb-6 flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
-                                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#f1ece5] text-neutral-700">
+                                <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[#f1ece5] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
                                     {user
                                         ? <CircleUserRound size={20} aria-hidden="true" />
                                         : <BookmarkPlus size={20} aria-hidden="true" />
@@ -145,7 +155,7 @@ const AccountButton = () => {
                                     <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
                                         {user ? "Your Lucea account" : "A little more inspiration"}
                                     </p>
-                                    <h2 id="account-dialog-title" className="font-editorial text-2xl leading-tight text-neutral-800 sm:text-[28px]">
+                                    <h2 id="account-dialog-title" className="font-editorial text-2xl leading-tight text-neutral-800 dark:text-neutral-100 sm:text-[28px]">
                                         {user ? "Your account" : isSignUp ? "Make room for inspiration" : "Welcome back"}
                                     </h2>
                                 </div>
@@ -153,7 +163,7 @@ const AccountButton = () => {
                             <button
                                 type="button"
                                 aria-label="Close dialog"
-                                className="rounded-full p-2 text-neutral-500 transition hover:bg-black/5 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
+                                className="grid size-8 place-items-center rounded-full text-neutral-500 transition hover:bg-black/5 hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-white/5 dark:hover:text-white"
                                 onClick={closeAuthDialog}
                             >
                                 <X size={18} aria-hidden="true" />
@@ -162,38 +172,73 @@ const AccountButton = () => {
 
                         {user ? (
                             <div>
-                                <p className="mb-4 text-sm leading-6 text-neutral-500">
-                                    Your saved inspiration is ready whenever you are.
-                                </p>
-                                <p className="break-all rounded-2xl border border-black/[0.06] bg-white px-4 py-3.5 text-sm text-neutral-700">{user.email}</p>
-                                <button
-                                    type="button"
-                                    disabled={isSubmitting}
-                                    className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-black/[0.08] px-4 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.035] hover:text-neutral-900 disabled:opacity-60"
-                                    onClick={() => void signOut()}
-                                >
-                                    {isSubmitting
-                                        ? <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />
-                                        : <LogOut size={16} aria-hidden="true" />
-                                    }
-                                    Sign out
-                                </button>
+                                <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-400 dark:text-neutral-500">Currently in</p>
+                                <div className="flex items-center gap-3.5 rounded-2xl border border-black/[0.06] bg-[#faf7f2] p-3.5 dark:border-white/[0.08] dark:bg-[#24211e]">
+                                    <div className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 font-semibold text-white shadow-sm">
+                                        {user.email ? user.email[0].toUpperCase() : "U"}
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
+                                            {user.email ? user.email.split("@")[0] : "Creator"}
+                                        </p>
+                                        <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="mt-5 flex flex-col gap-2">
+                                    <Link
+                                        to="/profile"
+                                        onClick={closeAuthDialog}
+                                        className="inline-flex min-h-11 items-center justify-between rounded-xl border border-black/[0.06] bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.035] dark:border-white/[0.08] dark:bg-[#24211e] dark:text-neutral-200 dark:hover:bg-[#2c2824]"
+                                    >
+                                        <span className="flex items-center gap-2.5">
+                                            <UserRound size={16} aria-hidden="true" />
+                                            Public profile & creator page
+                                        </span>
+                                        <ArrowUpRight size={15} className="text-neutral-400" aria-hidden="true" />
+                                    </Link>
+                                    <Link
+                                        to="/settings"
+                                        onClick={closeAuthDialog}
+                                        className="inline-flex min-h-11 items-center justify-between rounded-xl border border-black/[0.06] bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.035] dark:border-white/[0.08] dark:bg-[#24211e] dark:text-neutral-200 dark:hover:bg-[#2c2824]"
+                                    >
+                                        <span className="flex items-center gap-2.5">
+                                            <Settings size={16} aria-hidden="true" />
+                                            Preferences & Settings
+                                        </span>
+                                        <ArrowUpRight size={15} className="text-neutral-400" aria-hidden="true" />
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        disabled={isSubmitting}
+                                        className="mt-1 inline-flex min-h-11 items-center gap-2.5 rounded-xl border border-red-200/80 bg-red-50/50 px-4 text-sm font-medium text-red-700 transition hover:bg-red-100/70 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
+                                        onClick={() => void signOut()}
+                                    >
+                                        {isSubmitting
+                                            ? <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />
+                                            : <LogOut size={16} aria-hidden="true" />
+                                        }
+                                        Log out
+                                    </button>
+                                </div>
                             </div>
                         ) : (
                             <>
-                                <p className="mb-4 text-sm leading-6 text-neutral-500">
+                                <p className="mb-4 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
                                     {authPrompt ?? "Keep your favorite photos and videos together in moodboards you can revisit anytime."}
                                 </p>
-                                <div className="mb-5 flex items-center gap-2 rounded-2xl bg-[#f5f1eb] px-3.5 py-3 text-xs leading-5 text-neutral-600">
-                                    <Sparkles size={16} className="shrink-0 text-[#9a7048]" aria-hidden="true" />
+                                <div className="mb-5 flex items-center gap-2.5 rounded-2xl bg-[#f5f1eb] px-4 py-3 text-xs leading-5 text-neutral-600 dark:bg-[#24211e] dark:text-neutral-300">
+                                    <Sparkles size={16} className="shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
                                     <span>One account for your saved finds, wherever you sign in.</span>
                                 </div>
                                 {!isAuthConfigured && (
-                                    <p className="mb-4 rounded-xl bg-amber-50 px-3 py-2.5 text-sm text-amber-900" role="status">
+                                    <p className="mb-4 rounded-xl bg-amber-50 px-3 py-2.5 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200" role="status">
                                         Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` to `client/.env` to enable accounts.
                                     </p>
                                 )}
-                                <div className="mb-4 grid grid-cols-2 rounded-xl bg-black/[0.035] p-1" role="group" aria-label="Account action">
+                                <div className="mb-4 grid grid-cols-2 rounded-2xl bg-[#eee8df] p-1 dark:bg-[#25221e]" role="group" aria-label="Account action">
                                     {([
                                         { value: false, label: "Sign in" },
                                         { value: true, label: "Create account" },
@@ -202,10 +247,10 @@ const AccountButton = () => {
                                             key={label}
                                             type="button"
                                             aria-pressed={isSignUp === value}
-                                            className={`min-h-10 rounded-lg px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                                            className={`min-h-10 rounded-xl px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
                                                 isSignUp === value
-                                                    ? "bg-white text-neutral-900 shadow-sm"
-                                                    : "text-neutral-500 hover:text-neutral-800"
+                                                    ? "bg-white text-neutral-900 shadow-sm dark:bg-[#34302b] dark:text-white"
+                                                    : "text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-white"
                                             }`}
                                             onClick={() => {
                                                 setIsSignUp(value)
@@ -220,7 +265,7 @@ const AccountButton = () => {
                                 <button
                                     type="button"
                                     disabled={isSubmitting || !isAuthConfigured}
-                                    className="inline-flex min-h-11 w-full items-center justify-center gap-3 rounded-xl border border-black/[0.08] bg-white px-4 text-sm font-medium text-neutral-700 transition hover:border-black/15 hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                    className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-2xl border border-black/[0.09] bg-white px-4 text-sm font-semibold text-neutral-750 shadow-2xs transition hover:border-black/20 hover:bg-[#faf7f2] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/10 dark:bg-[#24211e] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#2c2824]"
                                     onClick={() => void signInWithGoogle()}
                                 >
                                     {isSubmitting
@@ -229,24 +274,25 @@ const AccountButton = () => {
                                     }
                                     Continue with Google
                                 </button>
-                                <div className="my-4 flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-400">
-                                    <span className="h-px flex-1 bg-black/[0.08]" />
+                                <div className="my-5 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">
+                                    <span className="h-px flex-1 bg-black/[0.08] dark:bg-white/[0.08]" />
                                     or with email
-                                    <span className="h-px flex-1 bg-black/[0.08]" />
+                                    <span className="h-px flex-1 bg-black/[0.08] dark:bg-white/[0.08]" />
                                 </div>
-                                <form onSubmit={event => void submit(event)} className="space-y-3.5">
-                                    <label className="block text-sm font-medium text-neutral-700">
+                                <form onSubmit={event => void submit(event)} className="space-y-4">
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.08em] text-neutral-600 dark:text-neutral-400">
                                         Email
                                         <input
                                             type="email"
                                             required
                                             autoComplete="email"
                                             value={email}
+                                            placeholder="you@example.com"
                                             onChange={event => setEmail(event.target.value)}
-                                            className="mt-1.5 min-h-11 w-full rounded-xl border border-black/[0.09] bg-white px-3.5 text-sm outline-none transition focus:border-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-500"
+                                            className="mt-1.5 min-h-12 w-full rounded-2xl border border-black/[0.09] bg-white px-4 text-sm font-normal text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-500 focus:bg-white focus:ring-4 focus:ring-neutral-900/[0.04] dark:border-white/10 dark:bg-[#24211e] dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-400 dark:focus:bg-[#25221e] dark:focus:ring-white/[0.04]"
                                         />
                                     </label>
-                                    <label className="block text-sm font-medium text-neutral-700">
+                                    <label className="block text-xs font-semibold uppercase tracking-[0.08em] text-neutral-600 dark:text-neutral-400">
                                         Password
                                         <input
                                             type="password"
@@ -254,16 +300,17 @@ const AccountButton = () => {
                                             minLength={8}
                                             autoComplete={isSignUp ? "new-password" : "current-password"}
                                             value={password}
+                                            placeholder="At least 8 characters"
                                             onChange={event => setPassword(event.target.value)}
-                                            className="mt-1.5 min-h-11 w-full rounded-xl border border-black/[0.09] bg-white px-3.5 text-sm outline-none transition focus:border-neutral-400 focus-visible:ring-2 focus-visible:ring-neutral-500"
+                                            className="mt-1.5 min-h-12 w-full rounded-2xl border border-black/[0.09] bg-white px-4 text-sm font-normal text-neutral-900 outline-none transition placeholder:text-neutral-400 focus:border-neutral-500 focus:bg-white focus:ring-4 focus:ring-neutral-900/[0.04] dark:border-white/10 dark:bg-[#24211e] dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-400 dark:focus:bg-[#25221e] dark:focus:ring-white/[0.04]"
                                         />
                                     </label>
-                                    {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-                                    {message && <p role="status" className="text-sm text-neutral-600">{message}</p>}
+                                    {error && <p role="alert" className="rounded-xl bg-red-50 px-3.5 py-2.5 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
+                                    {message && <p role="status" className="rounded-xl bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">{message}</p>}
                                     <button
                                         type="submit"
                                         disabled={isSubmitting || !isAuthConfigured}
-                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                                        className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-neutral-900 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-100"
                                     >
                                         {isSubmitting && <LoaderCircle size={16} className="animate-spin" aria-hidden="true" />}
                                         {isSignUp ? "Create account" : "Sign in"}
@@ -271,7 +318,7 @@ const AccountButton = () => {
                                 </form>
                             </>
                         )}
-                        {error && user && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
+                        {error && user && <p role="alert" className="mt-3 text-sm text-red-700 dark:text-red-400">{error}</p>}
                     </div>
                 </dialog>
             )}

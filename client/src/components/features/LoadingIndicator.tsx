@@ -7,7 +7,7 @@ const LoadingIndicator = ({ label, className = "min-h-[65vh] w-full" }: LoadingI
     <div
         role="status"
         aria-label={label}
-        className={`flex flex-col items-center justify-center gap-3 bg-white text-neutral-950 ${className}`}
+        className={`flex flex-col items-center justify-center gap-3 bg-transparent text-neutral-800 dark:text-neutral-200 ${className}`}
     >
         <svg
             aria-hidden="true"
@@ -23,7 +23,7 @@ const LoadingIndicator = ({ label, className = "min-h-[65vh] w-full" }: LoadingI
                 <rect x="45" y="13" width="8" height="4" rx="2" transform="rotate(45 49 15)" />
             </g>
         </svg>
-        <span className="text-sm text-neutral-500">{label}</span>
+        <span className="text-sm text-neutral-500 dark:text-neutral-400">{label}</span>
     </div>
 )
 

@@ -11,7 +11,7 @@ const Suggestions = () => {
 
     return (
         <div className="flex h-[46px] min-w-0 items-center gap-4">
-            <span className="inline-flex h-full shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium leading-none text-neutral-500">
+            <span className="inline-flex h-full shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium leading-none text-neutral-500 dark:text-neutral-400">
                 <Sparkles
                     size={14}
                     strokeWidth={2}
@@ -24,21 +24,35 @@ const Suggestions = () => {
                 {topicsReady ? (
                     <HorizontalScroller label="today's visual topics">
                         <ul aria-label="Today’s visual topics" className="flex h-[46px] w-full items-center gap-5 whitespace-nowrap pr-8">
+                            <li className="relative shrink-0">
+                                <Link
+                                    to="/"
+                                    aria-current={!activeTopic ? "page" : undefined}
+                                    className={`relative inline-flex items-center py-1 text-[13px] leading-none transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:bg-neutral-900 after:content-[''] motion-safe:after:transition-transform motion-safe:after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:focus-visible:outline-neutral-300 dark:after:bg-white sm:text-sm ${
+                                        !activeTopic
+                                            ? "text-neutral-900 after:scale-x-100 font-medium dark:text-white"
+                                            : "text-neutral-500 after:scale-x-0 hover:text-neutral-900 hover:after:scale-x-100 focus-visible:after:scale-x-100 dark:text-neutral-400 dark:hover:text-white"
+                                    }`}
+                                >
+                                    All
+                                </Link>
+                                <span aria-hidden="true" className="pointer-events-none absolute -right-3 top-1/2 size-0.5 -translate-y-1/2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+                            </li>
                             {topics.map((topic, index) => (
                                 <li key={topic.slug} className="relative shrink-0">
                                     <Link
                                         to={`/t/${topic.slug}`}
                                         aria-current={activeTopic === topic.slug ? "page" : undefined}
-                                        className={`relative inline-flex items-center py-1 text-[13px] leading-none transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:bg-neutral-900 after:content-[''] motion-safe:after:transition-transform motion-safe:after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:text-sm ${
+                                        className={`relative inline-flex items-center py-1 text-[13px] leading-none transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:bg-neutral-900 after:content-[''] motion-safe:after:transition-transform motion-safe:after:duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:focus-visible:outline-neutral-300 dark:after:bg-white sm:text-sm ${
                                             activeTopic === topic.slug
-                                                ? "text-neutral-900 after:scale-x-100"
-                                                : "text-neutral-500 after:scale-x-0 hover:text-neutral-900 hover:after:scale-x-100 focus-visible:after:scale-x-100"
+                                                ? "text-neutral-900 after:scale-x-100 font-medium dark:text-white"
+                                                : "text-neutral-500 after:scale-x-0 hover:text-neutral-900 hover:after:scale-x-100 focus-visible:after:scale-x-100 dark:text-neutral-400 dark:hover:text-white"
                                         }`}
                                     >
                                         {topic.title}
                                     </Link>
                                     {index < topics.length - 1 && (
-                                        <span aria-hidden="true" className="pointer-events-none absolute -right-3 top-1/2 size-0.5 -translate-y-1/2 rounded-full bg-neutral-300" />
+                                        <span aria-hidden="true" className="pointer-events-none absolute -right-3 top-1/2 size-0.5 -translate-y-1/2 rounded-full bg-neutral-300 dark:bg-neutral-700" />
                                     )}
                                 </li>
                             ))}
@@ -46,8 +60,8 @@ const Suggestions = () => {
                     </HorizontalScroller>
                 ) : (
                     <div role="status" aria-label="Loading daily topics" className="flex h-[46px] items-center gap-2">
-                        <span className="size-3 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-700" />
-                        <span className="text-xs text-neutral-400">Finding today’s sparks…</span>
+                        <span className="size-3 animate-spin rounded-full border-2 border-neutral-300 border-t-neutral-700 dark:border-neutral-700 dark:border-t-neutral-200" />
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500">Finding today’s sparks…</span>
                     </div>
                 )}
             </div>
