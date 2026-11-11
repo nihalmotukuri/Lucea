@@ -21,6 +21,7 @@ interface MediaDetailViewProps {
     item: DetailMedia
     onBack: () => void
     isModal?: boolean
+    onClose?: () => void
 }
 
 const getPhotoFallbackQuery = (photo: Photo) => {
@@ -50,7 +51,7 @@ const formatDuration = (duration: number) => {
 
 const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
 
-const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps) => {
+const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: MediaDetailViewProps) => {
     const [shareMessage, setShareMessage] = useState("")
     const [mediaError, setMediaError] = useState(false)
     const isPhoto = item.type === "photo"
@@ -153,7 +154,7 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
         >
             <div className="px-4 pb-8 pt-4 sm:px-7 sm:pb-10 sm:pt-6 lg:px-10 lg:pb-12">
                 {isModal && (
-                    <div className="mb-5 flex items-center justify-between pb-1">
+                    <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10">
                         <button
                             type="button"
                             autoFocus
@@ -166,7 +167,7 @@ const MediaDetailView = ({ item, onBack, isModal = false }: MediaDetailViewProps
                         <button
                             type="button"
                             aria-label="Close media details"
-                            onClick={onBack}
+                            onClick={onClose}
                             className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
                         >
                             <X size={18} strokeWidth={1.8} aria-hidden="true" />

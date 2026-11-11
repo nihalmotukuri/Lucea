@@ -17,6 +17,7 @@ const PhotoDetailModal = () => {
         if (backgroundLocation) navigate(backgroundLocation, { replace: true })
         else navigate(-1)
     }, [backgroundLocation, navigate])
+    const goBack = useCallback(() => navigate(-1), [navigate])
     const {
         data: photo,
         isPending,
@@ -36,7 +37,7 @@ const PhotoDetailModal = () => {
     return (
         <MediaDetailModalFrame label="Photo details" onClose={close}>
             {photo
-                ? <MediaDetailView item={{ type: "photo", media: photo }} onBack={close} isModal />
+                ? <MediaDetailView item={{ type: "photo", media: photo }} onBack={goBack} onClose={close} isModal />
                 : <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8">
                     {showLoading && <MediaLoadingState className="min-h-[40vh] w-full" />}
                     {!photo && isError && !showLoading && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}

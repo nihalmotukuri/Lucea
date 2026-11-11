@@ -17,6 +17,7 @@ const VideoDetailModal = () => {
         if (backgroundLocation) navigate(backgroundLocation, { replace: true })
         else navigate(-1)
     }, [backgroundLocation, navigate])
+    const goBack = useCallback(() => navigate(-1), [navigate])
     const {
         data: video,
         isPending,
@@ -36,7 +37,7 @@ const VideoDetailModal = () => {
     return (
         <MediaDetailModalFrame label="Video details" onClose={close}>
             {video
-                ? <MediaDetailView item={{ type: "video", media: video }} onBack={close} isModal />
+                ? <MediaDetailView item={{ type: "video", media: video }} onBack={goBack} onClose={close} isModal />
                 : <div className="my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8">
                     {showLoading && <MediaLoadingState className="min-h-[40vh] w-full" />}
                     {!video && isError && !showLoading && <QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} />}
