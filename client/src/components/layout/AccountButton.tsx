@@ -107,7 +107,7 @@ const AccountButton = () => {
                 aria-label={user ? `Account: ${user.email}` : "Sign in"}
                 title={user ? "Your account" : "Sign in"}
                 disabled={isAuthLoading}
-                className="group relative flex h-14 shrink-0 items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 px-3 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition-all duration-200 hover:border-black/20 hover:bg-white active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.1] dark:bg-[#1a1917] dark:hover:border-white/25 dark:hover:bg-[#23211e]"
+                className="group relative flex h-11 md:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl px-2 text-neutral-500 transition-all duration-200 hover:bg-black/[0.035] hover:text-neutral-900 motion-safe:hover:scale-105 active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white"
                 onClick={() => {
                     setError("")
                     setMessage("")
@@ -125,7 +125,7 @@ const AccountButton = () => {
                     </div>
                 ) : (
                     <div className="flex items-center gap-2 text-neutral-700 dark:text-neutral-200 sm:px-1">
-                        <LogIn size={18} strokeWidth={1.8} className="shrink-0 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-white" aria-hidden="true" />
+                        <LogIn size={18} strokeWidth={1.7} className="shrink-0 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-white" aria-hidden="true" />
                         <span className="hidden sm:inline text-xs font-medium">Sign in</span>
                     </div>
                 )}

@@ -49,8 +49,8 @@ const Home = () => {
     }
 
     return (
-        <div className="relative min-h-screen bg-[#fdfcfb] px-[18px] pb-[24px] pt-[140px] text-neutral-850 dark:bg-[#121110] dark:text-neutral-100">
-            <div className="fixed top-0 right-0 left-0 z-10 m-auto border-b border-black/10 bg-[#fdfcfb]/95 backdrop-blur-md px-4 pt-4 md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95">
+        <div className="relative min-h-screen bg-[#fdfcfb] px-[18px] pb-[24px] pt-[152px] text-neutral-850 dark:bg-[#121110] dark:text-neutral-100">
+            <div className="fixed top-0 right-0 left-0 z-30 m-auto border-b border-black/10 bg-[#fdfcfb]/95 backdrop-blur-md px-4 pt-4 pb-3 md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95">
                 <div className="flex items-center gap-2.5">
                     <div className="flex-1 min-w-0">
                         <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearchMedia} showRelatedSearches />

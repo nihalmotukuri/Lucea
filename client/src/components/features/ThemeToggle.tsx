@@ -15,12 +15,12 @@ export const ThemeToggle = ({ className = "" }: ThemeToggleProps) => {
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
             title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-            className={`group relative grid size-14 shrink-0 place-items-center rounded-[18px] border border-black/[0.09] bg-white/95 text-neutral-600 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition-all duration-200 hover:border-black/20 hover:bg-white hover:text-neutral-900 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.1] dark:bg-[#1a1917] dark:text-neutral-300 dark:hover:border-white/25 dark:hover:bg-[#23211e] dark:hover:text-white dark:focus-visible:outline-neutral-300 ${className}`}
+            className={`group relative grid size-11 md:size-12 shrink-0 place-items-center rounded-xl text-neutral-500 transition-all duration-200 hover:bg-black/[0.035] hover:text-neutral-900 motion-safe:hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white dark:focus-visible:outline-neutral-300 ${className}`}
         >
             <div className="relative size-5">
                 <Sun
                     size={20}
-                    strokeWidth={1.8}
+                    strokeWidth={1.7}
                     className={`absolute inset-0 transition-all duration-300 ${
                         isDark
                             ? "rotate-0 scale-100 opacity-100 text-amber-400"
@@ -30,11 +30,11 @@ export const ThemeToggle = ({ className = "" }: ThemeToggleProps) => {
                 />
                 <Moon
                     size={20}
-                    strokeWidth={1.8}
+                    strokeWidth={1.7}
                     className={`absolute inset-0 transition-all duration-300 ${
                         isDark
                             ? "rotate-90 scale-0 opacity-0"
-                            : "rotate-0 scale-100 opacity-100 text-neutral-700"
+                            : "rotate-0 scale-100 opacity-100 text-neutral-700 dark:text-neutral-300"
                     }`}
                     aria-hidden="true"
                 />

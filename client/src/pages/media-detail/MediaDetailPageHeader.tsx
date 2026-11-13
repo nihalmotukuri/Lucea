@@ -16,7 +16,7 @@ const MediaDetailPageHeader = () => {
     }
 
     return (
-        <div className="fixed top-0 right-0 left-0 z-20 border-b border-black/10 bg-[#fdfcfb]/95 px-4 pt-4 backdrop-blur-md md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95">
+        <div className="fixed top-0 right-0 left-0 z-30 border-b border-black/10 bg-[#fdfcfb]/95 px-4 pt-4 pb-3 backdrop-blur-md md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95">
             <div className="flex items-center gap-2.5">
                 <div className="flex-1 min-w-0">
                     <SearchBar value={searchQuery} onChange={setSearchQuery} onSubmit={onSearch} />

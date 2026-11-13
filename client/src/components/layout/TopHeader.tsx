@@ -21,7 +21,7 @@ export const TopHeader = ({ initialQuery = "", children, className = "" }: TopHe
     }
 
     return (
-        <header className={`fixed top-0 right-0 left-0 z-20 border-b border-black/10 bg-[#fdfcfb]/95 px-4 pt-4 backdrop-blur-md md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95 ${className}`}>
+        <header className={`fixed top-0 right-0 left-0 z-30 border-b border-black/10 bg-[#fdfcfb]/95 px-4 pt-4 backdrop-blur-md md:left-[80px] md:px-5 md:pt-5 dark:border-white/10 dark:bg-[#121110]/95 ${className}`}>
             <div className={`flex items-center gap-2.5 ${children ? "" : "pb-4"}`}>
                 <div className="min-w-0 flex-1">
                     <SearchBar
