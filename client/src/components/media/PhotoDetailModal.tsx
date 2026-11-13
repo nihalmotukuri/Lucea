@@ -42,12 +42,12 @@ const PhotoDetailModal = () => {
             ) : showLoading ? (
                 <MediaDetailModalSkeleton onBack={goBack} onClose={close} mediaType="photo" />
             ) : isError ? (
-                <div className="relative my-auto w-full max-w-xl rounded-3xl bg-[#fdfcfb] p-5 sm:p-8 dark:bg-[#1a1917] dark:text-neutral-100">
+                <div className="relative my-auto w-full max-w-lg dark:text-neutral-100">
                     <button
                         type="button"
                         aria-label="Close"
                         onClick={close}
-                        className="absolute right-4 top-4 grid size-9 place-items-center rounded-full text-neutral-400 transition hover:bg-black/5 hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-500 dark:hover:bg-white/10 dark:hover:text-white"
+                        className="absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full text-neutral-400 transition hover:bg-black/5 hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-500 dark:hover:bg-white/10 dark:hover:text-white"
                     >
                         <X size={18} aria-hidden="true" />
                     </button>
@@ -55,8 +55,7 @@ const PhotoDetailModal = () => {
                         error
                         isRetrying={isFetching}
                         onRetry={() => void refetch()}
-                        onDismiss={close}
-                        dismissLabel="Remove"
+                        className="my-0"
                     />
                 </div>
             ) : null}
