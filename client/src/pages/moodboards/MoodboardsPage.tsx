@@ -10,6 +10,7 @@ import { useAuth } from "@/auth/useAuth"
 import { getOwnProfile } from "@/api/moodboards"
 import LoadingIndicator from "@/components/features/LoadingIndicator"
 import { fullScreenLoadingClass, useMinimumLoading } from "@/lib/loadingIndicator"
+import TopHeader from "@/components/layout/TopHeader"
 
 type MoodboardMediaFilter = "all" | "photos" | "videos"
 
@@ -194,24 +195,27 @@ const MoodboardsPage = () => {
 
     if (!user) {
         return (
-            <section className="grid min-h-screen place-items-center bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:pt-12">
-                <div className="w-full max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
-                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
-                        <LockKeyhole size={20} aria-hidden="true" />
+            <div className="min-h-screen bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
+                <TopHeader />
+                <section className="grid place-items-center px-5 pb-10 text-neutral-800 dark:text-neutral-100">
+                    <div className="w-full max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
+                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
+                            <LockKeyhole size={20} aria-hidden="true" />
+                        </div>
+                        <h1 className="font-editorial mt-4 text-3xl text-neutral-700 dark:text-neutral-100">Your moodboards</h1>
+                        <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+                            Sign in or create an account to save bookmarks and access your moodboards across devices.
+                        </p>
+                        <button
+                            type="button"
+                            className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-neutral-900 px-5 text-sm font-medium text-white transition hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+                            onClick={() => openAuthDialog("Sign in to revisit and organize everything you have saved.")}
+                        >
+                            Sign in or create an account
+                        </button>
                     </div>
-                    <h1 className="font-editorial mt-4 text-3xl text-neutral-700 dark:text-neutral-100">Your moodboards</h1>
-                    <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
-                        Sign in or create an account to save bookmarks and access your moodboards across devices.
-                    </p>
-                    <button
-                        type="button"
-                        className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-neutral-900 px-5 text-sm font-medium text-white transition hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
-                        onClick={() => openAuthDialog("Sign in to revisit and organize everything you have saved.")}
-                    >
-                        Sign in or create an account
-                    </button>
-                </div>
-            </section>
+                </section>
+            </div>
         )
     }
 
@@ -265,28 +269,33 @@ const MoodboardsPage = () => {
 
     if (moodboardId && !moodboard) {
         return (
-            <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:pt-12">
-                <div className="mx-auto mt-10 max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
-                    <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
-                        <ImagePlus size={20} aria-hidden="true" />
+            <div className="min-h-screen bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
+                <TopHeader />
+                <section className="px-5 pb-10 text-neutral-800 dark:text-neutral-100">
+                    <div className="mx-auto mt-6 max-w-md rounded-3xl border border-black/[0.08] bg-white p-7 text-center shadow-sm dark:border-white/[0.08] dark:bg-[#1a1917]">
+                        <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                            <ImagePlus size={20} aria-hidden="true" />
+                        </div>
+                        <h1 className="mt-4 text-2xl font-semibold text-neutral-900 dark:text-white">Moodboard not found</h1>
+                        <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">It may have been deleted or is not available in this browser.</p>
+                        <Link className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200" to="/moodboards">
+                            <ArrowLeft size={16} aria-hidden="true" /> Back to moodboards
+                        </Link>
                     </div>
-                    <h1 className="mt-4 text-2xl font-semibold text-neutral-900 dark:text-white">Moodboard not found</h1>
-                    <p className="mt-2 text-sm leading-6 text-neutral-500 dark:text-neutral-400">It may have been deleted or is not available in this browser.</p>
-                    <Link className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200" to="/moodboards">
-                        <ArrowLeft size={16} aria-hidden="true" /> Back to moodboards
-                    </Link>
-                </div>
-            </section>
+                </section>
+            </div>
         )
     }
 
     if (moodboard) {
         return (
-            <section className="min-h-screen bg-[#fdfcfb] px-4 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 sm:px-5 md:px-8 md:pt-12">
-                <div className="mx-auto max-w-[1500px]">
-                <Link to="/moodboards" className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:text-white">
-                    <ArrowLeft size={16} aria-hidden="true" /> All moodboards
-                </Link>
+            <div className="min-h-screen bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
+                <TopHeader />
+                <section className="px-4 pb-10 text-neutral-800 dark:text-neutral-100 sm:px-5 md:px-8">
+                    <div className="mx-auto max-w-[1500px]">
+                    <Link to="/moodboards" className="inline-flex min-h-9 items-center gap-2 rounded-lg pr-2 text-sm text-neutral-600 transition hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:text-white">
+                        <ArrowLeft size={16} aria-hidden="true" /> All moodboards
+                    </Link>
                 <div className="relative mb-7 mt-5 flex flex-wrap items-end justify-center gap-3 border-b border-black/[0.08] pb-6 text-center dark:border-white/[0.08] sm:mb-9">
                     <div className="w-full">
                         <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">Your collection</p>
@@ -465,11 +474,14 @@ const MoodboardsPage = () => {
                     onConfirm={confirmDelete}
                 />
             </section>
+            </div>
         )
     }
 
     return (
-        <section className="min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:px-8 md:pt-12">
+        <div className="min-h-screen bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
+            <TopHeader />
+            <section className="px-5 pb-10 text-neutral-800 dark:text-neutral-100 md:px-8">
             <div className="mx-auto max-w-6xl">
                 <header className="pt-1 text-center">
                     <h1 className="font-editorial text-4xl font-normal text-neutral-700 dark:text-neutral-100 sm:text-[48px]">Moodboards</h1>
@@ -515,7 +527,7 @@ const MoodboardsPage = () => {
                     <button
                         type="submit"
                         disabled={!title.trim()}
-                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-neutral-800 hover:shadow active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:mt-0 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
+                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:mt-0 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#201d1a] dark:disabled:text-neutral-500 dark:disabled:border dark:disabled:border-white/[0.06]"
                     >
                         <ImagePlus size={17} aria-hidden="true" /> Create board
                     </button>
@@ -526,7 +538,7 @@ const MoodboardsPage = () => {
                         <h2 className="mb-4 text-sm font-semibold text-neutral-700 dark:text-neutral-300">Saved boards <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">({moodboards.length})</span></h2>
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         {moodboards.map(board => (
-                            <article key={board.id} className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-neutral-800">
+                            <article key={board.id} className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
                                 <Link
                                     to={`/moodboards/${board.id}`}
                                     aria-label={`${board.title}, ${board.media.length} saved ${board.media.length === 1 ? "item" : "items"}`}
@@ -581,6 +593,7 @@ const MoodboardsPage = () => {
                 onConfirm={confirmDelete}
             />
         </section>
+        </div>
     )
 }
 

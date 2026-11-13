@@ -89,7 +89,7 @@ const Media = ({ filter }: MediaProps) => {
                     })}
 
                     {isFetchingNextPage
-                        ? Array.from({ length: 20 }).map((_, i) => {
+                        ? Array.from({ length: 8 }).map((_, i) => {
                             if (i % 2 == 0) return <EvenSkeletonCard key={i} />
                             return <OddSkeletonCard key={i} />
                         })

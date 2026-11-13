@@ -1,15 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react"
 import { Link, useParams } from "react-router-dom"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { ArrowLeft, ArrowUpRight, LockKeyhole, UserRound } from "lucide-react"
+import { ArrowLeft, ArrowUpRight, Check, Copy, Globe2, LockKeyhole, UserRound } from "lucide-react"
 import { getOwnProfile, getPublicMoodboard, getPublicProfile, saveOwnProfile } from "@/api/moodboards"
 import PublicMoodboardCard from "@/components/features/PublicMoodboardCard"
 import LoadingIndicator from "@/components/features/LoadingIndicator"
 import { fullScreenLoadingClass, useMinimumLoading } from "@/lib/loadingIndicator"
+import TopHeader from "@/components/layout/TopHeader"
 import { useAuth } from "@/auth/useAuth"
 import { useMoodboards } from "@/store/useMoodboards"
 
-const surfaceClass = "min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-24 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:px-8 md:pt-12"
+const surfaceClass = "min-h-screen bg-[#fdfcfb] px-5 pb-10 pt-[120px] text-neutral-800 dark:bg-[#121110] dark:text-neutral-100 md:px-8"
 const handlePattern = /^[a-z0-9_]{3,30}$/
 
 export const MyProfilePage = () => {
@@ -17,6 +18,7 @@ export const MyProfilePage = () => {
     const queryClient = useQueryClient()
     const [handle, setHandle] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
+    const [copiedLink, setCopiedLink] = useState(false)
     const moodboards = useMoodboards(state => state.moodboards)
     const profileQuery = useQuery({
         queryKey: ["own-profile", user?.id],
@@ -47,6 +49,7 @@ export const MyProfilePage = () => {
     if (!user) {
         return (
             <section className={`${surfaceClass} grid place-items-center`}>
+                <TopHeader />
                 <div className="max-w-md text-center">
                     <UserRound className="mx-auto text-neutral-500 dark:text-neutral-400" aria-hidden="true" />
                     <h1 className="mt-3 font-editorial text-3xl text-neutral-900 dark:text-neutral-100">Your public profile</h1>
@@ -77,6 +80,7 @@ export const MyProfilePage = () => {
 
     return (
         <section className={surfaceClass}>
+            <TopHeader />
             <div className="mx-auto max-w-4xl">
                 <header className="border-b border-black/[0.08] pb-6 text-center dark:border-white/[0.08]">
                     <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
@@ -114,7 +118,7 @@ export const MyProfilePage = () => {
                         <button
                             type="submit"
                             disabled={saveProfile.isPending || !handlePattern.test(handle.trim().toLowerCase())}
-                            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition duration-200 hover:-translate-y-px hover:bg-neutral-800 hover:shadow active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
+                            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
                         >
                             {saveProfile.isPending ? "Saving…" : profileQuery.data ? "Save handle" : "Create profile"}
                         </button>
@@ -127,15 +131,43 @@ export const MyProfilePage = () => {
                 </form>
 
                 {profileQuery.data && (
-                    <div className="mt-8 rounded-2xl border border-black/[0.08] bg-white p-4 sm:p-5 dark:border-white/[0.08] dark:bg-[#1a1917]">
-                        <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">Your public page</p>
-                        <Link
-                            to={`/profiles/${encodeURIComponent(profileQuery.data.handle)}`}
-                            className="mt-2 inline-flex min-h-9 items-center gap-2 break-all text-sm text-neutral-600 underline decoration-neutral-300 underline-offset-4 hover:text-neutral-900 dark:text-neutral-300 dark:decoration-neutral-600 dark:hover:text-white"
-                        >
-                            {window.location.origin}/profiles/{profileQuery.data.handle}
-                            <ArrowUpRight size={15} aria-hidden="true" />
-                        </Link>
+                    <div className="mt-8 flex flex-col gap-3 rounded-2xl border border-black/[0.08] bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.08] dark:bg-[#1a1917]">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
+                                <Globe2 size={18} aria-hidden="true" />
+                            </span>
+                            <div className="min-w-0">
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">Your public page</p>
+                                <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                                    {window.location.origin}/profiles/{profileQuery.data.handle}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (!profileQuery.data?.handle) return
+                                    try {
+                                        await navigator.clipboard.writeText(`${window.location.origin}/profiles/${profileQuery.data.handle}`)
+                                        setCopiedLink(true)
+                                        window.setTimeout(() => setCopiedLink(false), 2000)
+                                    } catch {
+                                        // Ignore
+                                    }
+                                }}
+                                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-black/10 px-3 text-xs font-medium text-neutral-700 transition hover:bg-black/[0.04] dark:border-white/10 dark:text-neutral-200 dark:hover:bg-white/[0.06]"
+                            >
+                                {copiedLink ? <Check size={14} className="text-emerald-500" aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+                                {copiedLink ? "Copied!" : "Copy link"}
+                            </button>
+                            <Link
+                                to={`/profiles/${encodeURIComponent(profileQuery.data.handle)}`}
+                                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 text-xs font-medium text-white transition hover:bg-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                            >
+                                View page <ArrowUpRight size={14} aria-hidden="true" />
+                            </Link>
+                        </div>
                     </div>
                 )}
 
@@ -192,6 +224,7 @@ export const PublicProfilePage = () => {
     if (isError || !profile) {
         return (
             <section className={`${surfaceClass} grid place-items-center`}>
+                <TopHeader />
                 <div className="text-center">
                     <h1 className="font-editorial text-3xl">Profile not found</h1>
                     <p className="mt-2 text-sm text-neutral-500">This profile may have moved or been removed.</p>
@@ -205,6 +238,7 @@ export const PublicProfilePage = () => {
 
     return (
         <section className={surfaceClass}>
+            <TopHeader />
             <div className="mx-auto max-w-6xl">
                 <header className="mb-8 border-b border-black/[0.08] pb-6 text-center dark:border-white/[0.08]">
                     <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-[#f4efe9] text-neutral-700 dark:bg-[#282522] dark:text-neutral-200">
@@ -262,6 +296,7 @@ export const PublicMoodboardPage = () => {
 
     return (
         <section className={surfaceClass}>
+            <TopHeader />
             <div className="mx-auto max-w-6xl">
                 <header className="my-6 border-b border-black/[0.08] pb-5 text-center dark:border-white/[0.08]">
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">Public moodboard</p>

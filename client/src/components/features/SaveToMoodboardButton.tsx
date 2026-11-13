@@ -72,7 +72,7 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
                             ? "border-white bg-white text-neutral-900 shadow-neutral-900/20"
                             : "border-white/30 bg-black/40 text-white hover:border-white/60 hover:bg-black/60"
                     }`
-                    : `group inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                    : `group inline-flex min-h-11 items-center gap-2 rounded-full border px-4 text-sm font-medium transition duration-200 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
                         savedBoardCount > 0
                             ? "border-emerald-600/30 bg-emerald-50/70 text-emerald-800 hover:bg-emerald-100/70 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
                             : "border-black/[0.1] bg-white text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 dark:border-white/[0.1] dark:bg-[#201e1b] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#292622] dark:hover:text-white"

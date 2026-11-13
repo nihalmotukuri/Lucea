@@ -163,7 +163,7 @@ const SearchBar = ({
                     type="submit"
                     disabled={!value.trim()}
                     aria-label="Search"
-                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-3.5 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:-translate-y-px hover:bg-neutral-800 hover:shadow active:translate-y-0 active:scale-[0.98] disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600 sm:px-4"
+                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-3.5 text-sm font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600 sm:px-4"
                 >
                     <span className="hidden sm:inline">Search</span>
                     <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" className="transition-transform duration-200 group-hover/search:translate-x-0.5" />

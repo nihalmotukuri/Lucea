@@ -107,7 +107,7 @@ const AccountButton = () => {
                 aria-label={user ? `Account: ${user.email}` : "Sign in"}
                 title={user ? "Your account" : "Sign in"}
                 disabled={isAuthLoading}
-                className="group relative flex h-14 shrink-0 items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 px-3 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition-all duration-200 hover:-translate-y-px hover:border-black/20 hover:bg-white hover:shadow-md active:translate-y-0 active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.1] dark:bg-[#1a1917] dark:hover:border-white/25 dark:hover:bg-[#23211e]"
+                className="group relative flex h-14 shrink-0 items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 px-3 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition-all duration-200 hover:border-black/20 hover:bg-white active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/[0.1] dark:bg-[#1a1917] dark:hover:border-white/25 dark:hover:bg-[#23211e]"
                 onClick={() => {
                     setError("")
                     setMessage("")

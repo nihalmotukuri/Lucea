@@ -1,43 +1,51 @@
 import { ArrowLeft, X } from "lucide-react"
 
 interface MediaDetailModalSkeletonProps {
-    onBack: () => void
-    onClose: () => void
+    onBack?: () => void
+    onClose?: () => void
     mediaType?: "photo" | "video"
+    isModal?: boolean
 }
 
 export const MediaDetailModalSkeleton = ({
     onBack,
     onClose,
     mediaType = "photo",
+    isModal = true,
 }: MediaDetailModalSkeletonProps) => {
     return (
         <article
             aria-busy="true"
             aria-label={`Loading ${mediaType} details`}
-            className="w-full max-w-[1200px] overflow-y-auto rounded-[26px] bg-[#fdfcfb] text-neutral-800 shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[34px] dark:border dark:border-white/[0.08] dark:bg-[#161413] dark:text-neutral-100"
+            className={`w-full bg-[#fdfcfb] text-neutral-800 transition-colors dark:bg-[#161413] dark:text-neutral-100 ${
+                isModal
+                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[34px] dark:border dark:border-white/[0.08]"
+                    : "min-h-full max-w-[1440px] mx-auto"
+            }`}
         >
             <div className="px-4 pb-8 pt-4 sm:px-7 sm:pb-10 sm:pt-6 lg:px-10 lg:pb-12">
                 {/* Header bar matching MediaDetailView */}
-                <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10 dark:border-white/[0.08] dark:bg-[#161413]/95">
-                    <button
-                        type="button"
-                        autoFocus
-                        onClick={onBack}
-                        className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                    >
-                        <ArrowLeft size={17} aria-hidden="true" />
-                        Back to your trail
-                    </button>
-                    <button
-                        type="button"
-                        aria-label="Close media details"
-                        onClick={onClose}
-                        className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                    >
-                        <X size={18} strokeWidth={1.8} aria-hidden="true" />
-                    </button>
-                </div>
+                {isModal && (
+                    <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10 dark:border-white/[0.08] dark:bg-[#161413]/95">
+                        <button
+                            type="button"
+                            autoFocus
+                            onClick={onBack}
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        >
+                            <ArrowLeft size={17} aria-hidden="true" />
+                            Back to your trail
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Close media details"
+                            onClick={onClose}
+                            className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        >
+                            <X size={18} strokeWidth={1.8} aria-hidden="true" />
+                        </button>
+                    </div>
+                )}
 
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.75fr)] lg:gap-6">
                     {/* Media frame skeleton matching the image/video container */}

@@ -1,4 +1,4 @@
-import { AlertCircle, ImageOff, LoaderCircle, RotateCw, Sparkles } from "lucide-react"
+import { AlertCircle, ImageOff, LoaderCircle, RotateCw, Sparkles, X } from "lucide-react"
 import { Link } from "react-router-dom"
 
 interface QueryFeedbackProps {
@@ -6,6 +6,8 @@ interface QueryFeedbackProps {
     empty?: boolean
     onRetry?: () => void
     isRetrying?: boolean
+    onDismiss?: () => void
+    dismissLabel?: string
 }
 
 const suggestedSearches = [
@@ -16,7 +18,14 @@ const suggestedSearches = [
     "Warm interiors",
 ]
 
-const QueryFeedback = ({ error, empty = false, onRetry, isRetrying = false }: QueryFeedbackProps) => {
+const QueryFeedback = ({
+    error,
+    empty = false,
+    onRetry,
+    isRetrying = false,
+    onDismiss,
+    dismissLabel = "Dismiss",
+}: QueryFeedbackProps) => {
     const hasError = Boolean(error)
     if (!hasError && !empty) return null
     const isRateLimited = typeof error === "object"
@@ -79,15 +88,29 @@ const QueryFeedback = ({ error, empty = false, onRetry, isRetrying = false }: Qu
                     </div>
                 </div>
             )}
-            {hasError && onRetry && (
-                <button
-                    type="button"
-                    onClick={onRetry}
-                    className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:-translate-y-px hover:bg-neutral-700 hover:shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-                >
-                    <RotateCw size={15} aria-hidden="true" />
-                    Try again
-                </button>
+            {hasError && (onRetry || onDismiss) && (
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
+                    {onRetry && (
+                        <button
+                            type="button"
+                            onClick={onRetry}
+                            className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white shadow-xs transition hover:bg-neutral-800 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                        >
+                            <RotateCw size={15} aria-hidden="true" />
+                            Try again
+                        </button>
+                    )}
+                    {onDismiss && (
+                        <button
+                            type="button"
+                            onClick={onDismiss}
+                            className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border border-black/10 bg-white px-4 text-sm font-medium text-neutral-700 transition hover:bg-black/[0.04] active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:border-white/10 dark:bg-[#1f1d1a] dark:text-neutral-200 dark:hover:bg-white/[0.06]"
+                        >
+                            <X size={15} aria-hidden="true" />
+                            {dismissLabel}
+                        </button>
+                    )}
+                </div>
             )}
         </div>
     )

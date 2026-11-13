@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry'
-import { Images, LayoutGrid, Video } from 'lucide-react'
+import { Images, LayoutGrid, Sparkles, Video } from 'lucide-react'
 import { useTopic } from '@/store/useTopic'
 import ImageItem from '@/components/media/ImageItem'
 import VideoItem from '@/components/media/VideoItem'
@@ -31,12 +31,18 @@ interface TopicResultsHeaderProps {
 }
 
 const TopicResultsHeader = ({ title, mediaFilter, onFilterChange }: TopicResultsHeaderProps) => (
-    <header className="mb-6 border-b border-black/[0.08] pb-5 dark:border-white/[0.08]">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <header className="relative mb-6 overflow-hidden rounded-[24px] border border-black/[0.06] bg-gradient-to-br from-[#f8f5ee] via-white to-[#f5f0e6] p-5 sm:p-7 dark:border-white/[0.08] dark:from-[#1b1916] dark:via-[#151312] dark:to-[#191714] shadow-xs">
+        {/* Subtle decorative glow orb */}
+        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-400/5" />
+
+        <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="min-w-0 animate-subtle-reveal">
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-neutral-400">
-                    Today’s visual field <span className="mx-1.5 text-neutral-300 dark:text-neutral-600">/</span> Curated search
-                </p>
+                <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400 dark:text-neutral-400">
+                    <Sparkles size={13} className="text-amber-500" aria-hidden="true" />
+                    <span>Today’s visual field</span>
+                    <span className="mx-1 text-neutral-300 dark:text-neutral-600">/</span>
+                    <span>Curated topic</span>
+                </div>
                 <h1
                     className="font-editorial break-words text-[28px] sm:text-[38px] font-normal leading-tight text-neutral-900 dark:text-white tracking-[-0.015em]"
                 >
@@ -47,7 +53,7 @@ const TopicResultsHeader = ({ title, mediaFilter, onFilterChange }: TopicResults
                 </p>
             </div>
 
-            <div role="group" aria-label="Filter topic results by media type" className="flex items-center gap-1 rounded-full border border-black/[0.08] bg-white/80 p-1 dark:border-white/[0.08] dark:bg-[#1a1917]/80">
+            <div role="group" aria-label="Filter topic results by media type" className="flex items-center gap-1 rounded-full border border-black/[0.08] bg-white/90 p-1 backdrop-blur-sm dark:border-white/[0.08] dark:bg-[#1a1917]/90">
                 {mediaFilters.map(({ value, label, Icon }) => (
                     <button
                         key={value}

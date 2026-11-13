@@ -6,6 +6,16 @@ import SaveToMoodboardButton from '@/components/features/SaveToMoodboardButton'
 import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * 15
+const AUTOPLAY_PREF_KEY = "lucea.videoAutoplay"
+
+const isAutoplayEnabled = () => {
+    try {
+        const stored = localStorage.getItem(AUTOPLAY_PREF_KEY)
+        return stored !== null ? JSON.parse(stored) : true
+    } catch {
+        return true
+    }
+}
 
 interface VideoItemProps {
     video: Video
@@ -26,6 +36,7 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
     const progressRef = useRef<SVGCircleElement>(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [isPreviewActive, setIsPreviewActive] = useState(false)
+    const [isPosterLoaded, setIsPosterLoaded] = useState(false)
     const prefersReducedMotion = usePrefersReducedMotion()
     const previewFile = video.video_files.find((file) => file.quality === 'sd')
         ?? video.video_files.find((file) => file.quality === 'hd')
@@ -84,13 +95,13 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
     }
 
     const onPointerEnter = (event: PointerEvent<HTMLButtonElement>) => {
-        if (event.pointerType === 'mouse' && previewFile && !prefersReducedMotion) {
+        if (event.pointerType === 'mouse' && previewFile && !prefersReducedMotion && isAutoplayEnabled()) {
             setIsPreviewActive(true)
         }
     }
 
     return (
-        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.14)] dark:bg-neutral-800 dark:hover:shadow-[0_16px_36px_rgba(0,0,0,0.55)] sm:rounded-[24px]">
+        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[24px]">
             <button
                 type="button"
                 className="relative block w-full cursor-pointer overflow-hidden border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
@@ -104,11 +115,14 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                 }}
             >
                 <img
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.2,0,0,1)] motion-safe:group-hover:scale-[1.03]"
+                    className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.2,0,0,1)] motion-safe:group-hover:scale-[1.03] ${
+                        isPosterLoaded ? "opacity-100 blur-none" : "opacity-0 blur-xs"
+                    }`}
                     src={video.image}
                     alt=""
                     loading="lazy"
                     decoding="async"
+                    onLoad={() => setIsPosterLoaded(true)}
                 />
 
                 {/* Dark gradient scrim on hover */}

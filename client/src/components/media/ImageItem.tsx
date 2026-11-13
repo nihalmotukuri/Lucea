@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Download } from "lucide-react"
 import type { Photo } from "@/types/types.ts"
@@ -12,6 +13,7 @@ interface ImageItemProps {
 const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
     const navigate = useNavigate()
     const location = useLocation()
+    const [isLoaded, setIsLoaded] = useState(false)
 
     const onImage = () => {
         const state = location.state as { photoBackgroundLocation?: typeof location } | null
@@ -24,7 +26,7 @@ const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
     }
 
     return (
-        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.14)] dark:bg-neutral-800 dark:hover:shadow-[0_16px_36px_rgba(0,0,0,0.55)] sm:rounded-[24px]">
+        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[24px]">
             <button
                 type="button"
                 className="relative block w-full cursor-pointer overflow-hidden border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
@@ -36,11 +38,14 @@ const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
                 }}
             >
                 <img
-                    className="fade-in block h-full w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.2,0,0,1)] motion-safe:group-hover:scale-[1.03]"
+                    className={`block h-full w-full object-cover transition-all duration-700 ease-[cubic-bezier(0.2,0,0,1)] motion-safe:group-hover:scale-[1.03] ${
+                        isLoaded ? "opacity-100 blur-none" : "opacity-0 blur-xs"
+                    }`}
                     src={image.src.large}
                     alt={image.alt || `Photo by ${image.photographer}`}
                     loading="lazy"
                     decoding="async"
+                    onLoad={() => setIsLoaded(true)}
                 />
 
                 {/* Dark gradient scrim on hover */}

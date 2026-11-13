@@ -180,7 +180,7 @@ const Featured = () => {
                                     initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 4 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: prefersReducedMotion ? 0 : 0.25, delay: prefersReducedMotion ? 0 : 0.16, ease: "easeOut" }}
-                                    className="mb-1 inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-neutral-900 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:bg-[#f1e8da] group-hover:shadow-md"
+                                    className="mb-1 inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-neutral-900 transition duration-200 group-hover:bg-[#f1e8da]"
                                 >
                                     Explore
                                     <ArrowUpRight size={16} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

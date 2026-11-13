@@ -49,7 +49,7 @@ const formatDuration = (duration: number) => {
     return `${minutes}:${String(seconds).padStart(2, "0")}`
 }
 
-const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 hover:shadow-sm active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-white/[0.1] dark:bg-[#201e1b] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#292622] dark:hover:text-white"
+const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition duration-200 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-white/[0.1] dark:bg-[#201e1b] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#292622] dark:hover:text-white"
 
 const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: MediaDetailViewProps) => {
     const [shareMessage, setShareMessage] = useState("")

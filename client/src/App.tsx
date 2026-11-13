@@ -20,15 +20,15 @@ const SettingsPage = lazy(() => import("./pages/settings/SettingsPage"))
 
 function NotFound() {
   return (
-    <section className="flex min-h-[65vh] flex-col items-center justify-center px-6 text-center">
-      <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-400">404 / Lost in the field</p>
-      <h1 className="mt-3 font-editorial text-3xl text-neutral-800">This page isn’t here.</h1>
-      <p className="mt-2 max-w-sm text-sm leading-6 text-neutral-500">
+    <section className="flex min-h-[65vh] flex-col items-center justify-center px-6 text-center text-neutral-800 dark:text-neutral-100">
+      <p className="text-xs font-medium uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500">404 / Lost in the field</p>
+      <h1 className="mt-3 font-editorial text-3xl text-neutral-900 dark:text-white sm:text-4xl">This page isn’t here.</h1>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-neutral-500 dark:text-neutral-400">
         The link may be out of date, or the page may have moved.
       </p>
       <Link
         to="/"
-        className="mt-6 inline-flex min-h-10 items-center rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700"
+        className="mt-6 inline-flex min-h-10 items-center rounded-xl bg-neutral-900 px-4 text-sm font-medium text-white transition hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
       >
         Back to explore
       </Link>

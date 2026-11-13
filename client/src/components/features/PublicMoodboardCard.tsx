@@ -12,7 +12,7 @@ const PublicMoodboardCard = ({
     const preview = moodboard.preview.slice(0, 3)
 
     return (
-        <article className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-neutral-800">
+        <article className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
             <Link
                 to={`/profiles/${encodeURIComponent(moodboard.handle)}/boards/${encodeURIComponent(moodboard.id)}`}
                 aria-label={`${moodboard.title}, ${moodboard.mediaCount} saved ${moodboard.mediaCount === 1 ? "item" : "items"}`}

@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useCallback } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import QueryFeedback from "@/components/features/QueryFeedback"
-import MediaLoadingState from "@/components/features/MediaLoadingState"
+import MediaDetailModalSkeleton from "@/components/media/MediaDetailModalSkeleton"
 import MediaDetailView from "@/components/media/MediaDetailView"
 import { getPhoto } from "@/api/pexels"
 import MediaDetailPageHeader from "./MediaDetailPageHeader"
@@ -33,7 +33,7 @@ const PhotoDetailPage = () => {
     return (
         <div className="min-h-full bg-[#fdfcfb] pt-[140px] dark:bg-[#121110]">
             <MediaDetailPageHeader />
-            {!photo && isPending && <MediaLoadingState />}
+            {!photo && isPending && <MediaDetailModalSkeleton isModal={false} mediaType="photo" />}
             {!photo && isError && <div className="mx-auto max-w-3xl px-5 py-10"><QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} /></div>}
             {photo && <MediaDetailView item={{ type: "photo", media: photo }} onBack={goBack} />}
         </div>

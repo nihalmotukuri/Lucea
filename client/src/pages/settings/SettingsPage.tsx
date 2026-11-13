@@ -16,6 +16,7 @@ import {
 } from "lucide-react"
 import { useTheme, type ThemeMode } from "@/hooks/useTheme"
 import { useAuth } from "@/auth/useAuth"
+import TopHeader from "@/components/layout/TopHeader"
 
 const AUTOPLAY_PREF_KEY = "lucea.videoAutoplay"
 const FEED_FILTER_PREF_KEY = "lucea.defaultFeedFilter"
@@ -91,7 +92,8 @@ export const SettingsPage = () => {
     }
 
     return (
-        <div className="relative min-h-screen bg-[#fdfcfb] px-4 pb-16 pt-24 text-neutral-800 transition-colors sm:px-6 md:px-10 md:pt-14 dark:bg-[#121110] dark:text-neutral-100">
+        <div className="relative min-h-screen bg-[#fdfcfb] px-4 pb-16 pt-[120px] text-neutral-800 transition-colors sm:px-6 md:px-10 dark:bg-[#121110] dark:text-neutral-100">
+            <TopHeader />
             {toastMessage && (
                 <div
                     role="status"

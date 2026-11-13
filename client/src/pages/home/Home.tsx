@@ -14,11 +14,25 @@ const Featured = lazy(() => import("./Featured"))
 
 type MediaFilter = "all" | "photos" | "videos"
 
+const FEED_FILTER_PREF_KEY = "lucea.defaultFeedFilter"
+
+const getInitialFeedFilter = (): MediaFilter => {
+    try {
+        const stored = localStorage.getItem(FEED_FILTER_PREF_KEY)
+        if (stored === "photos" || stored === "videos" || stored === "all") {
+            return stored
+        }
+        return "all"
+    } catch {
+        return "all"
+    }
+}
+
 const Home = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [searchQuery, setSearchQuery] = useState('')
-    const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all")
+    const [mediaFilter, setMediaFilter] = useState<MediaFilter>(getInitialFeedFilter)
     const { topicSlug } = useParams()
     const topics = useTopic(state => state.topics)
     const { topicsReady } = useDailyTopics()
