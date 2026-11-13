@@ -28,7 +28,7 @@ describe("Home", () => {
             </MemoryRouter>,
         )
 
-        expect(screen.getByRole("heading", { name: "Photos & Videos" })).toBeTruthy()
+        expect(screen.getByRole("heading", { name: "Still & Moving" })).toBeTruthy()
         expect(
             consoleError.mock.calls.flat().join(" "),
         ).not.toContain("Cannot update a component")

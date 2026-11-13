@@ -12,7 +12,7 @@ const PublicMoodboardCard = ({
     const preview = moodboard.preview.slice(0, 3)
 
     return (
-        <article className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
+        <article className="group relative overflow-hidden rounded-[20px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
             <Link
                 to={`/profiles/${encodeURIComponent(moodboard.handle)}/boards/${encodeURIComponent(moodboard.id)}`}
                 aria-label={`${moodboard.title}, ${moodboard.mediaCount} saved ${moodboard.mediaCount === 1 ? "item" : "items"}`}
@@ -53,14 +53,14 @@ const PublicMoodboardCard = ({
                     )}
                 </div>
                 <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
+                <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 px-3 pb-3 sm:gap-3 sm:px-5 sm:pb-5">
                     <span className="min-w-0">
-                        <span className="block truncate font-editorial text-xl font-normal text-white sm:text-2xl">{moodboard.title}</span>
-                        <span className="mt-0.5 block text-xs text-white/85">
+                        <span className="block truncate font-editorial text-base font-normal text-white sm:text-2xl">{moodboard.title}</span>
+                        <span className="mt-0.5 block text-[11px] text-white/85 sm:text-xs">
                             {moodboard.mediaCount} {moodboard.mediaCount === 1 ? "item" : "items"}
                         </span>
                     </span>
-                    <ArrowUpRight size={19} className="mb-1 shrink-0 text-white/85 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                    <ArrowUpRight size={16} className="mb-1 shrink-0 text-white/85 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:size-[19px]" aria-hidden="true" />
                 </span>
             </Link>
             {showCreator && (

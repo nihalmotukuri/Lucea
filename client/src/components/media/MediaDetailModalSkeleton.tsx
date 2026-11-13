@@ -19,7 +19,7 @@ export const MediaDetailModalSkeleton = ({
             aria-label={`Loading ${mediaType} details`}
             className={`w-full bg-[#fdfcfb] text-neutral-800 transition-colors dark:bg-[#161413] dark:text-neutral-100 ${
                 isModal
-                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[34px] dark:border dark:border-white/[0.08]"
+                    ? "max-w-[1200px] overflow-y-auto rounded-[22px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[28px] dark:border dark:border-white/[0.08]"
                     : "min-h-full max-w-[1440px] mx-auto"
             }`}
         >
@@ -49,7 +49,7 @@ export const MediaDetailModalSkeleton = ({
 
                 <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(280px,0.75fr)] lg:gap-6">
                     {/* Media frame skeleton matching the image/video container */}
-                    <div className="relative aspect-[4/3] w-full min-w-0 overflow-hidden rounded-[18px] bg-[#eae6e0] dark:bg-[#201d1a]">
+                    <div className="relative aspect-[4/3] w-full min-w-0 overflow-hidden rounded-[16px] bg-[#eae6e0] dark:bg-[#201d1a]">
                         <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent dark:via-white/[0.06]" />
                     </div>
 

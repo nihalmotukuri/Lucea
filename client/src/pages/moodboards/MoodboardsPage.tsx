@@ -527,7 +527,7 @@ const MoodboardsPage = () => {
                     <button
                         type="submit"
                         disabled={!title.trim()}
-                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:mt-0 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#201d1a] dark:disabled:text-neutral-500 dark:disabled:border dark:disabled:border-white/[0.06]"
+                        className="group mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-[12px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:mt-0 sm:w-auto dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#201d1a] dark:disabled:text-neutral-500 dark:disabled:border dark:disabled:border-white/[0.06]"
                     >
                         <ImagePlus size={17} aria-hidden="true" /> Create board
                     </button>
@@ -536,9 +536,9 @@ const MoodboardsPage = () => {
                 {moodboards.length > 0 ? (
                     <div className="mt-8">
                         <h2 className="mb-4 text-sm font-semibold text-neutral-700 dark:text-neutral-300">Saved boards <span className="ml-1 font-normal text-neutral-500 dark:text-neutral-400">({moodboards.length})</span></h2>
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
                         {moodboards.map(board => (
-                            <article key={board.id} className="group relative overflow-hidden rounded-[24px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
+                            <article key={board.id} className="group relative overflow-hidden rounded-[20px] bg-neutral-200 transition-shadow duration-300 hover:shadow-lg dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.5)]">
                                 <Link
                                     to={`/moodboards/${board.id}`}
                                     aria-label={`${board.title}, ${board.media.length} saved ${board.media.length === 1 ? "item" : "items"}`}
@@ -546,27 +546,27 @@ const MoodboardsPage = () => {
                                 >
                                     <MoodboardPreview moodboard={board} />
                                     <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-                                    <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
+                                    <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 px-3 pb-3 sm:gap-3 sm:px-5 sm:pb-5">
                                         <span className="min-w-0">
-                                            <span className="block truncate text-xl font-medium text-white sm:text-2xl">{board.title}</span>
-                                            <span className="mt-1 flex items-center gap-1.5 text-xs text-white/80" aria-hidden="true">
-                                                {board.isPublic ? <Globe2 size={12} className="text-emerald-400" /> : <LockKeyhole size={12} />}
+                                            <span className="block truncate text-base font-medium text-white sm:text-2xl">{board.title}</span>
+                                            <span className="mt-1 flex items-center gap-1 text-[10px] text-white/80 sm:gap-1.5 sm:text-xs" aria-hidden="true">
+                                                {board.isPublic ? <Globe2 size={11} className="text-emerald-400 sm:size-3" /> : <LockKeyhole size={11} className="sm:size-3" />}
                                                 <span>{board.media.length} {board.media.length === 1 ? "item" : "items"}</span>
                                                 <span className="text-white/40">·</span>
                                                 <span>{board.isPublic ? "Public" : "Private"}</span>
                                             </span>
                                         </span>
-                                        <ArrowUpRight size={18} className="mb-1 shrink-0 text-white/80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                                        <ArrowUpRight size={16} className="mb-1 shrink-0 text-white/80 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:size-[18px]" aria-hidden="true" />
                                     </span>
                                 </Link>
                                 <button
                                     type="button"
                                     aria-label={`Delete ${board.title}`}
                                     title="Delete moodboard"
-                                    className="media-action absolute right-3 top-3 rounded-full border border-white/80 bg-black/25 p-2.5 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                    className="media-action absolute right-2 top-2 grid size-8 place-items-center rounded-full border border-white/80 bg-black/25 text-white shadow-sm backdrop-blur-sm hover:bg-white/20 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-3 sm:top-3 sm:size-9"
                                     onClick={() => setMoodboardToDelete(board)}
                                 >
-                                    <Trash2 size={17} aria-hidden="true" />
+                                    <Trash2 size={14} className="sm:size-[17px]" aria-hidden="true" />
                                 </button>
                             </article>
                         ))}

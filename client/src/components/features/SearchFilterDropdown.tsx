@@ -77,16 +77,16 @@ const SearchFilterDropdown = ({ label, value, options, onChange }: SearchFilterD
                         window.setTimeout(() => optionRefs.current[nextIndex]?.focus(), 0)
                     }
                 }}
-                className={`group flex min-h-9 w-full items-center gap-2 border-b px-1 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 ${
+                className={`group flex min-h-8 w-full items-center gap-1.5 border-b px-1 text-left transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:min-h-9 sm:gap-2 ${
                     isOpen ? "border-neutral-700 dark:border-neutral-300" : "border-transparent hover:border-black/20 dark:hover:border-white/20"
                 }`}
             >
-                <span className="text-[11px] text-neutral-400 dark:text-neutral-500">{label}</span>
-                <span className="min-w-0 truncate text-[13px] font-medium text-neutral-800 dark:text-neutral-200">
+                <span className="text-[10px] text-neutral-400 dark:text-neutral-500 sm:text-[11px]">{label}</span>
+                <span className="min-w-0 truncate text-xs font-medium text-neutral-800 dark:text-neutral-200 sm:text-[13px]">
                     {selectedOption.label}
                 </span>
                 <ChevronDown
-                    size={13}
+                    size={12}
                     className={`shrink-0 text-neutral-400 dark:text-neutral-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
                     aria-hidden="true"
                 />
@@ -116,22 +116,22 @@ const SearchFilterDropdown = ({ label, value, options, onChange }: SearchFilterD
                                 aria-selected={isSelected}
                                 onFocus={() => setActiveIndex(index)}
                                 onClick={() => chooseOption(option)}
-                                className={`flex min-h-[54px] w-full items-center gap-3 rounded-xl px-2.5 text-left transition focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-neutral-500 ${
+                                className={`flex min-h-12 w-full items-center gap-2.5 rounded-xl px-2 text-left transition focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-neutral-500 sm:min-h-[54px] sm:gap-3 sm:px-2.5 ${
                                     isSelected ? "bg-[#f6f3ee] dark:bg-[#282420]" : "hover:bg-[#faf8f5] dark:hover:bg-[#221f1c]"
                                 }`}
                             >
-                                <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${
+                                <span className={`grid size-7 shrink-0 place-items-center rounded-lg sm:size-8 ${
                                     isSelected ? "bg-white text-neutral-800 shadow-sm dark:bg-[#34302b] dark:text-neutral-100" : "bg-[#f7f5f1] text-neutral-500 dark:bg-[#25221e] dark:text-neutral-400"
                                 }`}>
-                                    <OptionIcon size={15} strokeWidth={1.7} aria-hidden="true" />
+                                    <OptionIcon size={13} className="sm:size-[15px]" strokeWidth={1.7} aria-hidden="true" />
                                 </span>
                                 <span className="min-w-0 flex-1">
-                                    <span className={`block text-sm ${isSelected ? "font-medium text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-300"}`}>
+                                    <span className={`block text-xs sm:text-sm ${isSelected ? "font-medium text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-300"}`}>
                                         {option.label}
                                     </span>
-                                    <span className="block truncate text-xs text-neutral-400 dark:text-neutral-500">{option.description}</span>
+                                    <span className="block truncate text-[11px] text-neutral-400 dark:text-neutral-500 sm:text-xs">{option.description}</span>
                                 </span>
-                                {isSelected && <Check size={15} className="shrink-0 text-neutral-700 dark:text-neutral-300" aria-hidden="true" />}
+                                {isSelected && <Check size={14} className="shrink-0 text-neutral-700 dark:text-neutral-300 sm:size-[15px]" aria-hidden="true" />}
                             </button>
                         )
                     })}

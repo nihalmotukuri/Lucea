@@ -31,7 +31,7 @@ interface TopicResultsHeaderProps {
 }
 
 const TopicResultsHeader = ({ title, mediaFilter, onFilterChange }: TopicResultsHeaderProps) => (
-    <header className="relative isolate mb-6 overflow-hidden rounded-[24px] border border-black/[0.06] bg-gradient-to-br from-[#f8f5ee] via-white to-[#f5f0e6] p-5 sm:p-7 dark:border-white/[0.08] dark:from-[#1b1916] dark:via-[#151312] dark:to-[#191714] shadow-xs">
+    <header className="relative isolate mb-6 overflow-hidden rounded-[20px] border border-black/[0.06] bg-gradient-to-br from-[#f8f5ee] via-white to-[#f5f0e6] p-5 sm:p-7 dark:border-white/[0.08] dark:from-[#1b1916] dark:via-[#151312] dark:to-[#191714] shadow-xs">
         {/* Subtle decorative glow orb */}
         <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-16 size-64 rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-400/5" />
 

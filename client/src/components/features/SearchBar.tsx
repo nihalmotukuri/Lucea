@@ -112,16 +112,16 @@ const SearchBar = ({
             <form
                 role="search"
                 onSubmit={handleSubmit}
-                className="group flex min-h-14 w-full items-center gap-2 rounded-[18px] border border-black/[0.09] bg-white/95 p-1.5 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition duration-200 hover:border-black/[0.15] focus-within:border-neutral-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-neutral-900/[0.04] dark:border-white/[0.1] dark:bg-[#1a1917]/95 dark:focus-within:border-neutral-500 dark:focus-within:bg-[#1a1917] dark:focus-within:ring-white/[0.04]"
+                className="group flex min-h-12 w-full items-center gap-1.5 rounded-[14px] border border-black/[0.09] bg-white/95 p-1 shadow-[0_2px_12px_rgba(35,29,22,0.035)] transition duration-200 hover:border-black/[0.15] focus-within:border-neutral-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-neutral-900/[0.04] sm:min-h-14 sm:gap-2 sm:rounded-[16px] sm:p-1.5 dark:border-white/[0.1] dark:bg-[#1a1917]/95 dark:focus-within:border-neutral-500 dark:focus-within:bg-[#1a1917] dark:focus-within:ring-white/[0.04]"
             >
-                <span className="ml-1 grid size-10 shrink-0 place-items-center rounded-[13px] bg-[#f4f0e9] text-neutral-600 transition-colors group-focus-within:bg-[#eee7dc] group-focus-within:text-neutral-900 dark:bg-[#262421] dark:text-neutral-300 dark:group-focus-within:bg-[#2f2b27] dark:group-focus-within:text-white">
-                    <Search size={18} strokeWidth={1.8} aria-hidden="true" />
+                <span className="ml-1 hidden size-9 shrink-0 place-items-center rounded-[12px] bg-[#f4f0e9] text-neutral-600 transition-colors group-focus-within:bg-[#eee7dc] group-focus-within:text-neutral-900 sm:grid sm:size-10 dark:bg-[#262421] dark:text-neutral-300 dark:group-focus-within:bg-[#2f2b27] dark:group-focus-within:text-white">
+                    <Search size={16} strokeWidth={1.8} aria-hidden="true" />
                 </span>
                 <input
                     ref={inputRef}
                     aria-label="Search photos and videos"
                     aria-expanded={isOpen && hasSuggestions}
-                    className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[15px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 dark:text-neutral-100 dark:placeholder:text-neutral-500 sm:text-base"
+                    className="min-w-0 flex-1 border-0 bg-transparent px-1 text-[13px] text-neutral-900 outline-none placeholder:text-neutral-400 focus-visible:ring-0 dark:text-neutral-100 dark:placeholder:text-neutral-500 sm:text-base"
                     type="text"
                     autoComplete="off"
                     placeholder={placeholder}
@@ -153,9 +153,9 @@ const SearchBar = ({
                             setIsOpen(true)
                             inputRef.current?.focus()
                         }}
-                        className="grid size-9 shrink-0 place-items-center rounded-full text-neutral-400 transition hover:bg-black/[0.05] hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-500 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                        className="grid size-8 shrink-0 place-items-center rounded-full text-neutral-400 transition hover:bg-black/[0.05] hover:text-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 sm:size-9 dark:text-neutral-500 dark:hover:bg-white/[0.08] dark:hover:text-white"
                     >
-                        <X size={16} aria-hidden="true" />
+                        <X size={14} aria-hidden="true" />
                     </button>
                 )}
                 <button
@@ -163,10 +163,10 @@ const SearchBar = ({
                     type="submit"
                     disabled={!value.trim()}
                     aria-label="Search"
-                    className="group/search inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-[13px] bg-neutral-900 px-3.5 text-sm font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600 sm:px-4"
+                    className="group/search inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-[10px] bg-neutral-900 px-3 text-xs font-medium text-white shadow-xs transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 sm:min-h-10 sm:gap-2 sm:rounded-[12px] sm:px-4 sm:text-sm dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
                 >
                     <span className="hidden sm:inline">Search</span>
-                    <ArrowRight size={17} strokeWidth={1.8} aria-hidden="true" className="transition-transform duration-200 group-hover/search:translate-x-0.5" />
+                    <ArrowRight size={15} strokeWidth={1.8} aria-hidden="true" className="transition-transform duration-200 group-hover/search:translate-x-0.5 sm:size-[17px]" />
                 </button>
             </form>
 

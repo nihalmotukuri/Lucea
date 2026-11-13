@@ -118,7 +118,7 @@ export const MyProfilePage = () => {
                         <button
                             type="submit"
                             disabled={saveProfile.isPending || !handlePattern.test(handle.trim().toLowerCase())}
-                            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[13px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
+                            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-[12px] bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition duration-200 hover:bg-neutral-800 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#eeeae3] disabled:text-neutral-400 disabled:shadow-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 dark:disabled:bg-[#282522] dark:disabled:text-neutral-600"
                         >
                             {saveProfile.isPending ? "Saving…" : profileQuery.data ? "Save handle" : "Create profile"}
                         </button>
@@ -177,7 +177,7 @@ export const MyProfilePage = () => {
                         <Link to="/moodboards" className="text-sm text-neutral-600 underline underline-offset-4 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white">Manage all</Link>
                     </div>
                     {publicMoodboards.length ? (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
                             {publicMoodboards.map(board => (
                                 <PublicMoodboardCard
                                     key={board.id}
@@ -249,7 +249,7 @@ export const PublicProfilePage = () => {
                     <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">{profile.moodboards.length} public moodboards</p>
                 </header>
                 {profile.moodboards.length ? (
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
                         {profile.moodboards.map(board => (
                             <PublicMoodboardCard
                                 key={board.id}
@@ -309,7 +309,7 @@ export const PublicMoodboardPage = () => {
                     </p>
                 </header>
                 {moodboard.media.length ? (
-                    <div className="columns-1 gap-3 sm:columns-2 lg:columns-3 xl:columns-4">
+                    <div className="columns-2 gap-3 lg:columns-3 xl:columns-4">
                         {moodboard.media.map(media => (
                             <Link key={media.key} to={media.detailPath} className="group relative mb-3 block break-inside-avoid overflow-hidden rounded-3xl bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:bg-neutral-800">
                                 <img src={media.thumbnail} alt={media.alt} loading="lazy" className="block h-auto w-full transition-transform duration-300 group-hover:scale-[1.02]" />

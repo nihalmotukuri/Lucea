@@ -148,7 +148,7 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
             aria-labelledby="media-detail-title"
             className={`mx-auto w-full bg-[#fdfcfb] text-neutral-850 transition-colors dark:bg-[#161413] dark:text-neutral-100 ${
                 isModal
-                    ? "max-w-[1200px] overflow-y-auto rounded-[26px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[34px] dark:border dark:border-white/[0.08]"
+                    ? "max-w-[1200px] overflow-y-auto rounded-[22px] shadow-[0_32px_100px_rgba(0,0,0,0.5)] sm:max-h-[94dvh] sm:rounded-[28px] dark:border dark:border-white/[0.08]"
                     : "min-h-full max-w-[1440px]"
             }`}
         >
@@ -157,12 +157,13 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                     <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-5 flex items-center justify-between border-b border-black/[0.06] bg-[#fdfcfb]/95 px-4 py-3 backdrop-blur-md sm:-mx-7 sm:-mt-6 sm:px-7 lg:-mx-10 lg:-mt-6 lg:px-10 dark:border-white/[0.08] dark:bg-[#161413]/95">
                         <button
                             type="button"
+                            aria-label="Back to your trail"
                             autoFocus
                             onClick={onBack}
                             className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
                             <ArrowLeft size={17} aria-hidden="true" />
-                            Back to your trail
+                            <span className="hidden sm:inline">Back to your trail</span>
                         </button>
                         <button
                             type="button"
@@ -185,7 +186,7 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                                 decoding="async"
                                 fetchPriority="high"
                                 onError={() => setMediaError(true)}
-                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[18px] object-contain"
+                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[16px] object-contain"
                             />
                         )}
                         {video && !mediaError && (
@@ -195,13 +196,15 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                                 poster={video.image}
                                 width={video.width}
                                 height={video.height}
+                                autoPlay
+                                muted
                                 controls
                                 playsInline
-                                preload="metadata"
+                                preload="auto"
                                 onError={() => setMediaError(true)}
                                 onLoadedData={() => setMediaError(false)}
                                 aria-label={`Video by ${video.user.name}`}
-                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[18px] object-contain"
+                                className="block h-auto w-auto max-h-[78dvh] max-w-full rounded-[16px] object-contain"
                             />
                         )}
                         {mediaError && (

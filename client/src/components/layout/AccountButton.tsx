@@ -107,7 +107,7 @@ const AccountButton = () => {
                 aria-label={user ? `Account: ${user.email}` : "Sign in"}
                 title={user ? "Your account" : "Sign in"}
                 disabled={isAuthLoading}
-                className="group relative flex h-11 md:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl px-2 text-neutral-500 transition-all duration-200 hover:bg-black/[0.035] hover:text-neutral-900 motion-safe:hover:scale-105 active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white"
+                className="group relative flex h-10 md:h-12 shrink-0 items-center justify-center gap-1 rounded-xl px-1.5 text-neutral-500 transition-all duration-200 hover:bg-black/[0.035] hover:text-neutral-900 motion-safe:hover:scale-105 active:scale-95 disabled:cursor-wait disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-700 dark:text-neutral-400 dark:hover:bg-white/[0.05] dark:hover:text-white"
                 onClick={() => {
                     setError("")
                     setMessage("")
@@ -115,17 +115,17 @@ const AccountButton = () => {
                 }}
             >
                 {isAuthLoading ? (
-                    <LoaderCircle size={19} className="animate-spin text-neutral-500" aria-hidden="true" />
+                    <LoaderCircle size={17} className="animate-spin text-neutral-500" aria-hidden="true" />
                 ) : user ? (
-                    <div className="flex items-center gap-1.5">
-                        <div className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-200 to-amber-400 font-semibold text-xs text-amber-950 shadow-2xs select-none dark:from-amber-600 dark:to-amber-800 dark:text-amber-100">
-                            {user.email ? user.email[0].toUpperCase() : <CircleUserRound size={17} aria-hidden="true" />}
+                    <div className="flex items-center gap-1">
+                        <div className="grid size-7 md:size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-200 to-amber-400 font-semibold text-[11px] md:text-xs text-amber-950 shadow-2xs select-none dark:from-amber-600 dark:to-amber-800 dark:text-amber-100">
+                            {user.email ? user.email[0].toUpperCase() : <CircleUserRound size={16} aria-hidden="true" />}
                         </div>
-                        <ChevronDown size={14} className="shrink-0 text-neutral-400 transition-transform duration-200 group-hover:text-neutral-700 dark:text-neutral-500 dark:group-hover:text-neutral-300" aria-hidden="true" />
+                        <ChevronDown size={12} className="shrink-0 text-neutral-400 transition-transform duration-200 group-hover:text-neutral-700 dark:text-neutral-500 dark:group-hover:text-neutral-300 md:size-[14px]" aria-hidden="true" />
                     </div>
                 ) : (
                     <div className="flex items-center gap-2 text-neutral-700 dark:text-neutral-200 sm:px-1">
-                        <LogIn size={18} strokeWidth={1.7} className="shrink-0 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-white" aria-hidden="true" />
+                        <LogIn size={16} strokeWidth={1.7} className="shrink-0 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-neutral-400 dark:group-hover:text-white md:size-[18px]" aria-hidden="true" />
                         <span className="hidden sm:inline text-xs font-medium">Sign in</span>
                     </div>
                 )}
@@ -135,7 +135,7 @@ const AccountButton = () => {
                 <dialog
                     ref={dialogRef}
                     aria-labelledby="account-dialog-title"
-                    className="fixed inset-0 m-auto max-h-[min(92dvh,48rem)] w-[min(92vw,28rem)] overflow-y-auto rounded-[28px] border border-black/[0.08] bg-[#fdfcfb] p-0 text-neutral-800 shadow-[0_24px_80px_rgba(35,29,22,0.18)] backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:border-white/[0.09] dark:bg-[#181615] dark:text-neutral-100"
+                    className="fixed inset-0 m-auto max-h-[min(92dvh,48rem)] w-[min(92vw,28rem)] overflow-y-auto rounded-[24px] border border-black/[0.08] bg-[#fdfcfb] p-0 text-neutral-800 shadow-[0_24px_80px_rgba(35,29,22,0.18)] backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:border-white/[0.09] dark:bg-[#181615] dark:text-neutral-100"
                     onCancel={event => {
                         event.preventDefault()
                         closeAuthDialog()

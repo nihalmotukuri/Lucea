@@ -26,7 +26,7 @@ const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
     }
 
     return (
-        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[24px]">
+        <div className="group relative z-0 w-full overflow-hidden rounded-[16px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[20px]">
             <button
                 type="button"
                 className="relative block w-full cursor-pointer overflow-hidden border-0 p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
@@ -56,12 +56,12 @@ const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
 
                 {/* Creator attribution pill (bottom-left) */}
                 <span
-                    className="pointer-events-none absolute bottom-3.5 left-3.5 z-10 flex max-w-[calc(100%-4.5rem)] items-center gap-2 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-1.5 group-hover:translate-y-0 group-hover:opacity-100"
+                    className="pointer-events-none absolute bottom-2.5 left-2.5 z-10 flex max-w-[calc(100%-4rem)] items-center gap-1.5 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-1.5 group-hover:translate-y-0 group-hover:opacity-100 sm:bottom-3.5 sm:left-3.5 sm:gap-2"
                 >
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-white/30 text-[10px] font-semibold text-white backdrop-blur-md">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-white/30 text-[9px] font-semibold text-white backdrop-blur-md sm:size-6 sm:text-[10px]">
                         {image.photographer.charAt(0).toUpperCase()}
                     </span>
-                    <span className="truncate text-xs font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                    <span className="truncate text-[11px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] sm:text-xs">
                         {image.photographer}
                     </span>
                 </span>
@@ -88,10 +88,10 @@ const ImageItem = ({ image, openInModal = true }: ImageItemProps) => {
                 download
                 aria-label={`Download photo by ${image.photographer}`}
                 title="Download high-res photo"
-                className="media-action absolute bottom-3 right-3 z-20 grid size-8 place-items-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:border-white/70 hover:bg-black/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="media-action absolute bottom-2 right-2 z-20 grid size-7 place-items-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-md transition-all duration-200 hover:scale-110 hover:border-white/70 hover:bg-black/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:bottom-3 sm:right-3 sm:size-8"
                 onClick={event => event.stopPropagation()}
             >
-                <Download size={14} aria-hidden="true" />
+                <Download size={12} className="sm:size-[14px]" aria-hidden="true" />
             </a>
         </div>
     )

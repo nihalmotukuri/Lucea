@@ -62,7 +62,7 @@ const AuthCallback = () => {
     }, [navigate])
 
     return (
-        <section className="grid min-h-[65vh] place-items-center bg-[#fdfcfb] px-5 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100">
+        <section className="grid min-h-dvh w-full place-items-center overflow-y-auto bg-[#fdfcfb] px-5 py-10 text-neutral-800 dark:bg-[#121110] dark:text-neutral-100">
             <div className="max-w-md text-center">
                 {error
                     ? (

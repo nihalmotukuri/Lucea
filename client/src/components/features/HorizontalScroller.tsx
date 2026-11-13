@@ -51,13 +51,13 @@ const HorizontalScroller = ({ children, label }: HorizontalScrollerProps) => {
             </div>
             <div
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent dark:from-[#121110] dark:via-[#121110]/90 transition-opacity duration-300 ${
+                className={`pointer-events-none absolute inset-y-0 left-0 z-[5] w-10 bg-gradient-to-r from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent dark:from-[#121110] dark:via-[#121110]/90 transition-opacity duration-300 ${
                     canScrollLeft ? "opacity-100" : "opacity-0"
                 }`}
             />
             <div
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent dark:from-[#121110] dark:via-[#121110]/90 transition-opacity duration-300 ${
+                className={`pointer-events-none absolute inset-y-0 right-0 z-[5] w-10 bg-gradient-to-l from-[#fdfcfb] via-[#fdfcfb]/90 to-transparent dark:from-[#121110] dark:via-[#121110]/90 transition-opacity duration-300 ${
                     canScrollRight ? "opacity-100" : "opacity-0"
                 }`}
             />
@@ -72,7 +72,7 @@ const HorizontalScroller = ({ children, label }: HorizontalScrollerProps) => {
                         : "pointer-events-none -translate-x-1 opacity-0"
                 }`}
             >
-                <ChevronLeft size={17} aria-hidden="true" />
+                <ChevronLeft size={18} aria-hidden="true" />
             </button>
             <button
                 type="button"
@@ -85,7 +85,7 @@ const HorizontalScroller = ({ children, label }: HorizontalScrollerProps) => {
                         : "pointer-events-none translate-x-1 opacity-0"
                 }`}
             >
-                <ChevronRight size={17} aria-hidden="true" />
+                <ChevronRight size={18} aria-hidden="true" />
             </button>
         </div>
     )

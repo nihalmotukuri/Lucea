@@ -101,7 +101,7 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
     }
 
     return (
-        <div className="group relative z-0 w-full overflow-hidden rounded-[20px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[24px]">
+        <div className="group relative z-0 w-full overflow-hidden rounded-[16px] bg-neutral-100 transition-shadow duration-300 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] dark:bg-neutral-800 dark:hover:shadow-[0_12px_28px_rgba(0,0,0,0.45)] sm:rounded-[20px]">
             <button
                 type="button"
                 className="relative block w-full cursor-pointer overflow-hidden border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800"
@@ -134,7 +134,7 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                 {/* Play/Progress circle on top-left */}
                 <svg
                     viewBox="0 0 36 36"
-                    className="pointer-events-none absolute left-3 top-3 z-[2] size-9 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]"
+                    className="pointer-events-none absolute left-2 top-2 z-[2] size-8 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)] sm:left-3 sm:top-3 sm:size-9"
                     aria-hidden="true"
                 >
                     <circle
@@ -150,23 +150,23 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                         strokeDashoffset="0"
                         transform="rotate(-90 18 18)"
                     />
-                    <Play x="11.5" y="11.5" size="13" fill="white" stroke="white" strokeWidth="1.5" />
+                    <Play x="11.5" y="11.5" size="12" fill="white" stroke="white" strokeWidth="1.5" />
                 </svg>
 
                 {/* Video Duration Pill (bottom-right) */}
-                <span className="pointer-events-none absolute bottom-3 right-3 z-10 flex items-center gap-1 rounded-md bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-md transition-opacity duration-200">
-                    <Play size={10} fill="currentColor" aria-hidden="true" />
+                <span className="pointer-events-none absolute bottom-2 right-2 z-10 flex items-center gap-0.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white backdrop-blur-md transition-opacity duration-200 sm:bottom-3 sm:right-3 sm:gap-1 sm:px-2 sm:text-[11px]">
+                    <Play size={9} fill="currentColor" aria-hidden="true" />
                     {formatDuration(video.duration)}
                 </span>
 
                 {/* Creator Attribution (bottom-left) */}
                 <span
-                    className="pointer-events-none absolute bottom-3.5 left-3.5 z-10 flex max-w-[calc(100%-6.5rem)] items-center gap-2 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-1.5 group-hover:translate-y-0 group-hover:opacity-100"
+                    className="pointer-events-none absolute bottom-2.5 left-2.5 z-10 flex max-w-[calc(100%-6rem)] items-center gap-1.5 opacity-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-1.5 group-hover:translate-y-0 group-hover:opacity-100 sm:bottom-3.5 sm:left-3.5 sm:gap-2"
                 >
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-white/30 text-[10px] font-semibold text-white backdrop-blur-md">
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-white/30 text-[9px] font-semibold text-white backdrop-blur-md sm:size-6 sm:text-[10px]">
                         {video.user.name.charAt(0).toUpperCase()}
                     </span>
-                    <span className="truncate text-xs font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+                    <span className="truncate text-[11px] font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)] sm:text-xs">
                         {video.user.name}
                     </span>
                 </span>

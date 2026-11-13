@@ -39,12 +39,13 @@ function NotFound() {
 function App() {
   const location = useLocation()
   const state = location.state
+  const isAuthCallback = location.pathname === "/auth/callback"
 
   return (
     <>
-      <Navbar />
+      {!isAuthCallback && <Navbar />}
 
-      <main className='min-h-screen pb-[calc(76px+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-[80px]'>
+      <main className={isAuthCallback ? "min-h-dvh w-full" : "min-h-screen pb-[calc(76px+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-[80px]"}>
         <Routes location={state?.photoBackgroundLocation || state?.videoBackgroundLocation || location}>
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<Home />} />

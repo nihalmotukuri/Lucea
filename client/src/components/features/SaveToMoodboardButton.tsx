@@ -67,7 +67,7 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
                 aria-label={savedBoardCount > 0 ? `Saved to ${savedBoardCount} moodboard${savedBoardCount === 1 ? "" : "s"}. Manage moodboards` : "Save to moodboard"}
                 title={!user ? "Sign in to save this item" : savedBoardCount > 0 ? "Saved to moodboard" : "Save to moodboard"}
                 className={variant === "overlay"
-                    ? `media-action absolute right-3 top-3 z-20 grid size-9 place-items-center rounded-full border shadow-md backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
+                    ? `media-action absolute right-2 top-2 z-20 grid size-8 place-items-center rounded-full border shadow-md backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-3 sm:top-3 sm:size-9 ${
                         savedBoardCount > 0
                             ? "border-white bg-white text-neutral-900 shadow-neutral-900/20"
                             : "border-white/30 bg-black/40 text-white hover:border-white/60 hover:bg-black/60"
@@ -87,8 +87,8 @@ const SaveToMoodboardButton = ({ media, variant = "overlay" }: SaveToMoodboardBu
                 }}
             >
                 {savedBoardCount > 0
-                    ? <BookmarkCheck size={18} aria-hidden="true" />
-                    : <BookmarkPlus size={18} aria-hidden="true" />
+                    ? <BookmarkCheck size={16} className="sm:size-[18px]" aria-hidden="true" />
+                    : <BookmarkPlus size={16} className="sm:size-[18px]" aria-hidden="true" />
                 }
                 {variant === "inline" && (savedBoardCount > 0 ? "Saved" : "Save to moodboard")}
             </button>

@@ -2,7 +2,6 @@ import { Link, useParams } from "react-router-dom"
 import { useTopic } from "@/store/useTopic"
 import HorizontalScroller from "@/components/features/HorizontalScroller"
 import useDailyTopics from "@/hooks/useDailyTopics"
-import { Sparkles } from "lucide-react"
 
 const Suggestions = () => {
     const { isError, topicsReady } = useDailyTopics()
@@ -11,15 +10,6 @@ const Suggestions = () => {
 
     return (
         <div className="flex h-[46px] min-w-0 items-center gap-4">
-            <span className="inline-flex h-full shrink-0 items-center gap-1.5 whitespace-nowrap text-[13px] font-medium leading-none text-neutral-500 dark:text-neutral-400">
-                <Sparkles
-                    size={14}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className="text-amber-500 [fill:#fcd34d] [stroke:#f97316] drop-shadow-[0_1px_2px_rgba(249,115,22,0.22)]"
-                />
-                <span>Today’s picks</span>
-            </span>
             <div className="min-w-0 flex-1">
                 {topicsReady ? (
                     <HorizontalScroller label="today's visual topics">
