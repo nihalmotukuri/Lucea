@@ -230,6 +230,13 @@ button:not(:disabled),
     border-color 180ms ease;
 }
 
+@media (hover: none), (max-width: 767px) {
+  .media-action,
+  .video-play-progress {
+    display: none;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
   .media-action {
     opacity: 0;

@@ -11,6 +11,9 @@ const PhotoDetailPage = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const { photoId } = useParams()
+    const hasBackgroundLocation = Boolean(
+        (location.state as { photoBackgroundLocation?: unknown } | null)?.photoBackgroundLocation,
+    )
     const goBack = useCallback(() => {
         if (location.key === "default") navigate("/")
         else navigate(-1)
@@ -32,11 +35,17 @@ const PhotoDetailPage = () => {
     })
 
     return (
-        <div className="min-h-full bg-[#fdfcfb] pt-[152px] dark:bg-[#121110]">
+        <div className="min-h-full bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
             <MediaDetailPageHeader />
             {!photo && isPending && <MediaDetailModalSkeleton isModal={false} mediaType="photo" />}
             {!photo && isError && <div className="mx-auto max-w-3xl px-5 py-10"><QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} /></div>}
-            {photo && <MediaDetailView item={{ type: "photo", media: photo }} onBack={goBack} />}
+            {photo && (
+                <MediaDetailView
+                    item={{ type: "photo", media: photo }}
+                    onBack={goBack}
+                    showBackButton={hasBackgroundLocation}
+                />
+            )}
         </div>
     )
 }

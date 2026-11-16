@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react"
+import { lazy, Suspense, useEffect, useState } from "react"
 import { Routes, Route, BrowserRouter, Navigate, useLocation, Link } from 'react-router-dom'
 import Navbar from "./components/layout/Navbar"
 import Home from './pages/home/Home'
@@ -40,13 +40,29 @@ function App() {
   const location = useLocation()
   const state = location.state
   const isAuthCallback = location.pathname === "/auth/callback"
+  const [isModalViewport, setIsModalViewport] = useState(
+    () => typeof window !== "undefined"
+      && typeof window.matchMedia === "function"
+      && window.matchMedia("(min-width: 768px)").matches,
+  )
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== "function") return
+
+    const mediaQuery = window.matchMedia("(min-width: 768px)")
+    const updateViewport = () => setIsModalViewport(mediaQuery.matches)
+    updateViewport()
+    mediaQuery.addEventListener("change", updateViewport)
+
+    return () => mediaQuery.removeEventListener("change", updateViewport)
+  }, [])
 
   return (
     <>
       {!isAuthCallback && <Navbar />}
 
       <main className={isAuthCallback ? "min-h-dvh w-full" : "min-h-screen pb-[calc(76px+env(safe-area-inset-bottom,0px))] md:pb-0 md:pl-[80px]"}>
-        <Routes location={state?.photoBackgroundLocation || state?.videoBackgroundLocation || location}>
+        <Routes location={isModalViewport ? state?.photoBackgroundLocation || state?.videoBackgroundLocation || location : location}>
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
@@ -63,13 +79,13 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        {state?.photoBackgroundLocation && (
+        {isModalViewport && state?.photoBackgroundLocation && (
           <Routes>
             <Route path="/photos/:photoId" element={<PhotoDetailModal />} />
           </Routes>
         )}
 
-        {state?.videoBackgroundLocation && (
+        {isModalViewport && state?.videoBackgroundLocation && (
           <Routes>
             <Route path="/videos/:videoId" element={<VideoDetailModal />} />
           </Routes>

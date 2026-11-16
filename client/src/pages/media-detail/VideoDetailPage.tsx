@@ -11,6 +11,9 @@ const VideoDetailPage = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const { videoId } = useParams()
+    const hasBackgroundLocation = Boolean(
+        (location.state as { videoBackgroundLocation?: unknown } | null)?.videoBackgroundLocation,
+    )
     const goBack = useCallback(() => {
         if (location.key === "default") navigate("/")
         else navigate(-1)
@@ -32,11 +35,17 @@ const VideoDetailPage = () => {
     })
 
     return (
-        <div className="min-h-full bg-[#fdfcfb] pt-[152px] dark:bg-[#121110]">
+        <div className="min-h-full bg-[#fdfcfb] pt-[120px] dark:bg-[#121110]">
             <MediaDetailPageHeader />
             {!video && isPending && <MediaDetailModalSkeleton isModal={false} mediaType="video" />}
             {!video && isError && <div className="mx-auto max-w-3xl px-5 py-10"><QueryFeedback error isRetrying={isFetching} onRetry={() => void refetch()} /></div>}
-            {video && <MediaDetailView item={{ type: "video", media: video }} onBack={goBack} />}
+            {video && (
+                <MediaDetailView
+                    item={{ type: "video", media: video }}
+                    onBack={goBack}
+                    showBackButton={hasBackgroundLocation}
+                />
+            )}
         </div>
     )
 }

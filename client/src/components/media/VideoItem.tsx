@@ -134,7 +134,7 @@ const VideoItem = ({ video, openInModal = true }: VideoItemProps) => {
                 {/* Play/Progress circle on top-left */}
                 <svg
                     viewBox="0 0 36 36"
-                    className="pointer-events-none absolute left-2 top-2 z-[2] size-8 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)] sm:left-3 sm:top-3 sm:size-9"
+                    className="video-play-progress pointer-events-none absolute left-2 top-2 z-[2] size-8 drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)] sm:left-3 sm:top-3 sm:size-9"
                     aria-hidden="true"
                 >
                     <circle

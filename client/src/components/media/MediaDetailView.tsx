@@ -22,6 +22,7 @@ interface MediaDetailViewProps {
     onBack: () => void
     isModal?: boolean
     onClose?: () => void
+    showBackButton?: boolean
 }
 
 const getPhotoFallbackQuery = (photo: Photo) => {
@@ -51,7 +52,7 @@ const formatDuration = (duration: number) => {
 
 const secondaryActionClassName = "group inline-flex min-h-11 items-center gap-2 rounded-full border border-black/[0.1] px-4 text-sm font-medium text-neutral-700 transition duration-200 hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-950 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-white/[0.1] dark:bg-[#201e1b] dark:text-neutral-200 dark:hover:border-white/20 dark:hover:bg-[#292622] dark:hover:text-white"
 
-const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: MediaDetailViewProps) => {
+const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack, showBackButton = false }: MediaDetailViewProps) => {
     const [shareMessage, setShareMessage] = useState("")
     const [mediaError, setMediaError] = useState(false)
     const isPhoto = item.type === "photo"
@@ -172,6 +173,20 @@ const MediaDetailView = ({ item, onBack, isModal = false, onClose = onBack }: Me
                             className="grid size-10 place-items-center rounded-full text-neutral-500 transition hover:bg-black/[0.05] hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
                             <X size={18} strokeWidth={1.8} aria-hidden="true" />
+                        </button>
+                    </div>
+                )}
+
+                {!isModal && showBackButton && (
+                    <div className="mb-4">
+                        <button
+                            type="button"
+                            aria-label="Back to your trail"
+                            onClick={onBack}
+                            className="inline-flex min-h-10 items-center gap-2 rounded-full px-3 text-sm font-medium text-neutral-600 transition hover:bg-black/[0.045] hover:text-neutral-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:text-neutral-300 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        >
+                            <ArrowLeft size={17} aria-hidden="true" />
+                            Back to your trail
                         </button>
                     </div>
                 )}
